@@ -1,26 +1,163 @@
 @import "tailwindcss";
 
+/*
+  CarEval design system — Trust & Authority
+  Brand: navy (autoritate/expertiză) + lime (acțiune/încredere)
+*/
+
+@theme {
+  /* Brand navy scale */
+  --color-navy-50: #eef2f8;
+  --color-navy-100: #d3ddec;
+  --color-navy-200: #a7bbd9;
+  --color-navy-300: #6f8cbd;
+  --color-navy-400: #3f5d96;
+  --color-navy-500: #1f3a6b;
+  --color-navy-600: #142a52;
+  --color-navy-700: #0e1f3e;
+  --color-navy-800: #0b1930;
+  --color-navy-900: #081323;
+  --color-navy-950: #050c18;
+
+  /* Brand lime/green scale (din logo CarEval) */
+  --color-lime-50: #f3fbe8;
+  --color-lime-100: #e3f6c8;
+  --color-lime-200: #cbed97;
+  --color-lime-300: #abe05b;
+  --color-lime-400: #8fd02f;
+  --color-lime-500: #74b51d;
+  --color-lime-600: #599013;
+  --color-lime-700: #436d14;
+  --color-lime-800: #375616;
+  --color-lime-900: #2f4917;
+
+  /* Neutrals */
+  --color-ink: #0b1930;
+  --color-cloud: #f6f8fb;
+  --color-mist: #eef2f7;
+
+  /* Semantic */
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+
+  /* Fonts */
+  --font-heading: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-body: var(--font-dm-sans), system-ui, sans-serif;
+
+  /* Easings & motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Radii */
+  --radius-xl2: 1.25rem;
+}
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0b1930;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+h1, h2, h3, h4, h5, .font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
+/* Surfaces */
+.bg-navy-gradient {
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(143, 208, 47, 0.16), transparent 60%),
+    radial-gradient(900px 500px at 0% 110%, rgba(63, 93, 150, 0.35), transparent 55%),
+    linear-gradient(160deg, #0b1930 0%, #081323 60%, #050c18 100%);
+}
+
+.bg-mesh-light {
+  background:
+    radial-gradient(800px 400px at 90% 0%, rgba(143, 208, 47, 0.10), transparent 60%),
+    radial-gradient(700px 500px at 0% 100%, rgba(31, 58, 107, 0.08), transparent 55%),
+    var(--color-cloud);
+}
+
+.text-gradient-lime {
+  background: linear-gradient(100deg, #abe05b 0%, #8fd02f 50%, #74b51d 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Glass card for dark sections */
+.glass {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(10px);
+}
+
+/* Reveal base state (GSAP toggles to visible) */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  will-change: transform, opacity;
+}
+
+/* Focus visibility */
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-lime-400);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* ── CTA button shimmer — conversion layer ── */
+@keyframes btn-shimmer {
+  0% { transform: translateX(-130%) skewX(-15deg); }
+  100% { transform: translateX(240%) skewX(-15deg); }
+}
+
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  inset-y: 0;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  animation: btn-shimmer 3.2s ease-in-out 2s infinite;
+  pointer-events: none;
+}
+
+/* Mașina din wizard — plutire ușoară */
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Hide number input spinners for cleaner forms */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }

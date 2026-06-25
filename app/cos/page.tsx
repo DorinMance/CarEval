@@ -1,0 +1,280 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useCart } from "@/lib/cart";
+import { saveLead } from "@/lib/db";
+import { fieldLabel } from "@/lib/labels";
+import type { Lead, Contact } from "@/lib/types";
+import { products, COMPANY } from "@/lib/products";
+import { FormField } from "@/components/FormField";
+import type { FieldStatus } from "@/components/FormField";
+import { Section, Eyebrow, btnPrimary, btnOutline, cn } from "@/components/ui";
+import { Cart, Check, X, ArrowRight, FileText, Shield } from "@/components/icons";
+
+type Phase = "cart" | "sending" | "success";
+
+export default function CartPage() {
+  const { items, total, removeItem, clear, ready } = useCart();
+  const [phase, setPhase] = useState<Phase>("cart");
+  const [preview, setPreview] = useState<string>("");
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [emailAsync, setEmailAsync] = useState<FieldStatus>("idle");
+
+  // pre-fill contact din ultimul item care are date de contact
+  const prefill = useMemo<Contact>(() => {
+    const withContact = [...items].reverse().find((i) => i.data.email || i.data.telefon);
+    const d = withContact?.data ?? {};
+    return {
+      nume: (d.nume as string) ?? "",
+      telefon: (d.telefon as string) ?? "",
+      email: (d.email as string) ?? "",
+      localitate: (d.localitate as string) ?? "",
+      mesaj: (d.mesaj as string) ?? "",
+    };
+  }, [items]);
+
+  const [contact, setContact] = useState<Contact>(prefill);
+  // pre-completează din datele wizardului când coșul s-a încărcat (o singură dată, dacă e gol)
+  useEffect(() => {
+    setContact((c) => (c.nume || c.email || c.telefon ? c : prefill));
+  }, [prefill]);
+
+  function set(name: keyof Contact, v: string) {
+    setContact((c) => ({ ...c, [name]: v }));
+    setErrors((e) => ({ ...e, [name]: false }));
+  }
+
+  function handleEmailChange(v: string) {
+    set("email", v);
+    if (emailAsync !== "idle") setEmailAsync("idle");
+  }
+
+  function handleEmailBlur() {
+    if (/.+@.+\..+/.test(contact.email)) {
+      setEmailAsync("loading");
+      setTimeout(() => setEmailAsync("success"), 900);
+    }
+  }
+
+  function validate(): boolean {
+    const next: Record<string, boolean> = {};
+    if (!contact.nume.trim()) next.nume = true;
+    if (!contact.telefon.trim()) next.telefon = true;
+    if (!contact.email.trim() || !/.+@.+\..+/.test(contact.email)) next.email = true;
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
+
+  async function submit() {
+    if (!validate()) return;
+    setPhase("sending");
+    const lead: Lead = {
+      id: `lead-${Date.now()}`,
+      createdAt: Date.now(),
+      status: "nou",
+      contact,
+      total: items.some((i) => i.price == null) ? null : total,
+      items: items.map(({ uid: _uid, ...rest }) => rest),
+    };
+
+    try {
+      const res = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(lead),
+      });
+      const json = await res.json();
+      saveLead(lead); // persistă în CRM (demo: localStorage)
+      setPreview(json.previewHtml ?? "");
+      clear();
+      setPhase("success");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch {
+      setPhase("cart");
+      alert("A apărut o eroare. Încearcă din nou.");
+    }
+  }
+
+  if (!ready) {
+    return <Section className="bg-white"><div className="h-40" /></Section>;
+  }
+
+  if (phase === "success") {
+    return (
+      <Section className="bg-mesh-light min-h-[70vh]">
+        <div className="mx-auto max-w-2xl text-center">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-lime-500 text-navy-900">
+            <Check className="h-8 w-8" />
+          </div>
+          <h1 className="mt-6 font-heading text-3xl font-bold text-navy-800">Comanda a fost trimisă!</h1>
+          <p className="mt-3 text-navy-500">
+            Demo: am simulat trimiterea unui email către <strong>{COMPANY.email}</strong> cu toate
+            datele și imaginile alese. Lead-ul apare acum în panoul de admin.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Link href="/admin" className={btnPrimary}>Vezi în panoul admin <ArrowRight className="h-4 w-4" /></Link>
+            <Link href="/produse" className={btnOutline}>Înapoi la servicii</Link>
+          </div>
+
+          {preview && (
+            <div className="mt-10 overflow-hidden rounded-2xl border border-mist bg-white text-left">
+              <div className="flex items-center gap-2 border-b border-mist bg-cloud px-5 py-3 text-sm font-semibold text-navy-700">
+                <FileText className="h-4 w-4 text-lime-600" /> Previzualizare email trimis către proprietar
+              </div>
+              <iframe title="Preview email" srcDoc={preview} className="h-[520px] w-full" />
+            </div>
+          )}
+        </div>
+      </Section>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <Section className="bg-white min-h-[70vh]">
+        <div className="mx-auto max-w-md text-center">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-cloud text-navy-300">
+            <Cart className="h-8 w-8" />
+          </div>
+          <h1 className="mt-6 font-heading text-2xl font-bold text-navy-800">Coșul tău e gol</h1>
+          <p className="mt-2 text-navy-500">Alege un serviciu de evaluare și completează formularul în câțiva pași.</p>
+          <Link href="/produse" className={cn(btnPrimary, "mt-6")}>Vezi serviciile <ArrowRight className="h-4 w-4" /></Link>
+        </div>
+      </Section>
+    );
+  }
+
+
+  return (
+    <Section className="bg-white">
+      <Eyebrow>Coșul tău</Eyebrow>
+      <h1 className="mt-4 font-heading text-3xl font-bold text-navy-800 sm:text-4xl">
+        Finalizează comanda
+      </h1>
+      <p className="mt-2 text-navy-500">Verifică serviciile alese și trimite cererea. Te contactăm cu oferta.</p>
+
+      <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_380px]">
+        {/* Items */}
+        <div className="space-y-4">
+          {items.map((item) => {
+            const product = products.find((p) => p.slug === item.productSlug);
+            const dataEntries = Object.entries(item.data).filter(([, v]) => v !== "" && v !== false);
+            const imgCount = Object.values(item.images).reduce((n, a) => n + a.length, 0);
+            return (
+              <div key={item.uid} className="rounded-2xl border border-mist bg-white p-5 shadow-[0_2px_10px_rgba(11,25,48,0.03)]">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <span className="text-xs font-medium text-navy-400">{product?.category} · Cod {item.code}</span>
+                    <h3 className="font-heading text-lg font-semibold text-navy-800">{item.productName}</h3>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-heading font-bold text-navy-800">
+                      {item.price == null ? "La cerere" : `${item.price.toLocaleString("ro-RO")} Lei`}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeItem(item.uid)}
+                      aria-label="Elimină din coș"
+                      className="grid h-8 w-8 place-items-center rounded-lg text-navy-400 hover:bg-cloud hover:text-danger"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {dataEntries.length > 0 && (
+                  <dl className="mt-4 grid gap-x-6 gap-y-1.5 border-t border-mist pt-4 sm:grid-cols-2">
+                    {dataEntries.slice(0, 8).map(([k, v]) => (
+                      <div key={k} className="flex justify-between gap-3 text-sm">
+                        <dt className="text-navy-400">{fieldLabel(k)}</dt>
+                        <dd className="truncate text-right font-medium text-navy-700">{v === true ? "Da" : String(v)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+
+                {imgCount > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2 border-t border-mist pt-3">
+                    {Object.values(item.images).flat().slice(0, 8).map((src, i) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img key={i} src={src} alt="" className="h-12 w-12 rounded-lg border border-mist object-cover" />
+                    ))}
+                    <span className="self-center text-xs text-navy-400">{imgCount} imagini</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          <button type="button" onClick={clear} className="text-sm font-medium text-navy-400 hover:text-danger">
+            Golește coșul
+          </button>
+        </div>
+
+        {/* Checkout panel */}
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <div className="rounded-2xl border border-mist bg-cloud p-6">
+            <div className="flex items-center justify-between border-b border-mist pb-4">
+              <span className="text-navy-500">Total estimativ</span>
+              <span className="font-heading text-2xl font-bold text-navy-800">
+                {total > 0 ? `${total.toLocaleString("ro-RO")} Lei` : "La cerere"}
+              </span>
+            </div>
+            <p className="mt-3 text-xs text-navy-400">
+              Prețul final se confirmă în ofertă. Serviciile „la cerere" se tarifează după caz.
+            </p>
+
+            <div className="mt-5 space-y-3">
+              <FormField
+                label="Nume și prenume"
+                type="text"
+                value={contact.nume}
+                placeholder="Ion Popescu"
+                required
+                externalError={errors.nume}
+                onChange={(v) => set("nume", v)}
+              />
+              <FormField
+                label="Telefon"
+                type="tel"
+                value={contact.telefon}
+                placeholder="07xx xxx xxx"
+                required
+                externalError={errors.telefon}
+                onChange={(v) => set("telefon", v)}
+              />
+              <FormField
+                label="Email"
+                type="email"
+                value={contact.email}
+                placeholder="nume@email.ro"
+                required
+                externalError={errors.email}
+                externalStatus={emailAsync !== "idle" ? emailAsync : undefined}
+                successMsg="Adresă validă — te contactăm aici."
+                loadingMsg="Verificăm adresa…"
+                onChange={handleEmailChange}
+                onBlurCallback={handleEmailBlur}
+              />
+              <FormField
+                label="Localitate"
+                type="text"
+                value={contact.localitate ?? ""}
+                placeholder="Timișoara"
+                onChange={(v) => set("localitate", v)}
+              />
+            </div>
+
+            <button type="button" onClick={submit} disabled={phase === "sending"} className={cn(btnPrimary, "mt-5 w-full", phase === "sending" && "opacity-70")}>
+              {phase === "sending" ? "Se trimite…" : (<>Trimite comanda <ArrowRight className="h-4 w-4" /></>)}
+            </button>
+
+            <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-navy-400">
+              <Shield className="h-3.5 w-3.5 text-lime-600" /> Datele tale sunt confidențiale.
+            </p>
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
