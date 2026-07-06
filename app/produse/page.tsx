@@ -1,18 +1,16 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ProductCard";
 import { Section, Eyebrow, btnPrimary } from "@/components/ui";
-import { products, COMPANY } from "@/lib/products";
+import { COMPANY } from "@/lib/products";
+import { useProducts } from "@/lib/content";
 import { ArrowRight } from "@/components/icons";
 
-export const metadata: Metadata = {
-  title: "Produse & servicii de evaluare auto",
-  description:
-    "Toate serviciile CarEval: evaluare autovehicul, costuri reparație, despăgubiri, epavă, devalorizare și consultanță în caz de accident. Rapoarte autorizate în 24–48h.",
-};
-
 export default function ProdusePage() {
+  const products = useProducts();
+
   return (
     <>
       <section className="bg-navy-gradient text-white">
@@ -31,13 +29,13 @@ export default function ProdusePage() {
       </section>
 
       <Section className="bg-white">
-        <Reveal stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p, i) => (
-            <div data-reveal key={p.slug}>
+            <div key={p.slug}>
               <ProductCard product={p} priority={i < 3} />
             </div>
           ))}
-        </Reveal>
+        </div>
 
         <Reveal className="mt-14 flex flex-col items-center gap-4 rounded-3xl bg-mesh-light p-8 text-center sm:p-12">
           <h2 className="font-heading text-2xl font-bold text-navy-800 sm:text-3xl">

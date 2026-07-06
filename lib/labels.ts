@@ -7,12 +7,15 @@ export const FIELD_LABELS: Record<string, string> = {
   locAccident: "Loc accident", dataOra: "Data și ora", victime: "Accident cu victime",
   nume: "Nume", telefon: "Telefon", email: "Email", localitate: "Localitate",
   mesaj: "Mesaj", raportTiparit: "Raport tipărit",
+  // A Doua Opinie
+  linkAnunt: "Link anunț", anFabricatie: "An fabricație", pretCerut: "Preț cerut",
 };
 
 export const IMAGE_LABELS: Record<string, string> = {
   imgFata: "Față", imgSpate: "Spate", imgDreapta: "Lateral dreapta", imgStanga: "Lateral stânga",
-  imgBord: "Bord", imgAvarii: "Avarii", imgPV: "Proces verbal",
+  imgBord: "Bord (km)", imgAvarii: "Avarii", imgPV: "Proces verbal / constatare",
   imgVehiculTau: "Vehiculul tău", imgVehiculVinovat: "Vehiculul vinovat",
+  docExpertizaAsigurator: "Expertiza / oferta asigurătorului", docCarteService: "Carte service / documente",
 };
 
 export function fieldLabel(name: string): string {

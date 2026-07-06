@@ -5,7 +5,10 @@ export interface Post {
   category: string;
   date: string; // ISO
   readingTime: string;
+  /** Conținut vechi ca paragrafe (seed). Folosit dacă `content` (HTML) lipsește. */
   body: string[];
+  /** Conținut HTML produs de editorul din admin (are prioritate la afișare). */
+  content?: string;
 }
 
 export const posts: Post[] = [

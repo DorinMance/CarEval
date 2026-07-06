@@ -34,7 +34,7 @@ export function CompareCard() {
   return (
     <div
       ref={ref}
-      className="absolute bottom-0 left-1/2 w-[320px] -translate-x-1/2 rounded-2xl border border-white/10 bg-[#0a1626]/90 p-4 shadow-[0_24px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl"
+      className="absolute bottom-0 left-1/2 w-[min(320px,86vw)] -translate-x-1/2 rounded-2xl border border-white/10 bg-[#0a1626]/90 p-4 shadow-[0_24px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl"
       style={{ transform: "perspective(1000px) rotateX(6deg)" }}
     >
       <p data-c className="mb-3 text-[10px] font-bold uppercase tracking-wider text-lime-400/75">

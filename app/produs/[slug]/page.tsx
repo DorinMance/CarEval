@@ -1,40 +1,30 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
-import { products, getProduct, formatPrice, COMPANY } from "@/lib/products";
+import { useParams } from "next/navigation";
+import { COMPANY } from "@/lib/products";
+import { useProducts } from "@/lib/content";
 import { Wizard } from "@/components/Wizard";
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ProductCard";
-import { Section, Eyebrow, PriceTag } from "@/components/ui";
+import { Section, Eyebrow, PriceTag, btnPrimary } from "@/components/ui";
 import { Check, Clock, Shield, ChevronRight, ArrowRight, Phone } from "@/components/icons";
 
-export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
-}
+export default function ProductPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const products = useProducts();
+  const product = products.find((p) => p.slug === slug);
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const product = getProduct(slug);
-  if (!product) return { title: "Produs inexistent" };
-  return {
-    title: product.name,
-    description: product.shortDescription,
-  };
-}
-
-export default async function ProductPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const product = getProduct(slug);
-  if (!product) notFound();
+  if (!product) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-24 text-center">
+        <h1 className="font-heading text-2xl font-bold text-navy-800">Produs inexistent</h1>
+        <p className="mt-2 text-navy-500">Serviciul căutat nu există sau a fost șters.</p>
+        <Link href="/produse" className={`${btnPrimary} mt-6`}>Vezi toate serviciile <ArrowRight className="h-4 w-4" /></Link>
+      </div>
+    );
+  }
 
   const related = products.filter((p) => p.slug !== product.slug && p.category === product.category).slice(0, 3);
   const fallback = products.filter((p) => p.slug !== product.slug).slice(0, 3);
@@ -151,13 +141,13 @@ export default async function ProductPage({
         <Reveal className="mb-8">
           <h2 className="font-heading text-2xl font-bold text-navy-800">Servicii similare</h2>
         </Reveal>
-        <Reveal stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {suggestions.map((p) => (
-            <div data-reveal key={p.slug}>
+            <div key={p.slug}>
               <ProductCard product={p} />
             </div>
           ))}
-        </Reveal>
+        </div>
       </Section>
     </>
   );

@@ -94,3 +94,24 @@ export const RefreshCw = (p: SVGProps<SVGSVGElement>) => (
 export const FileImage = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" /><path d="M14 3v5h5" /><circle cx="10" cy="13" r="1.5" /><path d="m9 17 1.5-2 2.5 3.5" /></svg>
 );
+export const Lock = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><rect x="4.5" y="10.5" width="15" height="10" rx="2" /><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" /><circle cx="12" cy="15.5" r="1.2" fill="currentColor" stroke="none" /></svg>
+);
+export const Plus = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M12 5v14M5 12h14" /></svg>
+);
+export const Trash = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-.7 12a2 2 0 0 1-2 1.9H8.7a2 2 0 0 1-2-1.9L6 7" /><path d="M10 11v6M14 11v6" /></svg>
+);
+export const Pencil = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3Z" /><path d="M13.5 6.5l3 3" /></svg>
+);
+export const Search = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+);
+export const LogOut = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" /><path d="M10 17l-5-5 5-5M5 12h11" /></svg>
+);
+export const Link2 = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M9 12h6" /><path d="M10 8H8a4 4 0 0 0 0 8h2M14 8h2a4 4 0 0 1 0 8h-2" /></svg>
+);

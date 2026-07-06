@@ -10,7 +10,8 @@ import { products, COMPANY } from "@/lib/products";
 import { FormField } from "@/components/FormField";
 import type { FieldStatus } from "@/components/FormField";
 import { Section, Eyebrow, btnPrimary, btnOutline, cn } from "@/components/ui";
-import { Cart, Check, X, ArrowRight, FileText, Shield } from "@/components/icons";
+import { Lottie } from "@/components/Lottie";
+import { X, ArrowRight, FileText, Shield } from "@/components/icons";
 
 type Phase = "cart" | "sending" | "success";
 
@@ -104,10 +105,8 @@ export default function CartPage() {
     return (
       <Section className="bg-mesh-light min-h-[70vh]">
         <div className="mx-auto max-w-2xl text-center">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-lime-500 text-navy-900">
-            <Check className="h-8 w-8" />
-          </div>
-          <h1 className="mt-6 font-heading text-3xl font-bold text-navy-800">Comanda a fost trimisă!</h1>
+          <Lottie src="/lottie/success-check.lottie" size={160} loop={false} className="mx-auto" />
+          <h1 className="mt-2 font-heading text-3xl font-bold text-navy-800">Comanda a fost trimisă!</h1>
           <p className="mt-3 text-navy-500">
             Demo: am simulat trimiterea unui email către <strong>{COMPANY.email}</strong> cu toate
             datele și imaginile alese. Lead-ul apare acum în panoul de admin.
@@ -134,10 +133,8 @@ export default function CartPage() {
     return (
       <Section className="bg-white min-h-[70vh]">
         <div className="mx-auto max-w-md text-center">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-cloud text-navy-300">
-            <Cart className="h-8 w-8" />
-          </div>
-          <h1 className="mt-6 font-heading text-2xl font-bold text-navy-800">Coșul tău e gol</h1>
+          <Lottie src="/lottie/empty-box.lottie" size={180} className="mx-auto" />
+          <h1 className="mt-2 font-heading text-2xl font-bold text-navy-800">Coșul tău e gol</h1>
           <p className="mt-2 text-navy-500">Alege un serviciu de evaluare și completează formularul în câțiva pași.</p>
           <Link href="/produse" className={cn(btnPrimary, "mt-6")}>Vezi serviciile <ArrowRight className="h-4 w-4" /></Link>
         </div>

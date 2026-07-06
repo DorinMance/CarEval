@@ -1,12 +1,18 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { products, COMPANY } from "@/lib/products";
-import { Phone, Mail, MapPin, Clock } from "./icons";
+import { Phone, Mail, MapPin, Clock, Lock } from "./icons";
 
 export function Footer() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <footer className="bg-navy-gradient text-navy-100">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-4 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
         <div className="lg:col-span-1">
           <Logo light />
           <p className="mt-4 max-w-xs text-sm text-navy-200">
@@ -41,7 +47,6 @@ export function Footer() {
             <li><Link href="/despre-noi" className="text-navy-200 hover:text-lime-300">Despre noi</Link></li>
             <li><Link href="/companii" className="text-navy-200 hover:text-lime-300">Pentru companii</Link></li>
             <li><Link href="/blog" className="text-navy-200 hover:text-lime-300">Blog</Link></li>
-            <li><Link href="/admin" className="text-navy-300 hover:text-lime-300">Panou admin (demo)</Link></li>
           </ul>
         </div>
 
@@ -61,7 +66,17 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-navy-300 sm:flex-row sm:px-6 lg:px-8">
           <p>© {new Date().getFullYear()} {COMPANY.name} · {COMPANY.legal}. Toate drepturile rezervate.</p>
-          <p>Demo realizat în Next.js · datele de admin sunt simulate local.</p>
+          <div className="flex items-center gap-4">
+            <p>Demo realizat în Next.js · datele de admin sunt simulate local.</p>
+            <Link
+              href="/admin"
+              aria-label="Autentificare administrator"
+              title="Acces administrator"
+              className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-navy-300 transition-colors hover:border-lime-400/40 hover:text-lime-300"
+            >
+              <Lock className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

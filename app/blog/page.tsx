@@ -1,17 +1,15 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Section } from "@/components/ui";
-import { posts } from "@/lib/blog";
+import { usePosts } from "@/lib/content";
 import { ArrowRight, Clock } from "@/components/icons";
 
-export const metadata: Metadata = {
-  title: "Blog",
-  description: "Ghiduri și sfaturi despre evaluări auto, despăgubiri RCA/CASCO, devalorizare și expertize în caz de accident.",
-};
-
 export default function BlogPage() {
+  const posts = usePosts();
+
   return (
     <>
       <PageHero
@@ -21,12 +19,11 @@ export default function BlogPage() {
       />
 
       <Section className="bg-white">
-        <Reveal stagger className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-3">
           {posts.map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              data-reveal
               className="group flex flex-col rounded-2xl border border-mist bg-white p-6 shadow-[0_2px_12px_rgba(11,25,48,0.04)] transition-all hover:-translate-y-1 hover:border-lime-200 hover:shadow-[0_24px_50px_-24px_rgba(11,25,48,0.4)]"
             >
               <div className="flex items-center gap-3 text-xs text-navy-400">
@@ -40,7 +37,10 @@ export default function BlogPage() {
               </span>
             </Link>
           ))}
-        </Reveal>
+          {posts.length === 0 && (
+            <p className="col-span-full text-center text-navy-400">Niciun articol publicat momentan.</p>
+          )}
+        </div>
       </Section>
     </>
   );

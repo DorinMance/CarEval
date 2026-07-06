@@ -43,8 +43,9 @@ export default function CompaniiPage() {
               Partener pentru orice business cu mașini
             </h2>
             <p className="mt-4 max-w-md text-lg leading-relaxed text-navy-500">
-              De la o flotă de livrare la un parc auto în leasing — evaluăm rapid, documentat și la
-              scară, indiferent de câte vehicule ai.
+              De la o flotă de livrare la un parc auto extins — expertizăm rapid și documentat orice
+              eveniment din flota ta. Expertize tehnice și devize de reparație pentru accidente, daune
+              și constatări din parcul auto.
             </p>
           </Reveal>
           {/* fleet-cut.png — 3D floating fleet */}

@@ -8,16 +8,24 @@ import { Check, ArrowRight, FileText, Shield } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Model de raport",
-  description: "Vezi ce conține un raport de evaluare CarEval: date tehnice, valoarea de piață, deviz de reparație și semnătura expertului tehnic judiciar.",
+  description: "Vezi ce conține un raport de evaluare CarEval: date tehnice, opinie de valoare argumentată tehnic, deviz de reparație și semnătura expertului tehnic judiciar.",
 };
 
 const contents = [
   "Datele complete ale vehiculului (marcă, model, VIN, km, dotări)",
-  "Valoarea de piață calculată profesionist",
+  "Opinie de valoare argumentată tehnic, pe baza sistemelor AUDATEX/DAT",
   "Deviz de reparație detaliat (AUDATEX / DAT) — unde e cazul",
   "Fotografiile relevante cu starea vehiculului",
   "Concluzia și valoarea finală, evidențiate clar",
   "Semnătura și ștampila expertului tehnic judiciar",
+];
+
+const reports = [
+  { slug: "raport-despagubiri", title: "Evaluare Despăgubiri Cuvenite", pages: 5 },
+  { slug: "raport-costuri-reparatie", title: "Evaluare Costuri Reparație", pages: 4 },
+  { slug: "raport-devalorizare", title: "Evaluare Devalorizare", pages: 6 },
+  { slug: "raport-epava", title: "Evaluare Epavă Autoturism", pages: 4 },
+  { slug: "raport-data-accidentului", title: "Evaluare la Data Accidentului", pages: 2 },
 ];
 
 export default function ModelRaportPage() {
@@ -52,7 +60,7 @@ export default function ModelRaportPage() {
           </Reveal>
 
           <Reveal className="order-1 lg:order-2">
-            <div className="relative overflow-hidden rounded-3xl bg-[#07101f] p-10">
+            <div className="relative overflow-hidden rounded-3xl bg-surface p-10">
               {/* glow + grid */}
               <div className="pointer-events-none absolute inset-0 opacity-[0.03]"
                 style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.9) 1px, transparent 1px)", backgroundSize: "26px 26px" }}
@@ -77,6 +85,70 @@ export default function ModelRaportPage() {
             </div>
           </Reveal>
         </div>
+      </Section>
+
+      <Section className="bg-white pt-0">
+        <Reveal className="mx-auto max-w-2xl text-center">
+          <Eyebrow>Modele reale</Eyebrow>
+          <h2 className="mt-4 font-heading text-3xl font-bold text-navy-800">
+            Exemple de rapoarte, pe fiecare serviciu
+          </h2>
+          <p className="mt-3 text-navy-500">
+            Deschide sau descarcă un model complet și vezi exact structura, cifrele și nivelul de detaliu.
+          </p>
+        </Reveal>
+
+        <Reveal stagger className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {reports.map((r) => (
+            <div
+              data-reveal
+              key={r.slug}
+              className="group flex flex-col overflow-hidden rounded-2xl border border-mist bg-white shadow-[0_2px_12px_rgba(11,25,48,0.05)] transition-all hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(11,25,48,0.35)]"
+            >
+              <a
+                href={`/model-raport/${r.slug}.pdf`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative block aspect-[1/1.414] overflow-hidden border-b border-mist bg-cloud"
+              >
+                <Image
+                  src={`/model-raport/thumbs/${r.slug}.png`}
+                  alt={`Model de raport — ${r.title}`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+                <span className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white opacity-0 transition-all duration-300 group-hover:bg-navy-900/70 group-hover:opacity-100">
+                  <FileText className="h-4 w-4" /> Deschide raportul
+                </span>
+              </a>
+
+              <div className="flex flex-1 flex-col p-5">
+                <span className="text-[11px] font-bold uppercase tracking-wide text-lime-600">
+                  {r.pages} pagini · PDF
+                </span>
+                <h3 className="mt-1 font-heading text-base font-semibold leading-snug text-navy-800">{r.title}</h3>
+                <div className="mt-4 flex gap-2">
+                  <a
+                    href={`/model-raport/${r.slug}.pdf`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-navy-800 px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-700"
+                  >
+                    <FileText className="h-4 w-4" /> Vezi
+                  </a>
+                  <a
+                    href={`/model-raport/${r.slug}.pdf`}
+                    download
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-mist px-4 py-2.5 text-sm font-semibold text-navy-700 transition-colors hover:bg-cloud"
+                  >
+                    Descarcă
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Reveal>
       </Section>
 
       <Section className="bg-cloud pt-0">

@@ -1,20 +1,20 @@
 import Link from "next/link";
+import Image from "next/image";
+
+/* Logo original CarEval — fișierul real (public/images/careval-logo.webp). */
 
 export function Logo({ light = false, className = "" }: { light?: boolean; className?: string }) {
   return (
-    <Link href="/" aria-label="CarEval — acasă" className={`inline-flex items-center gap-2 ${className}`}>
-      <svg width="34" height="34" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-        <rect width="48" height="48" rx="12" fill={light ? "rgba(255,255,255,0.08)" : "#0b1930"} />
-        <path
-          d="M33 17.5A10.5 10.5 0 1 0 33 30.5"
-          stroke="#8fd02f"
-          strokeWidth="3.4"
-          strokeLinecap="round"
+    <Link href="/" aria-label="CarEval — acasă" className={`inline-flex items-center ${className}`}>
+      <span className={light ? "grid place-items-center rounded-xl bg-white p-1.5" : ""}>
+        <Image
+          src="/images/careval-logo.webp"
+          alt="CarEval"
+          width={100}
+          height={100}
+          priority
+          className="h-[72px] w-[72px] object-contain"
         />
-        <path d="M20 24h13" stroke="#8fd02f" strokeWidth="3.4" strokeLinecap="round" />
-      </svg>
-      <span className={`font-heading text-xl font-bold tracking-tight ${light ? "text-white" : "text-navy-800"}`}>
-        Car<span className="text-lime-500">Eval</span>
       </span>
     </Link>
   );

@@ -1,28 +1,29 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { posts, getPost } from "@/lib/blog";
+import { useParams } from "next/navigation";
+import { usePosts } from "@/lib/content";
 import { Reveal } from "@/components/Reveal";
 import { Section, btnPrimary } from "@/components/ui";
 import { ChevronRight, ArrowRight, Clock } from "@/components/icons";
 
-export function generateStaticParams() {
-  return posts.map((p) => ({ slug: p.slug }));
-}
+export default function PostPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const posts = usePosts();
+  const post = posts.find((p) => p.slug === slug);
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
-  const post = getPost(slug);
-  if (!post) return { title: "Articol inexistent" };
-  return { title: post.title, description: post.excerpt };
-}
-
-export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const post = getPost(slug);
-  if (!post) notFound();
+  if (!post) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-24 text-center">
+        <h1 className="font-heading text-2xl font-bold text-navy-800">Articol inexistent</h1>
+        <p className="mt-2 text-navy-500">Articolul căutat nu există sau a fost șters.</p>
+        <Link href="/blog" className={`${btnPrimary} mt-6`}>Înapoi la blog <ArrowRight className="h-4 w-4" /></Link>
+      </div>
+    );
+  }
 
   const more = posts.filter((p) => p.slug !== post.slug).slice(0, 2);
+  const hasHtml = !!post.content;
 
   return (
     <>
@@ -47,30 +48,38 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           <p className="mt-4 text-lg text-navy-500">{post.excerpt}</p>
         </Reveal>
 
-        <Reveal className="mt-8 space-y-5 border-t border-mist pt-8">
-          {post.body.map((p, i) => (
-            <p key={i} className="text-lg leading-relaxed text-navy-700">{p}</p>
-          ))}
-        </Reveal>
+        <div className="mt-8 border-t border-mist pt-8">
+          {hasHtml ? (
+            <div className="article-html text-lg text-navy-700" dangerouslySetInnerHTML={{ __html: post.content! }} />
+          ) : (
+            <div className="space-y-5">
+              {post.body.map((p, i) => (
+                <p key={i} className="text-lg leading-relaxed text-navy-700">{p}</p>
+              ))}
+            </div>
+          )}
+        </div>
 
-        <Reveal className="mt-10 flex flex-col items-center gap-4 rounded-3xl bg-navy-gradient px-6 py-10 text-center text-white">
+        <div className="mt-10 flex flex-col items-center gap-4 rounded-3xl bg-navy-gradient px-6 py-10 text-center text-white">
           <h2 className="font-heading text-2xl font-bold">Vrei o evaluare corectă pentru mașina ta?</h2>
           <Link href="/produse" className={btnPrimary}>Vezi serviciile <ArrowRight className="h-4 w-4" /></Link>
-        </Reveal>
+        </div>
       </article>
 
-      <Section className="bg-cloud pt-0">
-        <h2 className="mb-6 font-heading text-2xl font-bold text-navy-800">Continuă să citești</h2>
-        <div className="grid gap-6 sm:grid-cols-2">
-          {more.map((p) => (
-            <Link key={p.slug} href={`/blog/${p.slug}`} className="group rounded-2xl border border-mist bg-white p-6 transition-all hover:border-lime-200 hover:shadow-lg">
-              <span className="rounded-md bg-lime-100 px-2 py-0.5 text-xs font-semibold text-lime-700">{p.category}</span>
-              <h3 className="mt-3 font-heading text-lg font-semibold text-navy-800">{p.title}</h3>
-              <p className="mt-2 text-sm text-navy-500">{p.excerpt}</p>
-            </Link>
-          ))}
-        </div>
-      </Section>
+      {more.length > 0 && (
+        <Section className="bg-cloud pt-0">
+          <h2 className="mb-6 font-heading text-2xl font-bold text-navy-800">Continuă să citești</h2>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {more.map((p) => (
+              <Link key={p.slug} href={`/blog/${p.slug}`} className="group rounded-2xl border border-mist bg-white p-6 transition-all hover:border-lime-200 hover:shadow-lg">
+                <span className="rounded-md bg-lime-100 px-2 py-0.5 text-xs font-semibold text-lime-700">{p.category}</span>
+                <h3 className="mt-3 font-heading text-lg font-semibold text-navy-800">{p.title}</h3>
+                <p className="mt-2 text-sm text-navy-500">{p.excerpt}</p>
+              </Link>
+            ))}
+          </div>
+        </Section>
+      )}
     </>
   );
 }

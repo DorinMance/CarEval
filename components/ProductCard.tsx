@@ -16,14 +16,14 @@ export function ProductCard({ product, priority = false }: { product: Product; p
         </span>
       )}
 
-      <div className="relative aspect-[5/4] overflow-hidden bg-mesh-light">
+      <div className="relative aspect-square overflow-hidden bg-white">
         <Image
           src={product.image}
           alt={product.name}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
           priority={priority}
-          className="object-contain p-5 transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </div>
 

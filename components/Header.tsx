@@ -32,6 +32,17 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Blochează scroll-ul paginii din fundal cât timp meniul mobil e deschis
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  // Adminul are propria bară — nu afișa header-ul site-ului acolo
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <header
       className={`sticky top-0 z-50 transition-all ${
@@ -40,7 +51,7 @@ export function Header() {
           : "bg-white"
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Logo />
 
         <nav className="hidden items-center gap-1 lg:flex">
@@ -50,8 +61,8 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  active ? "text-lime-600" : "text-navy-500 hover:text-navy-800"
+                className={`rounded-lg px-3 py-2 text-[15px] font-medium transition-colors ${
+                  active ? "text-lime-600" : "text-navy-700 hover:text-navy-900"
                 }`}
               >
                 {item.label}
@@ -72,7 +83,7 @@ export function Header() {
           <Link
             href="/cos"
             aria-label="Coșul meu"
-            className="relative grid h-10 w-10 place-items-center rounded-lg text-navy-700 transition-colors hover:bg-cloud"
+            className="relative grid h-11 w-11 place-items-center rounded-lg text-navy-700 transition-colors hover:bg-cloud"
           >
             <Cart className="h-5 w-5" />
             {count > 0 && (
@@ -86,29 +97,34 @@ export function Header() {
             type="button"
             aria-label={open ? "Închide meniul" : "Deschide meniul"}
             onClick={() => setOpen((v) => !v)}
-            className="grid h-10 w-10 place-items-center rounded-lg text-navy-700 hover:bg-cloud lg:hidden"
+            className="grid h-11 w-11 place-items-center rounded-lg text-navy-700 hover:bg-cloud lg:hidden"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — overlay full-page, cu blocare scroll fundal */}
       {open && (
-        <div className="border-t border-mist bg-white lg:hidden">
-          <nav className="mx-auto flex max-w-7xl flex-col px-4 py-3 sm:px-6">
-            {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-lg px-3 py-3 text-base font-medium text-navy-700 hover:bg-cloud"
-              >
-                {item.label}
-              </Link>
-            ))}
+        <div className="fixed inset-x-0 bottom-0 top-20 z-40 overflow-y-auto overscroll-contain bg-white lg:hidden">
+          <nav className="flex flex-col gap-1 px-4 py-6 sm:px-6">
+            {NAV.map((item) => {
+              const active = pathname === item.href || pathname.startsWith(item.href + "/");
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`rounded-xl px-4 py-4 text-lg font-semibold transition-colors ${
+                    active ? "bg-lime-50 text-lime-700" : "text-navy-800 hover:bg-cloud"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
             <a
               href={COMPANY.phoneHref}
-              className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-navy-800 px-3 py-3 text-base font-semibold text-white"
+              className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-navy-800 px-4 py-4 text-base font-semibold text-white"
             >
               <Phone className="h-4 w-4" /> {COMPANY.phone}
             </a>

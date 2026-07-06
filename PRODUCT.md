@@ -11,7 +11,7 @@ Romanian car owners who had an accident and received a low insurance offer, peop
 
 ## Brand
 - **Tone:** Confident, direct, on the user's side. Anti-bureaucratic. Never corporate. "We fight for your money."
-- **Colors:** Deep navy `#07101f` (hero bg), lime green `#8fd02f` (accent/CTA), white text.
+- **Colors:** Brand navy `#122844` (hero & dark-section bg, token `surface`), lime green `#8fd02f` (accent/CTA), white text.
 - **Fonts:** Space Grotesk (headings, bold editorial), DM Sans (body).
 - **Personality:** Premium but accessible. Think legal expert who speaks plain Romanian.
 

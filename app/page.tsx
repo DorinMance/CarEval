@@ -16,30 +16,30 @@ import {
 const situations = [
   {
     Icon: Car,
-    label: "Accident",
-    title: "Am avut un accident",
-    desc: "Asigurătorul îți oferă mai puțin decât merită mașina? Îți calculăm despăgubirea corectă.",
+    label: "Despăgubiri",
+    title: "Asigurătorul mi-a oferit prea puțin",
+    desc: "Calculăm suma reală la care ai dreptul, cu cifre din AUDATEX/DAT — argumentul solid față de orice asigurător.",
     href: "/produs/evaluare-despagubiri-cuvenite",
     stat: "9 din 10",
     statLabel: "oferte sub valoarea reală",
   },
   {
     Icon: Scale,
-    label: "Vânzare",
-    title: "Vând sau cumpăr o mașină",
-    desc: "Negociezi din poziție de forță cu o valoare de piață justificată documentat.",
-    href: "/produs/evaluare-autovehicul",
-    stat: "100%",
-    statLabel: "acoperire legală",
+    label: "Daună totală",
+    title: "Mașina e daună totală sau epavă",
+    desc: "Stabilim valoarea mașinii la data exactă a accidentului — esențial pentru despăgubirea corectă.",
+    href: "/produs/evaluare-autovehicul-la-data-accidentului",
+    stat: "Esențial",
+    statLabel: "la daună totală",
   },
   {
     Icon: FileText,
-    label: "Raport oficial",
-    title: "Am nevoie de un raport oficial",
-    desc: "Pentru instanță, asigurător sau leasing — raport întocmit de expert tehnic judiciar.",
-    href: "/produse",
-    stat: "24h",
-    statLabel: "timp mediu livrare",
+    label: "Devalorizare",
+    title: "Am reparat-o, dar valorează mai puțin acum",
+    desc: "O mașină accidentată pierde din valoare chiar și după reparație completă. Recuperează această diferență.",
+    href: "/produs/evaluare-devalorizare-autovehicul-dupa-accident",
+    stat: "Recuperabil",
+    statLabel: "chiar și după reparație completă",
   },
 ];
 
@@ -64,11 +64,17 @@ const steps = [
   },
 ];
 
+const featuredSlugs = [
+  "evaluare-despagubiri-cuvenite",
+  "evaluare-devalorizare-autovehicul-dupa-accident",
+  "evaluare-costuri-reparatie-autovehicul",
+];
+
 const whyUs = [
   {
     Icon: Shield,
-    title: "Valoare legală",
-    text: "Fiecare raport e o expertiză tehnică semnată de expert autorizat de Ministerul Justiției — acceptată oficial.",
+    title: "Expert autorizat MJ",
+    text: "Rapoartele sunt semnate de Dr. Ing. Kulcsar Raul Miklos, expert tehnic judiciar autorizat de Ministerul Justiției — acceptate de asigurători.",
   },
   {
     Icon: Scale,
@@ -91,11 +97,11 @@ const testimonials = [
     text: "Asigurarea îmi oferea cu aproape 4.000 lei mai puțin. Cu raportul CarEval am obținut suma corectă, fără bătăi de cap.",
   },
   {
-    name: "Elena D.",
-    city: "Arad",
-    saved: "Preț negociat corect",
-    stars: 4,
-    text: "Calcul transparent și raport profesionist. L-am folosit la vânzarea mașinii și cumpărătorul nu a mai negociat prețul.",
+    name: "Marius T.",
+    city: "Oradea",
+    saved: "+2.600 lei recuperați",
+    stars: 5,
+    text: "Mașina a fost reparată dar asigurătorul refuza devalorizarea. Cu raportul CarEval am primit tot ce mi se cuvenea — în mai puțin de o săptămână.",
   },
   {
     name: "Sorin P.",
@@ -123,7 +129,7 @@ export default function HomePage() {
       {/* ════════════════════════════════════
           STATS TICKER — imediat sub hero
       ════════════════════════════════════ */}
-      <div className="border-y border-white/[0.06] bg-[#07101f]">
+      <div className="border-y border-white/[0.06] bg-surface">
         <Reveal stagger className="mx-auto grid max-w-7xl grid-cols-2 gap-px px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
           {stats.map((s) => (
             <div
@@ -141,7 +147,7 @@ export default function HomePage() {
       {/* ════════════════════════════════════
           SITUAȚII — editorial 3-col
       ════════════════════════════════════ */}
-      <Section className="bg-[#f8f9fc]">
+      <Section id="situatii" className="bg-[#f8f9fc]">
         <Reveal className="mx-auto max-w-2xl text-center">
           <Eyebrow>În ce situație ești?</Eyebrow>
           <h2 className="mt-4 font-heading text-3xl font-bold text-navy-800 sm:text-4xl">
@@ -194,7 +200,7 @@ export default function HomePage() {
       {/* ════════════════════════════════════
           PROBLEMA — dark editorial split
       ════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-[#07101f] py-20 sm:py-28">
+      <section className="relative overflow-hidden bg-surface py-20 sm:py-28">
         {/* lime glow */}
         <div className="pointer-events-none absolute -right-40 top-0 h-[500px] w-[500px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(143,208,47,0.08)_0%,transparent_65%)]" />
         <div className="pointer-events-none absolute inset-0 opacity-[0.025]"
@@ -305,7 +311,7 @@ export default function HomePage() {
       {/* ════════════════════════════════════
           EXPERT VISUAL — cinematic full-bleed
       ════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-[#07101f] py-16 sm:py-20">
+      <section className="relative overflow-hidden bg-surface py-16 sm:py-20">
         {/* ambient grid + glow texture */}
         <div className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:44px_44px]" />
         <div className="pointer-events-none absolute -right-32 top-1/2 h-[460px] w-[460px] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(143,208,47,0.16)_0%,transparent_70%)] blur-2xl" />
@@ -380,18 +386,22 @@ export default function HomePage() {
         </Reveal>
 
         <Reveal stagger className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.slice(0, 3).map((p, i) => (
-            <div data-reveal key={p.slug}>
-              <ProductCard product={p} priority={i < 3} />
-            </div>
-          ))}
+          {featuredSlugs.map((slug, i) => {
+            const p = products.find((pr) => pr.slug === slug);
+            if (!p) return null;
+            return (
+              <div data-reveal key={p.slug}>
+                <ProductCard product={p} priority={i < 3} />
+              </div>
+            );
+          })}
         </Reveal>
       </Section>
 
       {/* ════════════════════════════════════
           DE CE CAREVAL — dark lottie cards
       ════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-[#07101f] py-20 sm:py-28">
+      <section className="relative overflow-hidden bg-surface py-20 sm:py-28">
         <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(143,208,47,0.07)_0%,transparent_65%)]" />
 
         {/* seal-cut.png — floating authority emblem */}
@@ -500,7 +510,7 @@ export default function HomePage() {
       {/* ════════════════════════════════════
           B2B TEASER
       ════════════════════════════════════ */}
-      <Section className="bg-[#07101f]">
+      <Section className="bg-surface">
         <Reveal className="overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.04] p-8 sm:p-12">
           <div className="grid items-center gap-8 lg:grid-cols-2">
             <div>
@@ -548,7 +558,7 @@ export default function HomePage() {
           FINAL CTA — dark dramatic
       ════════════════════════════════════ */}
       <Section className="bg-[#f8f9fc] pt-0">
-        <Reveal className="relative overflow-hidden rounded-3xl bg-[#07101f] px-6 py-16 text-center text-white sm:px-12 sm:py-24">
+        <Reveal className="relative overflow-hidden rounded-3xl bg-surface px-6 py-16 text-center text-white sm:px-12 sm:py-24">
           {/* Glow */}
           <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 h-48 w-[600px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(143,208,47,0.12)_0%,transparent_65%)]" />
 
@@ -592,7 +602,7 @@ export default function HomePage() {
             </p>
             <div className="mt-9 flex flex-wrap justify-center gap-3">
               <Link
-                href="/produse"
+                href="/#situatii"
                 className="inline-flex items-center gap-2 rounded-xl bg-lime-500 px-8 py-4 text-sm font-bold text-[#07101f] transition-all hover:bg-lime-400 hover:shadow-[0_0_32px_rgba(143,208,47,0.45)]"
               >
                 Cere evaluarea ta <ArrowRight className="h-4 w-4" />

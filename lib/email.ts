@@ -1,25 +1,14 @@
 // Stub de trimitere email (DEMO).
 //
 // LA GO-LIVE: înlocuiește buildOwnerEmail + "trimiterea" din /api/lead cu nodemailer
-// (sau Resend / SendGrid). Structura payload-ului rămâne identică.
+// (sau Resend / SendGrid). Structura payload-ului rămâne identică. Imaginile sunt trimise
+// ca dataURL inline; la go-live pot fi convertite în atașamente CID dacă e nevoie.
 
 import type { Lead } from "./types";
 import { COMPANY } from "./products";
+import { fieldLabel, imageLabel } from "./labels";
 
-function fieldLabel(name: string): string {
-  const map: Record<string, string> = {
-    marca: "Marca", model: "Model", varianta: "Variantă", vin: "VIN",
-    capacitate: "Capacitate [cmc]", putere: "Putere [kW]", transmisie: "Transmisie",
-    km: "Km", primaInmatriculare: "Primă înmatriculare", proprietari: "Proprietari",
-    dotari: "Dotări", descriereAvarii: "Avarii", dataAccident: "Data accidentului",
-    tipPolita: "Tip poliță", sistemCalcul: "Sistem calcul", motiv: "Motiv",
-    locAccident: "Loc accident", dataOra: "Data/ora", victime: "Cu victime",
-    raportTiparit: "Raport tipărit",
-  };
-  return map[name] ?? name;
-}
-
-/** Construiește HTML-ul emailului către proprietarul site-ului. */
+/** Construiește HTML-ul emailului către proprietarul site-ului — cu TOATE datele și imaginile. */
 export function buildOwnerEmail(lead: Lead): { subject: string; html: string } {
   const subject = `Lead nou CarEval — ${lead.contact.nume} (${lead.items.map((i) => i.code).join(", ")})`;
 
@@ -27,14 +16,36 @@ export function buildOwnerEmail(lead: Lead): { subject: string; html: string } {
     .map((it) => {
       const rows = Object.entries(it.data)
         .filter(([, v]) => v !== "" && v !== false)
-        .map(([k, v]) => `<tr><td style="padding:4px 10px;color:#64748b">${fieldLabel(k)}</td><td style="padding:4px 10px;font-weight:600">${v === true ? "Da" : v}</td></tr>`)
+        .map(
+          ([k, v]) =>
+            `<tr><td style="padding:4px 10px;color:#64748b;vertical-align:top">${fieldLabel(k)}</td><td style="padding:4px 10px;font-weight:600">${v === true ? "Da" : v}</td></tr>`
+        )
         .join("");
-      const imgCount = Object.values(it.images).reduce((n, arr) => n + arr.length, 0);
+
+      const imgGroups = Object.entries(it.images).filter(([, arr]) => arr.length > 0);
+      const imgCount = imgGroups.reduce((n, [, arr]) => n + arr.length, 0);
+
+      const imagesHtml = imgGroups
+        .map(
+          ([group, arr]) => `
+          <div style="margin-top:10px">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:#64748b;margin-bottom:4px">${imageLabel(group)} (${arr.length})</div>
+            <div>${arr
+              .map(
+                (src) =>
+                  `<img src="${src}" width="88" height="88" alt="" style="width:88px;height:88px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;margin:0 4px 4px 0;display:inline-block" />`
+              )
+              .join("")}</div>
+          </div>`
+        )
+        .join("");
+
       return `
         <div style="border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin:12px 0">
           <div style="font-weight:700;color:#0b1930;font-size:16px">${it.productName} <span style="color:#8fd02f">(${it.code})</span></div>
-          <div style="color:#64748b;margin:4px 0 10px">${it.price != null ? it.price + " Lei" : "Ofertă la cerere"} · ${imgCount} imagini atașate</div>
-          <table style="border-collapse:collapse;font-size:14px">${rows}</table>
+          <div style="color:#64748b;margin:4px 0 10px">${it.price != null ? it.price + " Lei" : "Ofertă la cerere"} · ${imgCount} ${imgCount === 1 ? "imagine atașată" : "imagini atașate"}</div>
+          <table style="border-collapse:collapse;font-size:14px;width:100%">${rows}</table>
+          ${imagesHtml ? `<div style="margin-top:6px;border-top:1px solid #eef2f7;padding-top:10px">${imagesHtml}</div>` : ""}
         </div>`;
     })
     .join("");
@@ -55,7 +66,7 @@ export function buildOwnerEmail(lead: Lead): { subject: string; html: string } {
         <tr><td style="padding:4px 10px;color:#64748b">Localitate</td><td style="padding:4px 10px">${lead.contact.localitate ?? "-"}</td></tr>
         ${lead.contact.mesaj ? `<tr><td style="padding:4px 10px;color:#64748b">Mesaj</td><td style="padding:4px 10px">${lead.contact.mesaj}</td></tr>` : ""}
       </table>
-      <h3 style="color:#0b1930;margin:16px 0 0">Servicii alese</h3>
+      <h3 style="color:#0b1930;margin:16px 0 0">Servicii alese, cu toate datele și pozele</h3>
       ${itemsHtml}
       <p style="color:#94a3b8;font-size:12px;margin-top:16px">Acest email a fost generat automat. Răspunde clientului la ${lead.contact.email} sau sună la ${lead.contact.telefon}.</p>
     </div>

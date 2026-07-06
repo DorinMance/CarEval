@@ -41,7 +41,7 @@ export default function DespreNoiPage() {
             </p>
             <p className="mt-3 leading-relaxed text-navy-600">
               Fiecare raport este întocmit și semnat de <strong className="text-navy-800">{COMPANY.expert}</strong>,
-              cu valoare legală recunoscută.
+              acceptat de asigurători.
             </p>
             <div className="mt-7">
               <Link href="/produse" className={btnPrimary}>Vezi serviciile <ArrowRight className="h-4 w-4" /></Link>
@@ -56,7 +56,7 @@ export default function DespreNoiPage() {
                   alt="Dr. Ing. Kulcsar Raul-Miklos — fondator CarEval, expert tehnic judiciar"
                   width={300}
                   height={400}
-                  className="block h-[400px] w-[300px] object-cover object-top"
+                  className="block aspect-[3/4] w-[min(300px,78vw)] object-cover object-top"
                 />
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-navy-950/80 to-transparent p-4">
                   <p className="font-heading text-sm font-semibold text-white">{COMPANY.expert}</p>
@@ -86,13 +86,19 @@ export default function DespreNoiPage() {
               Expert tehnic judiciar autorizat de Ministerul Justiției
             </h2>
             <p className="mt-4 leading-relaxed text-navy-600">
-              Expertizele noastre sunt întocmite de un expert tehnic judiciar autorizat, cu drept de
-              practică recunoscut de Ministerul Justiției din România. Autorizația garantează că
-              rapoartele au valoare legală deplină — pot fi depuse în instanță și acceptate de
-              asigurători.
+              Rapoartele sunt întocmite de Dr. Ing. Kulcsar Raul Miklos, expert tehnic judiciar
+              autorizat de Ministerul Justiției din România, specializarea Autovehicule, circulație
+              rutieră (Autorizația nr. 5420072015 / 20.07.2015). Rapoartele sunt acceptate de
+              asigurători. Când instanța numește expertul direct pe un caz, expertiza are calitate
+              deplină de expertiză judiciară.
             </p>
             <ul className="mt-5 space-y-2">
-              {["Autorizat Ministerul Justiției", "Specialitatea: evaluare autovehicule", "Valoare legală recunoscută în instanță"].map((item) => (
+              {[
+                "Autorizat MJ — Expert Tehnic Judiciar",
+                "Specializarea: Autovehicule, circulație rutieră",
+                "Autorizația nr. 5420072015 · eliberată 20.07.2015",
+                "Acceptat de asigurători",
+              ].map((item) => (
                 <li key={item} className="flex items-center gap-2.5 text-sm text-navy-700">
                   <Check className="h-4 w-4 shrink-0 text-lime-600" />{item}
                 </li>
@@ -165,7 +171,7 @@ export default function DespreNoiPage() {
               </ul>
             </div>
             <ul className="space-y-3">
-              {["Expert tehnic judiciar autorizat", "Sisteme oficiale AUDATEX & DAT", "Rapoarte cu valoare legală", "Premiat Targetare.ro 2023 & 2024"].map((c) => (
+              {["Expert tehnic judiciar autorizat", "Sisteme oficiale AUDATEX & DAT", "Acceptat de asigurători", "Premiat Targetare.ro 2023 & 2024"].map((c) => (
                 <li key={c} className="flex items-center gap-3 rounded-xl bg-white p-4 text-navy-700 shadow-[0_2px_8px_rgba(11,25,48,0.04)]">
                   <Check className="h-5 w-5 shrink-0 text-lime-600" /> {c}
                 </li>

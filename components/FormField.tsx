@@ -104,7 +104,7 @@ export function FormField({
     : "top-1/2 right-3 -translate-y-1/2";
 
   const inputCls = cn(
-    "w-full rounded-xl border px-4 py-2.5 text-sm text-navy-800 placeholder:text-navy-300",
+    "w-full rounded-xl border px-4 py-3 text-sm text-navy-800 placeholder:text-navy-300",
     "outline-none transition-all duration-200",
     borderCls, bgCls, ringShadow,
     showIcon && "pr-10",
