@@ -5,6 +5,33 @@ import { CartProvider } from "@/lib/cart";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress";
+import { COMPANY } from "@/lib/products";
+
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  name: "CarEval",
+  legalName: COMPANY.legal,
+  description:
+    "Expertize tehnice auto și evaluări în caz de accident, autorizate de expert tehnic judiciar. 100% online, livrare în 24–48h.",
+  url: "https://careval.ro",
+  telephone: COMPANY.phone,
+  email: COMPANY.email,
+  priceRange: "320–1200 Lei",
+  areaServed: { "@type": "Country", name: "România" },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Str. Lămîiței 4, ap. 12",
+    addressLocality: "Giroc",
+    addressRegion: "Timiș",
+    addressCountry: "RO",
+  },
+  founder: {
+    "@type": "Person",
+    name: "Dr. Ing. Kulcsar Raul Miklos",
+    jobTitle: "Expert Tehnic Judiciar (autorizat Ministerul Justiției)",
+  },
+};
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -39,6 +66,7 @@ export default function RootLayout({
   return (
     <html lang="ro" className={`${spaceGrotesk.variable} ${dmSans.variable}`}>
       <body className="min-h-dvh bg-white text-navy-800 antialiased">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
         <ScrollProgress />
         <CartProvider>
           <Header />

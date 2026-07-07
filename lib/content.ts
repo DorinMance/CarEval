@@ -10,8 +10,9 @@ import { useEffect, useState } from "react";
 import { products as seedProducts, type Product } from "./products";
 import { posts as seedPosts, type Post } from "./blog";
 
-const PRODUCTS_KEY = "careval_products_v1";
-const POSTS_KEY = "careval_posts_v1";
+// Bump versiunea când se schimbă seed-ul (produse/articole) → forțează reîncărcarea.
+const PRODUCTS_KEY = "careval_products_v2";
+const POSTS_KEY = "careval_posts_v2";
 const PRODUCTS_EVENT = "careval:products-updated";
 const POSTS_EVENT = "careval:posts-updated";
 

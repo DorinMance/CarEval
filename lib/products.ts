@@ -459,6 +459,48 @@ export function formatPrice(p: Product): string {
   return `${p.price.toLocaleString("ro-RO")} Lei`;
 }
 
+// FAQ per produs (2–3 întrebări reale) — folosit pe pagina de produs + schema FAQPage (SEO).
+export const PRODUCT_FAQ: Record<string, [string, string][]> = {
+  "consultanta-in-caz-de-accident": [
+    ["Cât durează o consultanță?", "De obicei 30–60 de minute, în funcție de complexitatea cazului. Poți suna direct sau completa formularul și te contactăm."],
+    ["Consultanța include și un raport?", "Nu — consultanța e îndrumare (pași, strategie, documente). Dacă ai nevoie de un document tehnic, îți recomandăm serviciul de evaluare potrivit."],
+  ],
+  "evaluare-despagubiri-cuvenite": [
+    ["Cu ce mă ajută concret raportul?", "Îți pune negru pe alb suma corectă la care ai dreptul, calculată în AUDATEX/DAT — argumentul tehnic în fața asigurătorului sau la contestație."],
+    ["În cât timp primesc raportul?", "În 24–48h de la trimiterea completă a datelor și fotografiilor."],
+    ["Pot folosi raportul în instanță?", "Da. E o expertiză tehnică semnată de expert autorizat de Ministerul Justiției; când instanța numește expertul pe caz, are calitate de expertiză judiciară."],
+  ],
+  "evaluare-costuri-reparatie-autovehicul": [
+    ["Ce sistem de calcul folosiți?", "AUDATEX sau DAT — aceleași sisteme oficiale folosite de asigurători, dar de data asta în favoarea ta."],
+    ["De ce fotografii am nevoie?", "Poze clare cu toate zonele avariate; cu cât sunt mai complete, cu atât devizul e mai precis."],
+  ],
+  "evaluare-autovehicul-la-data-accidentului": [
+    ["Când am nevoie de acest raport?", "La daună totală, când despăgubirea se calculează la valoarea mașinii din ziua accidentului."],
+    ["Cum stabiliți valoarea?", "Prin expertiză tehnică, cu referințe AUDATEX/DAT — o cifră documentată tehnic, nu o valoare de piață oficială."],
+  ],
+  "evaluare-epava-autoturism": [
+    ["Ce înseamnă valoarea epavei?", "Valoarea reziduală a mașinii avariate. La daună totală, despăgubirea = valoarea mașinii minus valoarea epavei."],
+    ["De ce contează?", "Dacă epava e supraevaluată de asigurător, primești mai puțini bani. Raportul stabilește valoarea reală, documentat."],
+  ],
+  "evaluare-devalorizare-autovehicul-dupa-accident": [
+    ["Ce este devalorizarea?", "Pierderea de valoare la revânzare pe care o suferă o mașină după un accident, chiar reparată perfect."],
+    ["Se poate recupera?", "Da — calculăm procentul și suma, documentat tehnic, pe care le poți cere de la partea vinovată sau de la asigurător."],
+  ],
+  "contraexpertiza-tehnica": [
+    ["Când am nevoie de o contraexpertiză?", "Când ai deja o expertiză sau ofertă de la asigurător pe care o consideri incorectă și vrei o analiză independentă."],
+    ["Ce trebuie să trimit?", "Pe lângă datele mașinii, încarci și expertiza/oferta asigurătorului — e materia primă a analizei, fără ea produsul nu poate fi livrat."],
+  ],
+  "a-doua-opinie": [
+    ["Înlocuiește verificarea la un service?", "Nu. Nu vedem fizic mașina — te pregătim să mergi la vizionare știind exact ce să cauți."],
+    ["Ce primesc concret?", "Verificare specificații anunț vs. serie șasiu (VIN), interval de preț orientativ AUDATEX/DAT, semnale de atenție din poze și un checklist personalizat pentru vizionare."],
+  ],
+};
+
+// Linie de onestitate afișată vizibil pe anumite pagini de produs.
+export const PRODUCT_NOTE: Record<string, string> = {
+  "a-doua-opinie": "Nu înlocuim verificarea la fața locului — te pregătim să mergi acolo știind exact ce să cauți.",
+};
+
 export const COMPANY = {
   name: "CarEval",
   legal: "SC VAST Expertise SRL",

@@ -13,6 +13,36 @@ export interface Post {
 
 export const posts: Post[] = [
   {
+    slug: "dauna-totala-cum-se-calculeaza",
+    title: "Daună totală: cum se calculează și ce poți contesta",
+    excerpt:
+      "Când mașina e declarată daună totală, despăgubirea se calculează după o formulă simplă. Iată ce intră în ea și unde poți contesta.",
+    category: "Ghid",
+    date: "2026-06-15",
+    readingTime: "4 min",
+    body: [
+      "O mașină este declarată daună totală atunci când costul reparației se apropie sau depășește valoarea ei dinainte de accident. În acel moment, asigurătorul nu mai plătește reparația, ci despăgubește proprietarul cu o sumă calculată după o formulă: valoarea mașinii la data accidentului minus valoarea epavei (partea care mai poate fi valorificată).",
+      "Ambele cifre pot fi discutabile. Dacă valoarea mașinii la data accidentului este subevaluată, primești mai puțin. Dacă valoarea epavei este supraevaluată, din nou primești mai puțin. Exact aici apar cele mai frecvente diferențe între oferta asigurătorului și suma corectă.",
+      "Pentru fiecare dintre cele două cifre există un serviciu dedicat: „Evaluare Autovehicul la Data Accidentului” stabilește valoarea mașinii din ziua evenimentului, iar „Evaluare Epavă Autoturism” stabilește valoarea reziduală reală. Ambele sunt documentate tehnic, cu referințe AUDATEX/DAT.",
+      "Concluzia: nu accepta calculul daunei totale fără să verifici cele două cifre. O expertiză tehnică independentă îți arată negru pe alb dacă suma oferită e corectă și, dacă nu, cu cât ar trebui să fie mai mare.",
+    ],
+  },
+  {
+    slug: "cum-arata-o-expertiza-tehnica-auto",
+    title: "Cum arată o expertiză tehnică auto (și de ce contează pentru dosarul tău)",
+    excerpt:
+      "Un raport bun nu e o cifră aruncată pe hârtie. Iată ce conține o expertiză tehnică serioasă și de ce structura ei contează.",
+    category: "Ghid",
+    date: "2026-05-30",
+    readingTime: "3 min",
+    body: [
+      "O expertiză tehnică auto nu este o simplă estimare de preț. Este un document structurat care pornește de la identificarea exactă a vehiculului (marcă, model, VIN, kilometraj, dotări), continuă cu descrierea avariilor și a metodologiei de calcul, și se încheie cu o concluzie clară, semnată de expert.",
+      "Diferența față de o părere informală stă în argumentare: fiecare cifră este susținută de sistemele de specialitate (AUDATEX/DAT) și de datele transmise de client. Asta transformă documentul dintr-o opinie într-un argument tehnic pe care îl poți susține în fața asigurătorului sau, la nevoie, în instanță.",
+      "La CarEval, fiecare raport este întocmit de Dr. Ing. Kulcsar Raul Miklos, expert tehnic judiciar autorizat de Ministerul Justiției. Rapoartele sunt acceptate de asigurători, iar când instanța numește expertul direct pe caz, expertiza are calitate deplină de expertiză judiciară.",
+      "Dacă vrei să vezi exact cum arată un astfel de document înainte să comanzi, pe pagina „Model raport” găsești exemple reale, pe fiecare tip de serviciu.",
+    ],
+  },
+  {
     slug: "cat-ti-se-cuvine-dupa-accident",
     title: "Cât ți se cuvine de fapt după un accident auto",
     excerpt:

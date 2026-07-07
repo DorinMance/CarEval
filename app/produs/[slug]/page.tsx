@@ -3,11 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { COMPANY } from "@/lib/products";
+import { COMPANY, PRODUCT_FAQ, PRODUCT_NOTE } from "@/lib/products";
 import { useProducts } from "@/lib/content";
 import { Wizard } from "@/components/Wizard";
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ProductCard";
+import { FAQAccordion } from "@/components/FAQAccordion";
 import { Section, Eyebrow, PriceTag, btnPrimary } from "@/components/ui";
 import { Check, Clock, Shield, ChevronRight, ArrowRight, Phone } from "@/components/icons";
 
@@ -29,6 +30,9 @@ export default function ProductPage() {
   const related = products.filter((p) => p.slug !== product.slug && p.category === product.category).slice(0, 3);
   const fallback = products.filter((p) => p.slug !== product.slug).slice(0, 3);
   const suggestions = related.length ? related : fallback;
+
+  const faqs = PRODUCT_FAQ[product.slug] ?? [];
+  const note = PRODUCT_NOTE[product.slug];
 
   return (
     <>
@@ -88,7 +92,7 @@ export default function ProductPage() {
                 <PriceTag price={product.price} note={product.priceNote} className="text-3xl font-bold" />
               </div>
               <a href="#formular" className="ml-auto inline-flex items-center gap-2 rounded-xl bg-lime-500 px-5 py-3 text-sm font-semibold text-navy-900 transition-colors hover:bg-lime-400">
-                Cere ofertă <ArrowRight className="h-4 w-4" />
+                Comandă <ArrowRight className="h-4 w-4" />
               </a>
             </div>
 
@@ -109,6 +113,13 @@ export default function ProductPage() {
               ))}
             </div>
 
+            {note && (
+              <div className="mt-5 flex items-start gap-3 rounded-xl border border-lime-300 bg-lime-50 p-4 text-sm font-medium text-navy-700">
+                <Shield className="mt-0.5 h-5 w-5 shrink-0 text-lime-600" />
+                <span>{note}</span>
+              </div>
+            )}
+
             <div className="mt-6 flex items-center gap-3 rounded-xl bg-navy-800 p-4 text-sm text-navy-100">
               <Phone className="h-5 w-5 text-lime-400" />
               Ai nevoie de ajutor?{" "}
@@ -123,7 +134,7 @@ export default function ProductPage() {
       {/* Wizard */}
       <Section id="formular" className="bg-mesh-light">
         <Reveal className="mx-auto mb-8 max-w-3xl text-center">
-          <Eyebrow>Cere oferta</Eyebrow>
+          <Eyebrow>Comandă</Eyebrow>
           <h2 className="mt-4 font-heading text-3xl font-bold text-navy-800">
             Completează pas cu pas
           </h2>
@@ -135,6 +146,31 @@ export default function ProductPage() {
           <Wizard product={product} />
         </div>
       </Section>
+
+      {/* FAQ + schema FAQPage (SEO) */}
+      {faqs.length > 0 && (
+        <Section className="bg-white pt-0">
+          <Reveal className="mx-auto max-w-3xl text-center">
+            <Eyebrow>Întrebări frecvente</Eyebrow>
+            <h2 className="mt-4 font-heading text-3xl font-bold text-navy-800">Ce întreabă oamenii</h2>
+          </Reveal>
+          <FAQAccordion faqs={faqs} />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: faqs.map(([q, a]) => ({
+                  "@type": "Question",
+                  name: q,
+                  acceptedAnswer: { "@type": "Answer", text: a },
+                })),
+              }),
+            }}
+          />
+        </Section>
+      )}
 
       {/* Suggestions */}
       <Section className="bg-white">

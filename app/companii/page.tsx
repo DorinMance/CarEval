@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 const audience = [
-  { icon: <Building className="h-7 w-7" />, t: "Flote & leasing", d: "Evaluări periodice ale parcului auto pentru decizii de achiziție, vânzare sau scoatere din uz." },
+  { icon: <Building className="h-7 w-7" />, t: "Flote & leasing", d: "Expertize tehnice și devize de reparație pentru accidente, daune și constatări din parcul auto." },
   { icon: <Users className="h-7 w-7" />, t: "Service-uri & dealeri", d: "Devize de reparație și evaluări la schimb, livrate rapid, pentru clienții voștri." },
   { icon: <Shield className="h-7 w-7" />, t: "Asigurări & brokeri", d: "Expertize independente pentru constatări, daune totale și soluționarea dosarelor." },
 ];
@@ -23,7 +23,7 @@ const benefits = [
   { icon: <FileText className="h-6 w-6" />, t: "Facturare lunară", d: "Un singur cont, raportare consolidată." },
   { icon: <Clock className="h-6 w-6" />, t: "Prioritate la livrare", d: "Timpi de răspuns dedicați pentru volume." },
   { icon: <Award className="h-6 w-6" />, t: "Expert dedicat", d: "Un punct de contact care îți cunoaște nevoile." },
-  { icon: <Shield className="h-6 w-6" />, t: "Rapoarte autorizate", d: "Aceeași valoare legală, la scară." },
+  { icon: <Shield className="h-6 w-6" />, t: "Rapoarte autorizate", d: "Aceeași autoritate tehnică, la scară." },
 ];
 
 export default function CompaniiPage() {
