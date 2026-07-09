@@ -67,7 +67,7 @@ export function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-navy-300 sm:flex-row sm:px-6 lg:px-8">
           <p>© {new Date().getFullYear()} {COMPANY.name} · {COMPANY.legal}. Toate drepturile rezervate.</p>
           <div className="flex items-center gap-4">
-            <p>Demo realizat în Next.js · datele de admin sunt simulate local.</p>
+            <p>Expertize tehnice auto autorizate · {COMPANY.legal}</p>
             <Link
               href="/admin"
               aria-label="Autentificare administrator"

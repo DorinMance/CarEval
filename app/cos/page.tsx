@@ -11,14 +11,13 @@ import { FormField } from "@/components/FormField";
 import type { FieldStatus } from "@/components/FormField";
 import { Section, Eyebrow, btnPrimary, btnOutline, cn } from "@/components/ui";
 import { Lottie } from "@/components/Lottie";
-import { X, ArrowRight, FileText, Shield } from "@/components/icons";
+import { X, ArrowRight, Shield, Phone } from "@/components/icons";
 
 type Phase = "cart" | "sending" | "success";
 
 export default function CartPage() {
   const { items, total, removeItem, clear, ready } = useCart();
   const [phase, setPhase] = useState<Phase>("cart");
-  const [preview, setPreview] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [emailAsync, setEmailAsync] = useState<FieldStatus>("idle");
 
@@ -111,22 +110,15 @@ export default function CartPage() {
     };
 
     try {
-      const res = await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(lead),
-      });
-      const json = await res.json();
       await saveLead(lead); // Firestore (+ poze în Storage) sau localStorage în demo
       // Notificare pe email prin Netlify Forms (secundară — nu blocăm comanda dacă pică)
       try { await submitToNetlify(lead); } catch { /* email best-effort */ }
-      setPreview(json.previewHtml ?? "");
       clear();
       setPhase("success");
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setPhase("cart");
-      alert("A apărut o eroare. Încearcă din nou.");
+      alert("A apărut o eroare. Încearcă din nou. Dacă persistă, sună-ne.");
     }
   }
 
@@ -137,26 +129,21 @@ export default function CartPage() {
   if (phase === "success") {
     return (
       <Section className="bg-mesh-light min-h-[70vh]">
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto max-w-xl text-center">
           <Lottie src="/lottie/success-check.lottie" size={160} loop={false} className="mx-auto" />
           <h1 className="mt-2 font-heading text-3xl font-bold text-navy-800">Comanda a fost trimisă!</h1>
           <p className="mt-3 text-navy-500">
-            Demo: am simulat trimiterea unui email către <strong>{COMPANY.email}</strong> cu toate
-            datele și imaginile alese. Lead-ul apare acum în panoul de admin.
+            Am primit cererea ta împreună cu toate datele și fotografiile. Un expert te contactează
+            în cel mai scurt timp cu oferta, pe telefon sau email. Verifică-ți inbox-ul, inclusiv folderul Spam.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link href="/admin" className={btnPrimary}>Vezi în panoul admin <ArrowRight className="h-4 w-4" /></Link>
-            <Link href="/produse" className={btnOutline}>Înapoi la servicii</Link>
+            <Link href="/produse" className={btnPrimary}>Înapoi la servicii <ArrowRight className="h-4 w-4" /></Link>
+            <Link href="/" className={btnOutline}>Pagina principală</Link>
           </div>
-
-          {preview && (
-            <div className="mt-10 overflow-hidden rounded-2xl border border-mist bg-white text-left">
-              <div className="flex items-center gap-2 border-b border-mist bg-cloud px-5 py-3 text-sm font-semibold text-navy-700">
-                <FileText className="h-4 w-4 text-lime-600" /> Previzualizare email trimis către proprietar
-              </div>
-              <iframe title="Preview email" srcDoc={preview} className="h-[520px] w-full" />
-            </div>
-          )}
+          <p className="mt-8 flex items-center justify-center gap-2 text-sm text-navy-500">
+            <Phone className="h-4 w-4 text-lime-600" /> Ai o întrebare urgentă?{" "}
+            <a href={COMPANY.phoneHref} className="font-semibold text-navy-800 hover:text-lime-600">{COMPANY.phone}</a>
+          </p>
         </div>
       </Section>
     );

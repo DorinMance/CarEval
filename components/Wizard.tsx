@@ -70,9 +70,25 @@ export function Wizard({ product }: { product: Product }) {
     setImages((im) => ({ ...im, [group]: (im[group] ?? []).filter((_, i) => i !== idx) }));
   }
 
+  // Validează câmpurile obligatorii ale unui pas. Întoarce harta de erori (gol = valid).
+  function validateStep(stepObj: WizardStep): Record<string, boolean> {
+    const errs: Record<string, boolean> = {};
+    (stepObj.fields ?? []).forEach((f) => {
+      if (!f.required) return;
+      const v = values[f.name];
+      const empty = v === undefined || v === null || v === "" || v === false;
+      if (empty) errs[f.name] = true;
+    });
+    return errs;
+  }
+
   function next() {
-    // DEMO: navigarea NU este blocată de validare — poți avansa și cu câmpuri goale
-    // ca să vezi fluxul. Câmpurile obligatorii rămân marcate cu * pentru varianta reală.
+    const errs = validateStep(current);
+    if (Object.keys(errs).length > 0) {
+      setErrors((e) => ({ ...e, ...errs })); // marchează câmpurile lipsă
+      panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return; // blochează avansarea
+    }
     dirRef.current = 1;
     setStep((s) => Math.min(s + 1, steps.length - 1));
     panelRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -85,6 +101,15 @@ export function Wizard({ product }: { product: Product }) {
 
   function jumpTo(i: number) {
     if (i === step) return;
+    // La salt înainte, validează pasul curent (înapoi e mereu permis).
+    if (i > step) {
+      const errs = validateStep(current);
+      if (Object.keys(errs).length > 0) {
+        setErrors((e) => ({ ...e, ...errs }));
+        panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+    }
     dirRef.current = i > step ? 1 : -1;
     setStep(i);
   }
@@ -110,6 +135,13 @@ export function Wizard({ product }: { product: Product }) {
       <div ref={panelRef} className="p-5 sm:p-7">
         <h3 className="font-heading text-xl font-bold text-navy-800">{current.title}</h3>
         {current.subtitle && <p className="mt-1 text-sm text-navy-500">{current.subtitle}</p>}
+
+        {(current.fields ?? []).some((f) => errors[f.name]) && (
+          <div className="mt-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-red-500 text-xs font-bold text-white">!</span>
+            Completează câmpurile obligatorii marcate cu roșu ca să poți continua.
+          </div>
+        )}
 
         {!isSummary ? (
           <div className="mt-6 space-y-6">

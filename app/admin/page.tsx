@@ -10,7 +10,6 @@ import { Lock, Shield, LogOut, FileText, Car, ClipboardList } from "@/components
 import { OrdersPanel } from "@/components/admin/OrdersPanel";
 import { ProductsPanel } from "@/components/admin/ProductsPanel";
 import { BlogPanel } from "@/components/admin/BlogPanel";
-import { seedProductsIfEmpty, seedPostsIfEmpty } from "@/lib/content";
 
 type Tab = "comenzi" | "produse" | "blog";
 
@@ -30,20 +29,6 @@ export default function AdminPage() {
   const [password, setPassword] = useState(isFirebaseEnabled ? "" : ADMIN_CREDENTIALS.password);
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [loadState, setLoadState] = useState<"idle" | "loading" | "done">("idle");
-
-  async function loadAll() {
-    if (loadState === "loading") return;
-    setLoadState("loading");
-    try {
-      await seedProductsIfEmpty();
-      await seedPostsIfEmpty();
-      setLoadState("done");
-    } catch {
-      setLoadState("idle");
-      alert("Nu am putut încărca. Verifică: ești logat și regulile Firestore sunt publicate?");
-    }
-  }
 
   useEffect(() => {
     const unsub = subscribeAuth((a) => {
@@ -129,21 +114,6 @@ export default function AdminPage() {
             <span className="hidden rounded-full bg-navy-800 px-2.5 py-1 text-xs font-semibold text-white sm:inline">Admin</span>
           </div>
           <div className="flex items-center gap-4">
-            {isFirebaseEnabled && (
-              <button
-                onClick={loadAll}
-                disabled={loadState === "loading"}
-                title="Populează Firebase cu produsele și articolele (o singură dată)"
-                className={cn(
-                  "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors disabled:opacity-60",
-                  loadState === "done"
-                    ? "bg-lime-100 text-lime-700"
-                    : "bg-navy-800 text-white hover:bg-navy-700"
-                )}
-              >
-                {loadState === "loading" ? "Se încarcă…" : loadState === "done" ? "✓ Încărcat în Firebase" : "Încarcă tot în Firebase"}
-              </button>
-            )}
             <Link href="/" className="hidden text-sm font-medium text-navy-500 hover:text-navy-800 sm:inline">Vezi site-ul ↗</Link>
             <button
               onClick={async () => { await logout(); setAuthed(false); }}
