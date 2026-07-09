@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Check } from "./icons";
 import { cn } from "./ui";
 
@@ -12,12 +12,7 @@ function AlertCircle({ className }: { className?: string }) {
   );
 }
 
-const MONTHS_RO = [
-  "Ianuarie", "Februarie", "Martie", "Aprilie", "Mai", "Iunie",
-  "Iulie", "August", "Septembrie", "Octombrie", "Noiembrie", "Decembrie",
-];
 const CY = new Date().getFullYear();
-const YEARS = Array.from({ length: CY - 1980 + 1 }, (_, i) => CY - i); // de la anul curent înapoi la 1980
 
 interface Seg { d: string; m: string; y: string }
 
@@ -27,6 +22,7 @@ function parse(v: string): Seg {
   const [d = "", m = "", y = ""] = v.split(".");
   return { d, m, y };
 }
+const pad2 = (s: string) => (s.length === 1 ? "0" + s : s);
 
 export interface DateFormFieldProps {
   label: string;
@@ -49,23 +45,44 @@ export function DateFormField({
   const [seg, setSeg] = useState<Seg>(() => parse(value));
   const [touched, setTouched] = useState(false);
 
-  const complete = Boolean(seg.d && seg.m && seg.y);
+  const dRef = useRef<HTMLInputElement>(null);
+  const mRef = useRef<HTMLInputElement>(null);
+  const yRef = useRef<HTMLInputElement>(null);
+
+  const di = +seg.d, mi = +seg.m, yi = +seg.y;
+  const valid =
+    !!seg.d && !!seg.m && seg.y.length === 4 &&
+    di >= 1 && di <= 31 && mi >= 1 && mi <= 12 && yi >= 1900 && yi <= CY + 1;
 
   function update(field: keyof Seg, raw: string) {
-    const next: Seg = { ...seg, [field]: raw };
+    const max = field === "y" ? 4 : 2;
+    const digits = raw.replace(/\D/g, "").slice(0, max);
+    const next: Seg = { ...seg, [field]: digits };
     setSeg(next);
-    if (next.d && next.m && next.y) onChange(`${next.d}.${next.m}.${next.y}`);
+    // salt automat la câmpul următor
+    if (field === "d" && digits.length === 2) mRef.current?.focus();
+    if (field === "m" && digits.length === 2) yRef.current?.focus();
+    // emite doar când e complet
+    if (next.d && next.m && next.y.length === 4) onChange(`${pad2(next.d)}.${pad2(next.m)}.${next.y}`);
     else onChange("");
   }
 
-  const status = externalError ? "error" : touched && required && !complete ? "error" : complete ? "success" : "idle";
+  function onBackspace(field: keyof Seg, e: React.KeyboardEvent) {
+    if (e.key === "Backspace" && !seg[field]) {
+      if (field === "m") dRef.current?.focus();
+      if (field === "y") mRef.current?.focus();
+    }
+  }
+
+  const status = externalError ? "error" : touched && required && !valid ? "error" : valid ? "success" : "idle";
   const errMsg = externalErrorMsg ?? "Câmp obligatoriu.";
 
-  const boxCls = (val: string) =>
+  const inputCls =
     cn(
-      "w-full rounded-xl border px-3 py-2.5 text-sm text-navy-800 outline-none transition-all",
-      status === "error" ? "border-red-400 bg-red-50/60" : "border-navy-200 bg-white focus:border-lime-400 focus:shadow-[0_0_0_3px_rgba(143,208,47,0.18)]",
-      !val && "text-navy-300"
+      "w-full rounded-xl border px-3 py-2.5 text-center text-sm tabular-nums text-navy-800 placeholder:text-navy-300 outline-none transition-all",
+      status === "error"
+        ? "border-red-400 bg-red-50/60"
+        : "border-navy-200 bg-white focus:border-lime-400 focus:shadow-[0_0_0_3px_rgba(143,208,47,0.18)]"
     );
 
   return (
@@ -74,29 +91,37 @@ export function DateFormField({
         {label}{required && <span className="ml-0.5 text-lime-600">*</span>}
       </label>
 
-      {/* 3 căsuțe separate: Zi · Lună · An */}
+      {/* 3 căsuțe separate în care scrii: Zi · Lună · An */}
       <div className="grid grid-cols-3 gap-2">
-        <select aria-label="Zi" disabled={disabled} value={seg.d} onChange={(e) => update("d", e.target.value)} className={boxCls(seg.d)}>
-          <option value="">Zi</option>
-          {Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0")).map((d) => (
-            <option key={d} value={d} className="text-navy-800">{+d}</option>
-          ))}
-        </select>
-
-        <select aria-label="Lună" disabled={disabled} value={seg.m} onChange={(e) => update("m", e.target.value)} className={boxCls(seg.m)}>
-          <option value="">Lună</option>
-          {MONTHS_RO.map((name, i) => {
-            const val = String(i + 1).padStart(2, "0");
-            return <option key={val} value={val} className="text-navy-800">{name}</option>;
-          })}
-        </select>
-
-        <select aria-label="An" disabled={disabled} value={seg.y} onChange={(e) => update("y", e.target.value)} className={boxCls(seg.y)}>
-          <option value="">An</option>
-          {YEARS.map((y) => (
-            <option key={y} value={String(y)} className="text-navy-800">{y}</option>
-          ))}
-        </select>
+        <div>
+          <span className="mb-1 block text-[11px] font-medium text-navy-400">Zi</span>
+          <input
+            ref={dRef} inputMode="numeric" maxLength={2} placeholder="ZZ" aria-label="Zi"
+            value={seg.d} disabled={disabled}
+            onChange={(e) => update("d", e.target.value)}
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <span className="mb-1 block text-[11px] font-medium text-navy-400">Lună</span>
+          <input
+            ref={mRef} inputMode="numeric" maxLength={2} placeholder="LL" aria-label="Lună"
+            value={seg.m} disabled={disabled}
+            onChange={(e) => update("m", e.target.value)}
+            onKeyDown={(e) => onBackspace("m", e)}
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <span className="mb-1 block text-[11px] font-medium text-navy-400">An</span>
+          <input
+            ref={yRef} inputMode="numeric" maxLength={4} placeholder="AAAA" aria-label="An"
+            value={seg.y} disabled={disabled}
+            onChange={(e) => update("y", e.target.value)}
+            onKeyDown={(e) => onBackspace("y", e)}
+            className={inputCls}
+          />
+        </div>
       </div>
 
       {status === "error" && (

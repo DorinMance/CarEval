@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { COMPANY, PRODUCT_FAQ, PRODUCT_NOTE } from "@/lib/products";
+import { COMPANY, PRODUCT_FAQ, PRODUCT_NOTE, products as seedProducts } from "@/lib/products";
 import { useProducts } from "@/lib/content";
 import { Wizard } from "@/components/Wizard";
 import { Reveal } from "@/components/Reveal";
@@ -33,6 +33,11 @@ export default function ProductPage() {
 
   const faqs = PRODUCT_FAQ[product.slug] ?? [];
   const note = PRODUCT_NOTE[product.slug];
+
+  // Schema formularului (pașii) vine mereu din cod (după slug), ca îmbunătățirile de câmpuri
+  // să se aplice fără a reîncărca produsele în Firestore. Restul (nume, preț, text) din store.
+  const seed = seedProducts.find((p) => p.slug === product.slug);
+  const wizardProduct = seed ? { ...product, steps: seed.steps } : product;
 
   return (
     <>
@@ -143,7 +148,7 @@ export default function ProductPage() {
           </p>
         </Reveal>
         <div className="mx-auto max-w-3xl">
-          <Wizard product={product} />
+          <Wizard product={wizardProduct} />
         </div>
       </Section>
 

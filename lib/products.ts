@@ -20,6 +20,7 @@ export interface Field {
   placeholder?: string;
   help?: string;
   full?: boolean; // ocupă toată lățimea
+  maxLength?: number; // limită de caractere + contor live (ex. VIN = 17)
 }
 
 export interface ImageGroup {
@@ -61,7 +62,7 @@ const vehicleFields: Field[] = [
   { name: "marca", label: "Marca", type: "text", required: true, placeholder: "ex. BMW" },
   { name: "model", label: "Model", type: "text", required: true, placeholder: "ex. Seria 3" },
   { name: "varianta", label: "Variantă echipare", type: "text", placeholder: "ex. 320d xDrive" },
-  { name: "vin", label: "Serie șasiu (VIN)", type: "text", required: true, placeholder: "17 caractere" },
+  { name: "vin", label: "Serie șasiu (VIN)", type: "text", required: true, placeholder: "17 caractere", maxLength: 17 },
   { name: "capacitate", label: "Capacitate cilindrică [cmc]", type: "number", placeholder: "ex. 1995" },
   { name: "putere", label: "Putere motor [kW]", type: "number", placeholder: "ex. 140" },
   { name: "transmisie", label: "Transmisie", type: "select", required: true, options: ["Manuală", "Automată"] },
@@ -389,7 +390,7 @@ export const products: Product[] = [
         title: "Date tehnice",
         subtitle: "Completează datele din talon sau din anunț.",
         fields: [
-          { name: "vin", label: "Serie șasiu (VIN)", type: "text", placeholder: "17 caractere — din talon sau bord" },
+          { name: "vin", label: "Serie șasiu (VIN)", type: "text", placeholder: "17 caractere — din talon sau bord", maxLength: 17 },
           { name: "capacitate", label: "Capacitate cilindrică [cmc]", type: "number", placeholder: "ex. 1598" },
           { name: "putere", label: "Putere motor [kW]", type: "number", placeholder: "ex. 85" },
           { name: "transmisie", label: "Transmisie", type: "select", options: ["Manuală", "Automată"] },

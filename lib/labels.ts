@@ -4,7 +4,7 @@ export const FIELD_LABELS: Record<string, string> = {
   km: "Kilometri", primaInmatriculare: "Primă înmatriculare", proprietari: "Nr. proprietari",
   dotari: "Dotări suplimentare", descriereAvarii: "Descriere avarii", dataAccident: "Data accidentului",
   tipPolita: "Tip poliță", sistemCalcul: "Sistem calcul", motiv: "Motiv consultanță",
-  locAccident: "Loc accident", dataOra: "Data și ora", victime: "Accident cu victime",
+  locAccident: "Loc accident", dataOra: "Data accidentului", victime: "Accident cu victime",
   nume: "Nume", telefon: "Telefon", email: "Email", localitate: "Localitate",
   mesaj: "Mesaj", raportTiparit: "Raport tipărit",
   // A Doua Opinie

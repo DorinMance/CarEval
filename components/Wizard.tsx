@@ -271,6 +271,7 @@ function FieldInput({
       help={field.help}
       required={field.required}
       options={field.options}
+      maxLength={field.maxLength}
       externalError={error}
       externalErrorMsg="Acest câmp este obligatoriu."
       rows={3}

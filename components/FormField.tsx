@@ -49,6 +49,7 @@ export interface FormFieldProps {
   className?: string;
   disabled?: boolean;
   dataAnim?: boolean;
+  maxLength?: number;
 }
 
 function runValidation(type: InputType, value: string, required?: boolean): string {
@@ -66,7 +67,7 @@ export function FormField({
   externalError, externalErrorMsg, externalStatus,
   successMsg, loadingMsg = "Verificare în curs…",
   onChange, onBlurCallback,
-  className, disabled, dataAnim,
+  className, disabled, dataAnim, maxLength,
 }: FormFieldProps) {
   const [touched, setTouched] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -141,8 +142,9 @@ export function FormField({
     ) : (
       <input
         type={type} name={name} value={value} placeholder={placeholder}
+        maxLength={maxLength}
         disabled={disabled || status === "loading"}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(maxLength ? e.target.value.slice(0, maxLength) : e.target.value)}
         className={inputCls}
         {...eventProps}
       />
@@ -150,9 +152,16 @@ export function FormField({
 
   return (
     <div className={className} data-anim={dataAnim ? "" : undefined}>
-      <label className="mb-1.5 block text-sm font-medium text-navy-700">
-        {label}
-        {required && <span className="ml-0.5 text-lime-600">*</span>}
+      <label className="mb-1.5 flex items-center justify-between gap-2 text-sm font-medium text-navy-700">
+        <span>
+          {label}
+          {required && <span className="ml-0.5 text-lime-600">*</span>}
+        </span>
+        {maxLength && (
+          <span className={cn("shrink-0 text-xs font-semibold tabular-nums", value.length >= maxLength ? "text-lime-600" : "text-navy-400")}>
+            {value.length}/{maxLength}
+          </span>
+        )}
       </label>
 
       <div className="relative">
