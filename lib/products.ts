@@ -165,7 +165,7 @@ export const products: Product[] = [
         fields: [
           { name: "motiv", label: "Motivul pentru care soliciți consultanța", type: "textarea", required: true, full: true, placeholder: "Descrie pe scurt ce s-a întâmplat și cu ce te putem ajuta." },
           { name: "locAccident", label: "Locul accidentului", type: "text", full: true, placeholder: "ex. DN6, km 12, Timișoara" },
-          { name: "dataOra", label: "Data și ora accidentului", type: "text", placeholder: "zz.ll.aaaa - oo:mm" },
+          { name: "dataOra", label: "Data accidentului", type: "date" },
           { name: "victime", label: "Accident cu victime?", type: "select", options: ["Nu", "Da"], required: true },
         ],
       },
