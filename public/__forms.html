@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <title>Netlify Forms — CarEval</title>
+  </head>
+  <body>
+    <!-- Fișier static servit de Netlify CDN (nu trece prin Next.js).
+         Aici Netlify detectează formularul și aici se face POST-ul real. -->
+    <form name="comanda" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="text" name="nume" />
+      <input type="text" name="telefon" />
+      <input type="email" name="email" />
+      <input type="text" name="localitate" />
+      <input type="text" name="produse" />
+      <input type="text" name="total" />
+      <textarea name="detalii"></textarea>
+      <textarea name="mesaj"></textarea>
+      <input type="text" name="bot-field" />
+    </form>
+  </body>
+</html>

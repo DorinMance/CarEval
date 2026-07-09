@@ -1,14 +1,33 @@
-// Strat de date "Firebase-ready".
+// Strat de date pentru comenzi (lead-uri).
 //
-// DEMO: datele sunt ținute în localStorage, ca să fie 100% funcțional fără backend.
-// LA GO-LIVE: se rescrie DOAR implementarea de mai jos cu apeluri Firestore/Storage
-// (firebase/firestore: collection, addDoc, getDocs, updateDoc). UI-ul rămâne neschimbat.
+// - Cu Firebase configurat: comenzile se scriu în Firestore, iar pozele în Firebase Storage.
+// - Fără Firebase (mod demo): totul în localStorage, cu lead-uri demo pre-încărcate.
+// UI-ul (panoul admin, checkout) folosește exact aceleași funcții în ambele moduri.
 
 import type { Lead, LeadStatus } from "./types";
+import { isFirebaseEnabled, fbDb, fbStorage } from "./firebase";
+import {
+  collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, query, orderBy,
+} from "firebase/firestore";
+import { ref as storageRef, uploadString, getDownloadURL } from "firebase/storage";
 
-// Bump versiunea când se schimbă structura/seed-ul demo → forțează reîncărcarea datelor.
+/** Rezolvă o „sursă" de imagine în URL afișabil.
+ *  - path local (/images/…), URL http sau dataURL → se folosește ca atare
+ *  - cale Storage (Firebase) → generează link-ul de download (necesită admin logat) */
+export async function resolveImageUrl(src: string): Promise<string> {
+  if (!isFirebaseEnabled) return src;
+  if (src.startsWith("http") || src.startsWith("data:") || src.startsWith("/")) return src;
+  try {
+    return await getDownloadURL(storageRef(fbStorage()!, src));
+  } catch {
+    return src;
+  }
+}
+
 const KEY = "careval_leads_v2";
+const COL = "leads";
 
+/* ─────────── localStorage (mod demo) ─────────── */
 function read(): Lead[] {
   if (typeof window === "undefined") return [];
   try {
@@ -25,30 +44,97 @@ function write(leads: Lead[]) {
   window.dispatchEvent(new CustomEvent("careval:leads-updated"));
 }
 
-export function saveLead(lead: Lead): void {
+/* ─────────── API public ─────────── */
+
+/** Salvează o comandă: în Firestore (+ poze în Storage) sau în localStorage. */
+export async function saveLead(lead: Lead): Promise<void> {
+  if (isFirebaseEnabled) {
+    const db = fbDb()!;
+    const st = fbStorage()!;
+    const ref = doc(collection(db, COL));
+    const id = ref.id;
+
+    // Urcă pozele (dataURL) în Storage și înlocuiește-le cu URL-uri publice.
+    const items = await Promise.all(
+      lead.items.map(async (item, ii) => {
+        const images: Record<string, string[]> = {};
+        for (const [group, srcs] of Object.entries(item.images)) {
+          images[group] = await Promise.all(
+            srcs.map(async (src, i) => {
+              if (!src.startsWith("data:")) return src; // deja URL/path — nu reurca
+              // Salvăm DOAR calea în Firestore. Link-ul de download se generează
+              // în admin (logat), ca pozele să nu fie accesibile public.
+              const path = `leads/${id}/${ii}_${group}_${i}`;
+              await uploadString(storageRef(st, path), src, "data_url");
+              return path;
+            })
+          );
+        }
+        return { ...item, images };
+      })
+    );
+
+    await setDoc(ref, {
+      createdAt: lead.createdAt,
+      status: "nou" as LeadStatus,
+      contact: lead.contact,
+      total: lead.total ?? null,
+      items,
+    });
+    return;
+  }
+
+  // Fallback demo
   const leads = read();
   leads.unshift(lead);
   write(leads);
 }
 
+/** Ascultă lista de comenzi în timp real. Returnează funcția de dezabonare. */
+export function subscribeLeads(cb: (leads: Lead[]) => void): () => void {
+  if (isFirebaseEnabled) {
+    const db = fbDb()!;
+    const q = query(collection(db, COL), orderBy("createdAt", "desc"));
+    return onSnapshot(
+      q,
+      (snap) => cb(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Lead, "id">) }))),
+      () => cb([])
+    );
+  }
+  // Fallback demo: citim din localStorage + reacționăm la evenimentul de update.
+  const emit = () => cb(read().sort((a, b) => b.createdAt - a.createdAt));
+  emit();
+  if (typeof window !== "undefined") window.addEventListener("careval:leads-updated", emit);
+  return () => {
+    if (typeof window !== "undefined") window.removeEventListener("careval:leads-updated", emit);
+  };
+}
+
+/** Listare sincronă (folosită doar în modul demo). */
 export function listLeads(): Lead[] {
   return read().sort((a, b) => b.createdAt - a.createdAt);
 }
 
-export function updateLeadStatus(id: string, status: LeadStatus): void {
-  const leads = read().map((l) => (l.id === id ? { ...l, status } : l));
-  write(leads);
+export async function updateLeadStatus(id: string, status: LeadStatus): Promise<void> {
+  if (isFirebaseEnabled) {
+    await updateDoc(doc(fbDb()!, COL, id), { status });
+    return;
+  }
+  write(read().map((l) => (l.id === id ? { ...l, status } : l)));
 }
 
-export function deleteLead(id: string): void {
+export async function deleteLead(id: string): Promise<void> {
+  if (isFirebaseEnabled) {
+    await deleteDoc(doc(fbDb()!, COL, id));
+    return;
+  }
   write(read().filter((l) => l.id !== id));
 }
 
-// Lead-uri demo pentru ca panoul de admin să arate populat din prima.
+/** Lead-uri demo — DOAR în modul fără Firebase. */
 export function seedIfEmpty(): void {
+  if (isFirebaseEnabled) return; // date reale în Firestore, fără seed
   if (typeof window === "undefined") return;
-  // Reîncarcă demo-ul dacă lipsește cheia SAU dacă lista e goală/coruptă
-  // (altfel, după ștergerea tuturor comenzilor, CRM-ul rămânea gol permanent).
   const existing = window.localStorage.getItem(KEY);
   if (existing) {
     try {
@@ -59,13 +145,11 @@ export function seedIfEmpty(): void {
     }
   }
   const now = Date.now();
-  // Poze demo — folosim imagini reale din proiect ca să arate cum apar fotografiile clientului.
   const IMG_AVARIE = "/images/generated/accident-cut.png";
   const IMG_MASINA = "/images/generated/car-cutout.png";
   const IMG_DOC = "/images/generated/docs-cut.png";
 
   const demo: Lead[] = [
-    // 1 — Despăgubiri Cuvenite (avarii + proces verbal)
     {
       id: "demo-1",
       createdAt: now - 1000 * 60 * 60 * 3,
@@ -90,7 +174,6 @@ export function seedIfEmpty(): void {
         },
       ],
     },
-    // 2 — Costuri Reparație (deviz, avarii)
     {
       id: "demo-2",
       createdAt: now - 1000 * 60 * 60 * 26,
@@ -115,7 +198,6 @@ export function seedIfEmpty(): void {
         },
       ],
     },
-    // 3 — Evaluare la Data Accidentului (poze pe 5 unghiuri)
     {
       id: "demo-3",
       createdAt: now - 1000 * 60 * 60 * 50,

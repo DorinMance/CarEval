@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ADMIN_CREDENTIALS, login, logout, isAuthed } from "@/lib/auth";
+import { ADMIN_CREDENTIALS, login, logout, subscribeAuth } from "@/lib/auth";
+import { isFirebaseEnabled } from "@/lib/firebase";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/components/ui";
 import { Lock, Shield, LogOut, FileText, Car, ClipboardList } from "@/components/icons";
 import { OrdersPanel } from "@/components/admin/OrdersPanel";
 import { ProductsPanel } from "@/components/admin/ProductsPanel";
 import { BlogPanel } from "@/components/admin/BlogPanel";
+import { seedProductsIfEmpty, seedPostsIfEmpty } from "@/lib/content";
 
 type Tab = "comenzi" | "produse" | "blog";
 
@@ -23,18 +25,40 @@ export default function AdminPage() {
   const [ready, setReady] = useState(false);
   const [tab, setTab] = useState<Tab>("comenzi");
 
-  // Precompletate pentru demo → doar apeși „Autentificare".
-  const [email, setEmail] = useState(ADMIN_CREDENTIALS.email);
-  const [password, setPassword] = useState(ADMIN_CREDENTIALS.password);
+  // Precompletate doar în modul demo (fără Firebase). Cu Firebase, câmpurile sunt goale.
+  const [email, setEmail] = useState(isFirebaseEnabled ? "" : ADMIN_CREDENTIALS.email);
+  const [password, setPassword] = useState(isFirebaseEnabled ? "" : ADMIN_CREDENTIALS.password);
   const [error, setError] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [loadState, setLoadState] = useState<"idle" | "loading" | "done">("idle");
+
+  async function loadAll() {
+    if (loadState === "loading") return;
+    setLoadState("loading");
+    try {
+      await seedProductsIfEmpty();
+      await seedPostsIfEmpty();
+      setLoadState("done");
+    } catch {
+      setLoadState("idle");
+      alert("Nu am putut încărca. Verifică: ești logat și regulile Firestore sunt publicate?");
+    }
+  }
 
   useEffect(() => {
-    setAuthed(isAuthed());
-    setReady(true);
+    const unsub = subscribeAuth((a) => {
+      setAuthed(a);
+      setReady(true);
+    });
+    return unsub;
   }, []);
 
-  function submit() {
-    if (login(email, password)) {
+  async function submit() {
+    if (busy) return;
+    setBusy(true);
+    const ok = await login(email, password);
+    setBusy(false);
+    if (ok) {
       setAuthed(true);
       setError(false);
     } else {
@@ -78,14 +102,16 @@ export default function AdminPage() {
             {error && <p className="text-sm text-danger">Email sau parolă greșite.</p>}
             <button
               onClick={submit}
-              className="w-full rounded-xl bg-lime-500 px-4 py-2.5 text-sm font-semibold text-navy-900 transition-colors hover:bg-lime-400"
+              disabled={busy}
+              className="w-full rounded-xl bg-lime-500 px-4 py-2.5 text-sm font-semibold text-navy-900 transition-colors hover:bg-lime-400 disabled:opacity-60"
             >
-              Autentificare
+              {busy ? "Se conectează…" : "Autentificare"}
             </button>
           </div>
 
           <p className="mt-4 flex items-center justify-center gap-1.5 rounded-lg bg-cloud py-2 text-xs text-navy-400">
-            <Shield className="h-3.5 w-3.5" /> Demo: datele sunt deja completate.
+            <Shield className="h-3.5 w-3.5" />
+            {isFirebaseEnabled ? "Autentificare securizată prin Firebase." : "Demo: datele sunt deja completate."}
           </p>
           <Link href="/" className="mt-4 block text-center text-xs text-navy-400 hover:text-navy-700">← Înapoi pe site</Link>
         </div>
@@ -103,9 +129,24 @@ export default function AdminPage() {
             <span className="hidden rounded-full bg-navy-800 px-2.5 py-1 text-xs font-semibold text-white sm:inline">Admin</span>
           </div>
           <div className="flex items-center gap-4">
+            {isFirebaseEnabled && (
+              <button
+                onClick={loadAll}
+                disabled={loadState === "loading"}
+                title="Populează Firebase cu produsele și articolele (o singură dată)"
+                className={cn(
+                  "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors disabled:opacity-60",
+                  loadState === "done"
+                    ? "bg-lime-100 text-lime-700"
+                    : "bg-navy-800 text-white hover:bg-navy-700"
+                )}
+              >
+                {loadState === "loading" ? "Se încarcă…" : loadState === "done" ? "✓ Încărcat în Firebase" : "Încarcă tot în Firebase"}
+              </button>
+            )}
             <Link href="/" className="hidden text-sm font-medium text-navy-500 hover:text-navy-800 sm:inline">Vezi site-ul ↗</Link>
             <button
-              onClick={() => { logout(); setAuthed(false); }}
+              onClick={async () => { await logout(); setAuthed(false); }}
               className="flex items-center gap-1.5 text-sm font-medium text-navy-500 hover:text-danger"
             >
               <LogOut className="h-4 w-4" /> Ieși

@@ -67,6 +67,37 @@ export default function CartPage() {
     return Object.keys(next).length === 0;
   }
 
+  // Trimite comanda către Netlify Forms → notificare pe email (POST către fișierul static /__forms.html).
+  async function submitToNetlify(lead: Lead) {
+    const detalii = lead.items
+      .map((it) => {
+        const rows = Object.entries(it.data)
+          .filter(([, v]) => v !== "" && v !== false)
+          .map(([k, v]) => `  ${fieldLabel(k)}: ${v === true ? "Da" : v}`)
+          .join("\n");
+        const imgs = Object.values(it.images).reduce((n, a) => n + a.length, 0);
+        return `• ${it.productName} (${it.code}) — ${it.price != null ? it.price + " Lei" : "la cerere"}\n${rows}\n  Fotografii încărcate: ${imgs} (vizibile în panoul admin)`;
+      })
+      .join("\n\n");
+
+    const params = new URLSearchParams();
+    params.append("form-name", "comanda");
+    params.append("nume", lead.contact.nume);
+    params.append("telefon", lead.contact.telefon);
+    params.append("email", lead.contact.email);
+    params.append("localitate", lead.contact.localitate || "");
+    params.append("produse", lead.items.map((i) => `${i.productName} (${i.code})`).join(", "));
+    params.append("total", lead.total != null ? `${lead.total} Lei` : "La cerere");
+    params.append("detalii", detalii);
+    params.append("mesaj", lead.contact.mesaj || "");
+
+    await fetch("/__forms.html", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    });
+  }
+
   async function submit() {
     if (!validate()) return;
     setPhase("sending");
@@ -86,7 +117,9 @@ export default function CartPage() {
         body: JSON.stringify(lead),
       });
       const json = await res.json();
-      saveLead(lead); // persistă în CRM (demo: localStorage)
+      await saveLead(lead); // Firestore (+ poze în Storage) sau localStorage în demo
+      // Notificare pe email prin Netlify Forms (secundară — nu blocăm comanda dacă pică)
+      try { await submitToNetlify(lead); } catch { /* email best-effort */ }
       setPreview(json.previewHtml ?? "");
       clear();
       setPhase("success");

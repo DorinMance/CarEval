@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { usePosts, savePost, deletePost, resetPosts } from "@/lib/content";
+import { useState, useEffect } from "react";
+import { usePosts, savePost, deletePost, resetPosts, seedPostsIfEmpty } from "@/lib/content";
 import { slugify } from "@/lib/products";
 import type { Post as BlogPost } from "@/lib/blog";
 import { RichTextEditor } from "@/components/RichTextEditor";
@@ -40,6 +40,9 @@ export function BlogPanel() {
   const posts = usePosts();
   const [editing, setEditing] = useState<Article | null>(null);
   const [query, setQuery] = useState("");
+
+  // La deschiderea panoului (admin logat), populăm Firestore cu articolele-seed dacă e gol.
+  useEffect(() => { seedPostsIfEmpty(); }, []);
 
   const filtered = posts.filter((p) =>
     (p.title + p.category + p.excerpt).toLowerCase().includes(query.trim().toLowerCase())

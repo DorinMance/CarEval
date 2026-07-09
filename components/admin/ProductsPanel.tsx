@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useProducts, saveProduct, deleteProduct, resetProducts } from "@/lib/content";
+import { useProducts, saveProduct, deleteProduct, resetProducts, seedProductsIfEmpty } from "@/lib/content";
 import { blankProduct, slugify, formatPrice, type Product } from "@/lib/products";
 import { Plus, Pencil, Trash, Search, RefreshCw } from "@/components/icons";
 
@@ -12,6 +12,9 @@ export function ProductsPanel() {
   const products = useProducts();
   const [editing, setEditing] = useState<Product | null>(null);
   const [query, setQuery] = useState("");
+
+  // La deschiderea panoului (admin logat), populăm Firestore cu produsele-seed dacă e gol.
+  useEffect(() => { seedProductsIfEmpty(); }, []);
 
   const filtered = products.filter((p) =>
     (p.name + p.category + p.code).toLowerCase().includes(query.trim().toLowerCase())

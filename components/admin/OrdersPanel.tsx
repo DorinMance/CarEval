@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { listLeads, updateLeadStatus, deleteLead, seedIfEmpty } from "@/lib/db";
+import { subscribeLeads, updateLeadStatus, deleteLead, seedIfEmpty, resolveImageUrl } from "@/lib/db";
 import type { Lead, LeadStatus } from "@/lib/types";
 import { STATUS_LABELS } from "@/lib/types";
 import { fieldLabel, imageLabel } from "@/lib/labels";
@@ -23,11 +23,9 @@ export function OrdersPanel() {
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    seedIfEmpty();
-    const refresh = () => setLeads(listLeads());
-    refresh();
-    window.addEventListener("careval:leads-updated", refresh);
-    return () => window.removeEventListener("careval:leads-updated", refresh);
+    seedIfEmpty(); // no-op cu Firebase; încarcă demo doar în modul local
+    const unsub = subscribeLeads(setLeads);
+    return unsub;
   }, []);
 
   const productNames = useMemo(() => {
@@ -261,14 +259,7 @@ function LeadDetail({ lead }: { lead: Lead }) {
                         <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-navy-400">{imageLabel(group)} ({srcs.length})</p>
                         <div className="flex flex-wrap gap-2">
                           {srcs.map((src, i) => (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              key={i}
-                              src={src}
-                              alt={`${imageLabel(group)} ${i + 1}`}
-                              onClick={() => setLightbox(src)}
-                              className="h-16 w-16 cursor-zoom-in rounded-lg border border-mist object-cover transition-transform hover:scale-105"
-                            />
+                            <LeadImage key={i} src={src} alt={`${imageLabel(group)} ${i + 1}`} onZoom={setLightbox} />
                           ))}
                         </div>
                       </div>
@@ -295,5 +286,28 @@ function LeadDetail({ lead }: { lead: Lead }) {
         </div>
       )}
     </div>
+  );
+}
+
+/** Miniatură care rezolvă calea Storage → URL de download (doar în admin, logat). */
+function LeadImage({ src, alt, onZoom }: { src: string; alt: string; onZoom: (url: string) => void }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    resolveImageUrl(src).then((u) => alive && setUrl(u));
+    return () => {
+      alive = false;
+    };
+  }, [src]);
+
+  if (!url) return <div className="h-16 w-16 animate-pulse rounded-lg border border-mist bg-cloud" />;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={url}
+      alt={alt}
+      onClick={() => onZoom(url)}
+      className="h-16 w-16 cursor-zoom-in rounded-lg border border-mist object-cover transition-transform hover:scale-105"
+    />
   );
 }

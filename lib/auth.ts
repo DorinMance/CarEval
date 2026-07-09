@@ -1,6 +1,11 @@
-// Autentificare DEMO pentru panoul de admin.
-// La go-live: se înlocuiește cu Firebase Auth / NextAuth. UI-ul rămâne la fel.
+// Autentificare admin.
+// - Cu Firebase configurat: login real prin Firebase Auth (user + parolă create de tine în Firebase).
+// - Fără Firebase (mod demo): fallback pe credențialele de mai jos + localStorage.
 
+import { isFirebaseEnabled, fbAuth } from "./firebase";
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+
+// Folosite DOAR în modul demo (fără Firebase).
 export const ADMIN_CREDENTIALS = {
   email: "admin@careval.ro",
   password: "careval2026",
@@ -8,21 +13,38 @@ export const ADMIN_CREDENTIALS = {
 
 const KEY = "careval_admin_session_v1";
 
-export function login(email: string, password: string): boolean {
+export async function login(email: string, password: string): Promise<boolean> {
+  if (isFirebaseEnabled) {
+    try {
+      await signInWithEmailAndPassword(fbAuth()!, email.trim(), password);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  // Fallback demo
   const ok =
     email.trim().toLowerCase() === ADMIN_CREDENTIALS.email &&
     password === ADMIN_CREDENTIALS.password;
-  if (ok && typeof window !== "undefined") {
-    window.localStorage.setItem(KEY, "1");
-  }
+  if (ok && typeof window !== "undefined") window.localStorage.setItem(KEY, "1");
   return ok;
 }
 
-export function logout(): void {
+export async function logout(): Promise<void> {
+  if (isFirebaseEnabled) {
+    await signOut(fbAuth()!);
+    return;
+  }
   if (typeof window !== "undefined") window.localStorage.removeItem(KEY);
 }
 
-export function isAuthed(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.localStorage.getItem(KEY) === "1";
+/** Ascultă starea de autentificare. Returnează funcția de dezabonare. */
+export function subscribeAuth(cb: (authed: boolean) => void): () => void {
+  if (isFirebaseEnabled) {
+    return onAuthStateChanged(fbAuth()!, (user) => cb(!!user));
+  }
+  // Fallback demo: citim o singură dată din localStorage.
+  if (typeof window !== "undefined") cb(window.localStorage.getItem(KEY) === "1");
+  else cb(false);
+  return () => {};
 }
