@@ -20,6 +20,8 @@ export default function CartPage() {
   const [phase, setPhase] = useState<Phase>("cart");
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [emailAsync, setEmailAsync] = useState<FieldStatus>("idle");
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState(false);
 
   // pre-fill contact din ultimul item care are date de contact
   const prefill = useMemo<Contact>(() => {
@@ -63,7 +65,8 @@ export default function CartPage() {
     if (!contact.telefon.trim()) next.telefon = true;
     if (!contact.email.trim() || !/.+@.+\..+/.test(contact.email)) next.email = true;
     setErrors(next);
-    return Object.keys(next).length === 0;
+    setConsentError(!consent);
+    return Object.keys(next).length === 0 && consent;
   }
 
   // Trimite comanda către Netlify Forms → notificare pe email (POST către fișierul static /__forms.html).
@@ -282,7 +285,26 @@ export default function CartPage() {
               />
             </div>
 
-            <button type="button" onClick={submit} disabled={phase === "sending"} className={cn(btnPrimary, "mt-5 w-full", phase === "sending" && "opacity-70")}>
+            <label className="mt-5 flex cursor-pointer items-start gap-2.5 text-xs leading-relaxed text-navy-600">
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => { setConsent(e.target.checked); setConsentError(false); }}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-lime-500"
+              />
+              <span>
+                Sunt de acord cu{" "}
+                <Link href="/termeni-si-conditii" className="font-medium text-lime-600 underline-offset-2 hover:underline">Termenii și condițiile</Link>{" "}
+                și cu{" "}
+                <Link href="/politica-confidentialitate" className="font-medium text-lime-600 underline-offset-2 hover:underline">Politica de confidențialitate</Link>{" "}
+                și îmi exprim acordul pentru prelucrarea datelor în scopul realizării evaluării.
+              </span>
+            </label>
+            {consentError && (
+              <p className="mt-1.5 text-xs text-danger">Trebuie să accepți termenii pentru a trimite cererea.</p>
+            )}
+
+            <button type="button" onClick={submit} disabled={phase === "sending"} className={cn(btnPrimary, "mt-4 w-full", phase === "sending" && "opacity-70")}>
               {phase === "sending" ? "Se trimite…" : (<>Trimite comanda <ArrowRight className="h-4 w-4" /></>)}
             </button>
 

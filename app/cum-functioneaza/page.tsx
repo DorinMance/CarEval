@@ -20,7 +20,7 @@ const steps = [
 const faqs: [string, string][] = [
   ["Cât durează?", "Majoritatea rapoartelor sunt livrate în 24–48h de la primirea datelor complete și a fotografiilor."],
   ["Trebuie să mă deplasez?", "Nu. Întregul proces este online — completezi formularul și încarci pozele de pe telefon."],
-  ["Raportul are valoare oficială?", "Da. Este o expertiză tehnică semnată de expert tehnic judiciar autorizat de Ministerul Justiției."],
+  ["Raportul are valoare oficială?", "Da. Este o expertiză tehnică extrajudiciară, semnată de un expert autorizat de Ministerul Justiției."],
   ["Ce fotografii sunt necesare?", "Poze clare din toate unghiurile relevante și cu zonele avariate. Te ghidăm exact în formular."],
   ["Cum plătesc?", "Comanda se finalizează online, cu plată prin card sau transfer bancar. Echipa confirmă comanda și revine cu raportul în termenul promis."],
 ];
@@ -60,8 +60,9 @@ export default function CumFunctioneazaPage() {
         <Reveal className="mt-10 flex items-center gap-3 rounded-2xl bg-mesh-light p-6">
           <Shield className="h-6 w-6 shrink-0 text-lime-600" />
           <p className="text-navy-600">
-            <strong className="text-navy-800">Important:</strong> dacă omiți avarii din poze sau descriere,
-            evaluarea poate fi inexactă. Completează cât mai detaliat pentru un rezultat corect.
+            <strong className="text-navy-800">Important:</strong> evaluarea se realizează pe baza
+            documentelor și fotografiilor furnizate de beneficiar. Dacă omiți avarii din poze sau
+            descriere, evaluarea poate fi inexactă. Completează cât mai detaliat pentru un rezultat corect.
           </p>
         </Reveal>
       </Section>

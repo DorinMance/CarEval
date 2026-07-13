@@ -24,6 +24,6 @@ Romanian car owners who had an accident and received a low insurance offer, peop
 ## Strategic principles
 1. Every section answers "what do I get?" before "how does it work?"
 2. Price anchoring: always show what the insurer offers vs. what CarEval recovers (+4.200 lei framing).
-3. Trust signals: expert judicial authorization, AUDATEX/DAT systems, Targetare.ro awards 2023/2024.
+3. Trust signals: expert judicial authorization (MJ, Autorizația nr. 5420072015 / 2015), AUDATEX + DAT official systems. Do NOT claim "acceptat de asigurători" or Targetare.ro awards as credentials.
 4. One primary CTA per section max: "Cere evaluarea acum".
 5. 3D floating cutout images (no background) for premium feel — established visual language.

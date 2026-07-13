@@ -8,12 +8,12 @@ import { Check, ArrowRight, FileText, Shield } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Model de raport",
-  description: "Vezi ce conține un raport de evaluare CarEval: date tehnice, opinie de valoare argumentată tehnic, deviz de reparație și semnătura expertului tehnic judiciar.",
+  description: "Vezi ce conține un raport de evaluare CarEval: date tehnice, estimare tehnică a valorii, deviz de reparație și semnătura expertului autorizat de Ministerul Justiției.",
 };
 
 const contents = [
   "Datele complete ale vehiculului (marcă, model, VIN, km, dotări)",
-  "Opinie de valoare argumentată tehnic, pe baza sistemelor AUDATEX/DAT",
+  "Estimare tehnică a valorii, pe baza sistemelor AUDATEX/DAT",
   "Deviz de reparație detaliat (AUDATEX / DAT) — unde e cazul",
   "Fotografiile relevante cu starea vehiculului",
   "Concluzia și valoarea finală, evidențiate clar",
@@ -21,7 +21,7 @@ const contents = [
 ];
 
 const reports = [
-  { slug: "raport-despagubiri", title: "Evaluare Despăgubiri Cuvenite", pages: 5 },
+  { slug: "raport-despagubiri", title: "Evaluare tehnică a prejudiciului", pages: 5 },
   { slug: "raport-costuri-reparatie", title: "Evaluare Costuri Reparație", pages: 4 },
   { slug: "raport-devalorizare", title: "Evaluare Devalorizare", pages: 6 },
   { slug: "raport-epava", title: "Evaluare Epavă Autoturism", pages: 4 },
@@ -34,7 +34,7 @@ export default function ModelRaportPage() {
       <PageHero
         eyebrow="Model raport"
         title={<>Cum arată un <span className="text-gradient-lime">raport autorizat</span></>}
-        subtitle="Un document clar, profesionist și acceptat oficial — exact ce ai nevoie în fața asigurătorului sau în instanță."
+        subtitle="Un document clar, profesionist și verificabil — cifre calculate în AUDATEX și DAT, utile în discuția cu asigurătorul sau în instanță."
       />
 
       <Section className="bg-white">
@@ -156,7 +156,7 @@ export default function ModelRaportPage() {
           {[
             { icon: <FileText className="h-6 w-6" />, t: "Format PDF", d: "Primit direct pe email, ușor de printat și de trimis mai departe." },
             { icon: <Shield className="h-6 w-6" />, t: "Valoare legală", d: "Expertiză semnată de expert tehnic judiciar autorizat." },
-            { icon: <Check className="h-6 w-6" />, t: "Acceptat oficial", d: "Folosit în relația cu asigurătorii și în proceduri legale." },
+            { icon: <Check className="h-6 w-6" />, t: "Document oficial", d: "Poate fi folosit în discuția cu asigurătorul și în proceduri legale." },
           ].map((b) => (
             <div data-reveal key={b.t} className="rounded-2xl border border-mist bg-white p-6">
               <span className="grid h-11 w-11 place-items-center rounded-xl bg-navy-800 text-lime-300">{b.icon}</span>

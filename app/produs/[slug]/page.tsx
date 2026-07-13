@@ -15,9 +15,9 @@ import { Check, Clock, Shield, ChevronRight, ArrowRight, Phone } from "@/compone
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
   const products = useProducts();
-  const product = products.find((p) => p.slug === slug);
+  const rawProduct = products.find((p) => p.slug === slug);
 
-  if (!product) {
+  if (!rawProduct) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
         <h1 className="font-heading text-2xl font-bold text-navy-800">Produs inexistent</h1>
@@ -27,17 +27,21 @@ export default function ProductPage() {
     );
   }
 
-  const related = products.filter((p) => p.slug !== product.slug && p.category === product.category).slice(0, 3);
-  const fallback = products.filter((p) => p.slug !== product.slug).slice(0, 3);
+  // Conținutul celor 8 servicii standard vine din cod (nume, text, pași, preț, imagine),
+  // ca textele aprobate de client să apară live indiferent de datele (eventual învechite) din store.
+  const overlay = (p: typeof rawProduct) => {
+    const s = seedProducts.find((x) => x.slug === p.slug);
+    return s ? { ...p, ...s } : p;
+  };
+  const product = overlay(rawProduct);
+  const wizardProduct = product;
+
+  const related = products.filter((p) => p.slug !== product.slug && p.category === product.category).map(overlay).slice(0, 3);
+  const fallback = products.filter((p) => p.slug !== product.slug).map(overlay).slice(0, 3);
   const suggestions = related.length ? related : fallback;
 
   const faqs = PRODUCT_FAQ[product.slug] ?? [];
   const note = PRODUCT_NOTE[product.slug];
-
-  // Schema formularului (pașii) vine mereu din cod (după slug), ca îmbunătățirile de câmpuri
-  // să se aplice fără a reîncărca produsele în Firestore. Restul (nume, preț, text) din store.
-  const seed = seedProducts.find((p) => p.slug === product.slug);
-  const wizardProduct = seed ? { ...product, steps: seed.steps } : product;
 
   return (
     <>
@@ -59,7 +63,7 @@ export default function ProductPage() {
             <div className="overflow-hidden rounded-3xl bg-mesh-light p-6">
               <div className="relative aspect-square">
                 <Image
-                  src={product.image}
+                  src={product.image.startsWith("data:") ? product.image : `${product.image}?v=4`}
                   alt={product.name}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"

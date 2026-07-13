@@ -9,13 +9,13 @@ import { Award, Shield, Scale, Check, ArrowRight } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Despre noi",
-  description: "CarEval (SC VAST Expertise SRL) — expertize tehnice auto autorizate, conduse de expert tehnic judiciar. Misiunea noastră: despăgubiri corecte, fără stres.",
+  description: "CarEval (SC VAST Expertise SRL) — expertize tehnice extrajudiciare auto, semnate de un expert autorizat de Ministerul Justiției. Misiunea noastră: expertize clare și imparțiale, fără stres.",
 };
 
 const values = [
-  { icon: <Shield className="h-6 w-6" />, t: "Independență", d: "Lucrăm pentru tine, nu pentru asigurător. Cifrele noastre sunt obiective și documentate." },
+  { icon: <Shield className="h-6 w-6" />, t: "Imparțialitate", d: "Lucrăm imparțial, indiferent de beneficiar. Cifrele noastre sunt obiective și documentate." },
   { icon: <Scale className="h-6 w-6" />, t: "Rigoare tehnică", d: "Folosim sistemele oficiale AUDATEX și DAT și standardele expertizei judiciare." },
-  { icon: <Award className="h-6 w-6" />, t: "Experiență", d: "Sute de evaluări și expertize, premiate la Targetare.ro AWARDS 2023 și 2024." },
+  { icon: <Award className="h-6 w-6" />, t: "Experiență", d: "Sute de evaluări și expertize tehnice auto realizate cu rigoare, în caz de accident sau daună." },
 ];
 
 export default function DespreNoiPage() {
@@ -32,7 +32,7 @@ export default function DespreNoiPage() {
           <Reveal>
             <Eyebrow>Misiunea noastră</Eyebrow>
             <h2 className="mt-4 font-heading text-3xl font-bold text-navy-800">
-              Despăgubiri corecte, fără bătăi de cap
+              Documentul tehnic de care ai nevoie, fără bătăi de cap
             </h2>
             <p className="mt-4 leading-relaxed text-navy-600">
               Am pornit CarEval pentru că prea mulți șoferi pierd bani după un accident — pur și
@@ -41,7 +41,7 @@ export default function DespreNoiPage() {
             </p>
             <p className="mt-3 leading-relaxed text-navy-600">
               Fiecare raport este întocmit și semnat de <strong className="text-navy-800">{COMPANY.expert}</strong>,
-              acceptat de asigurători.
+              expert autorizat de Ministerul Justiției.
             </p>
             <div className="mt-7">
               <Link href="/produse" className={btnPrimary}>Vezi serviciile <ArrowRight className="h-4 w-4" /></Link>
@@ -88,16 +88,15 @@ export default function DespreNoiPage() {
             <p className="mt-4 leading-relaxed text-navy-600">
               Rapoartele sunt întocmite de Dr. Ing. Kulcsar Raul Miklos, expert tehnic judiciar
               autorizat de Ministerul Justiției din România, specializarea Autovehicule, circulație
-              rutieră (Autorizația nr. 5420072015 / 20.07.2015). Rapoartele sunt acceptate de
-              asigurători. Când instanța numește expertul direct pe un caz, expertiza are calitate
-              deplină de expertiză judiciară.
+              rutieră (Autorizația nr. 5420072015 / 20.07.2015). Când instanța numește expertul
+              direct pe un caz, expertiza are calitate deplină de expertiză judiciară.
             </p>
             <ul className="mt-5 space-y-2">
               {[
                 "Autorizat MJ — Expert Tehnic Judiciar",
                 "Specializarea: Autovehicule, circulație rutieră",
                 "Autorizația nr. 5420072015 · eliberată 20.07.2015",
-                "Acceptat de asigurători",
+                "Specializare completă pentru dosare de daună",
               ].map((item) => (
                 <li key={item} className="flex items-center gap-2.5 text-sm text-navy-700">
                   <Check className="h-4 w-4 shrink-0 text-lime-600" />{item}
@@ -146,7 +145,7 @@ export default function DespreNoiPage() {
           {[
             ["500+", "evaluări realizate"],
             ["24–48h", "timp mediu de livrare"],
-            ["2", "premii Targetare.ro"],
+            ["2015", "autorizat din"],
             ["100%", "online"],
           ].map(([v, l]) => (
             <div data-reveal key={l}>
@@ -171,7 +170,7 @@ export default function DespreNoiPage() {
               </ul>
             </div>
             <ul className="space-y-3">
-              {["Expert tehnic judiciar autorizat", "Sisteme oficiale AUDATEX & DAT", "Acceptat de asigurători", "Premiat Targetare.ro 2023 & 2024"].map((c) => (
+              {["Expert tehnic judiciar autorizat", "Sisteme oficiale AUDATEX & DAT", "Autorizat de Ministerul Justiției", "Rapoarte livrate în 24–48h"].map((c) => (
                 <li key={c} className="flex items-center gap-3 rounded-xl bg-white p-4 text-navy-700 shadow-[0_2px_8px_rgba(11,25,48,0.04)]">
                   <Check className="h-5 w-5 shrink-0 text-lime-600" /> {c}
                 </li>

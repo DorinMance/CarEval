@@ -38,23 +38,24 @@ export function CompareCard() {
       style={{ transform: "perspective(1000px) rotateX(6deg)" }}
     >
       <p data-c className="mb-3 text-[10px] font-bold uppercase tracking-wider text-lime-400/75">
-        Diferența pe care o recuperezi
+        Ce conține raportul
       </p>
-      <div data-c className="flex items-center gap-3">
-        <div className="flex-1 rounded-xl border border-white/[0.08] bg-white/[0.04] p-2.5 text-center">
-          <p className="text-[10px] text-white/35">Ofertă asig.</p>
-          <p className="font-heading text-base font-bold text-white">14.200 lei</p>
-        </div>
-        <div className="text-white/25">→</div>
-        <div className="flex-1 rounded-xl border border-lime-400/25 bg-lime-400/[0.1] p-2.5 text-center">
-          <p className="text-[10px] text-lime-400/75">Valoare reală</p>
-          <p className="font-heading text-base font-bold text-lime-400">18.400 lei</p>
-        </div>
-      </div>
-      <div data-c className="mt-3 flex items-center gap-2 rounded-xl border border-lime-400/15 bg-lime-400/[0.08] px-3.5 py-2">
-        <Check className="h-4 w-4 shrink-0 text-lime-400" />
-        <span className="text-[13px] font-semibold text-white">
-          cifre AUDATEX — imposibil de contestat
+      <ul className="flex flex-col gap-2">
+        {[
+          "Valoare de piață la data accidentului",
+          "Deviz de reparație AUDATEX / DAT",
+          "Valoare reziduală",
+          "Metodologie, surse și date de referință",
+        ].map((item) => (
+          <li key={item} data-c className="flex items-start gap-2.5">
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-lime-400" />
+            <span className="text-[13px] leading-snug text-white/85">{item}</span>
+          </li>
+        ))}
+      </ul>
+      <div data-c className="mt-3 rounded-xl border border-lime-400/15 bg-lime-400/[0.08] px-3.5 py-2">
+        <span className="text-[12px] font-medium leading-snug text-white/70">
+          Cifre verificabile în aceleași sisteme folosite de industrie.
         </span>
       </div>
     </div>

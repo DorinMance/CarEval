@@ -4,12 +4,18 @@ import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ProductCard";
 import { Section, Eyebrow, btnPrimary } from "@/components/ui";
-import { COMPANY } from "@/lib/products";
+import { COMPANY, products as seedProducts } from "@/lib/products";
 import { useProducts } from "@/lib/content";
 import { ArrowRight } from "@/components/icons";
 
+// Conținutul celor 8 servicii standard vine din cod (sursă de adevăr), ca textele
+// aprobate de client să apară live indiferent de ce e (eventual învechit) în store.
+const SEED_BY_SLUG = Object.fromEntries(seedProducts.map((s) => [s.slug, s]));
+
 export default function ProdusePage() {
-  const products = useProducts();
+  const products = useProducts().map((p) =>
+    SEED_BY_SLUG[p.slug] ? { ...p, ...SEED_BY_SLUG[p.slug] } : p
+  );
 
   return (
     <>

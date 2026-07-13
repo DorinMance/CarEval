@@ -5,21 +5,22 @@ import Image from "next/image";
 import { useRef } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
-import { ArrowRight, Check, Shield, Car, FileText, Scale } from "./icons";
+import { ArrowRight, Shield, Car, FileText, Scale } from "./icons";
 
 gsap.registerPlugin(useGSAP);
 
 const situations = [
-  { label: "Asigurătorul mi-a oferit prea puțin", href: "/produs/evaluare-despagubiri-cuvenite", Icon: Scale },
-  { label: "Mașina e daună totală sau epavă", href: "/produs/evaluare-autovehicul-la-data-accidentului", Icon: Car },
-  { label: "Am reparat-o, dar valorează mai puțin acum", href: "/produs/evaluare-devalorizare-autovehicul-dupa-accident", Icon: FileText },
+  { label: "Vreau să verific suma din dosar", href: "/produs/evaluare-despagubiri-cuvenite", Icon: Scale },
+  { label: "Mașina e declarată daună totală", href: "/produs/evaluare-autovehicul-la-data-accidentului", Icon: Car },
+  { label: "Am reparat-o — cât mai valorează?", href: "/produs/evaluare-devalorizare-autovehicul-dupa-accident", Icon: FileText },
 ];
 
 /* Floating value tags positioned around the car (real HTML — crisp, not AI). */
 const valueTags = [
-  { v: "18.400 lei", l: "valoare reală", top: "16%", left: "6%", accent: true },
-  { v: "14.200 lei", l: "ofertă asig.", top: "60%", left: "2%", accent: false },
-  { v: "AUDATEX", l: "sistem oficial", top: "78%", left: "44%", accent: false },
+  { v: "18.400 lei", l: "valoare de piață", top: "14%", left: "5%", accent: true },
+  { v: "6.310 lei", l: "cost reparație", top: "58%", left: "1%", accent: false },
+  { v: "AUDATEX", l: "sistem oficial reparații", top: "70%", left: "44%", accent: false },
+  { v: "DAT", l: "valoare vehicul", top: "86%", left: "44%", accent: false },
 ];
 
 export function Hero() {
@@ -52,21 +53,6 @@ export function Hero() {
         yoyo: true,
         delay: 1.5,
       });
-
-      // Count-up: +4.200 → cifra crește de la 0
-      const valEl = root.current?.querySelector<HTMLElement>("[data-count-val]");
-      if (valEl) {
-        const obj = { v: 0 };
-        gsap.to(obj, {
-          v: 4200,
-          duration: 1.6,
-          delay: 1.3,
-          ease: "power2.out",
-          onUpdate() {
-            valEl.textContent = "+" + Math.round(obj.v).toLocaleString("ro-RO");
-          },
-        });
-      }
 
       const tl = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.15 });
       tl.fromTo("[data-h='badge']", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5 })
@@ -157,31 +143,26 @@ export function Hero() {
           <div className="flex items-center gap-2">
             <Shield className="h-3.5 w-3.5 text-lime-400" />
             <p className="text-[9px] font-bold uppercase tracking-widest text-lime-400/75">
-              Calcul despăgubire
+              FIȘĂ DE VALOARE · exemplu
             </p>
           </div>
-          <p className="mt-2.5 font-heading text-[1.7rem] font-bold leading-none text-white">
-            <span data-count-val>+4.200</span>
-            <span className="ml-1 text-xs font-normal text-white/30">lei</span>
-          </p>
-          <p className="mt-0.5 text-[10px] text-white/30">față de oferta inițială</p>
-          <div className="my-3 h-px bg-white/[0.06]" />
-          {(
-            [
-              ["Ofertă asigurător", "14.200 lei", false],
-              ["Valoare reală", "18.400 lei", false],
-              ["Recuperat", "+4.200 lei", true],
-            ] as const
-          ).map(([k, v, accent]) => (
-            <div key={k} className="mt-1.5 flex justify-between text-[11px]">
-              <span className="text-white/30">{k}</span>
-              <span className={`font-semibold ${accent ? "text-lime-400" : "text-white"}`}>{v}</span>
-            </div>
-          ))}
-          <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-lime-400/10 px-2.5 py-2">
-            <Check className="h-3.5 w-3.5 shrink-0 text-lime-400" />
-            <span className="text-[10px] font-semibold text-lime-400">cu raport CarEval</span>
+          <div className="mt-3">
+            {(
+              [
+                ["Valoare de piață la data accidentului", "18.400 lei"],
+                ["Cost reparație (AUDATEX)", "6.310 lei"],
+                ["Valoare reziduală", "2.150 lei"],
+                ["Devalorizare post-reparație", "1.480 lei"],
+              ] as const
+            ).map(([k, v]) => (
+              <div key={k} className="mt-1.5 flex justify-between gap-2 text-[11px]">
+                <span className="text-white/30">{k}</span>
+                <span className="shrink-0 font-semibold text-white">{v}</span>
+              </div>
+            ))}
           </div>
+          <div className="my-3 h-px bg-white/[0.06]" />
+          <p className="text-[10px] text-white/30">Fiecare cifră are o sursă și o metodă.</p>
         </div>
       </div>
 
@@ -197,7 +178,7 @@ export function Hero() {
           >
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lime-400" />
             <span className="text-xs font-medium text-white/55">
-              Expert tehnic judiciar autorizat · Giroc, Timiș
+              Expert Tehnic Judiciar – autorizat Ministerul Justiției
             </span>
           </div>
 
@@ -205,22 +186,21 @@ export function Hero() {
             data-h="title"
             className="font-heading text-[clamp(2.35rem,8vw,5.4rem)] font-bold leading-[1.03] tracking-tight text-white"
           >
-            Nu lăsa
+            Mașina ta are
             <br />
-            asigurătorul
+            o valoare exactă.
             <br />
-            să decidă{" "}
-            <em className="not-italic italic text-lime-400">cât</em>
-            <br />
-            <em className="not-italic italic text-lime-400">valorează</em>
-            <br />
-            mașina ta.
+            <em className="not-italic italic text-lime-400">
+              O punem
+              <br />
+              pe hârtie.
+            </em>
           </h1>
 
           <p data-h="sub" className="mt-6 max-w-[390px] text-[1.05rem] leading-relaxed text-white/55">
-            Evaluare auto &amp; expertiză judiciară în{" "}
-            <strong className="text-white/85">24–48h, 100% online</strong>. Cifre
-            din AUDATEX &amp; DAT — argumentul solid față de orice asigurător.
+            Expertiză tehnică extrajudiciară în{" "}
+            <strong className="text-white/85">24–48h, 100% online</strong>. Valori
+            calculate în AUDATEX și DAT — sistemele folosite de întreaga industrie auto, verificabile de oricare parte.
           </p>
 
           <div data-h="cta" className="mt-9 flex flex-wrap gap-3">
@@ -248,29 +228,25 @@ export function Hero() {
               <div className="p-4">
                 <div className="flex items-center gap-2">
                   <Shield className="h-3.5 w-3.5 text-lime-400" />
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-lime-400/75">Calcul despăgubire</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-lime-400/75">FIȘĂ DE VALOARE · exemplu</p>
                 </div>
-                <p className="mt-2.5 font-heading text-[1.7rem] font-bold leading-none text-white">
-                  +4.200<span className="ml-1 text-xs font-normal text-white/30">lei</span>
-                </p>
-                <p className="mt-0.5 text-[10px] text-white/30">față de oferta inițială</p>
+                <div className="mt-3">
+                  {(
+                    [
+                      ["Valoare de piață la data accidentului", "18.400 lei"],
+                      ["Cost reparație (AUDATEX)", "6.310 lei"],
+                      ["Valoare reziduală", "2.150 lei"],
+                      ["Devalorizare post-reparație", "1.480 lei"],
+                    ] as const
+                  ).map(([k, v]) => (
+                    <div key={k} className="mt-1.5 flex justify-between gap-2 text-[11px]">
+                      <span className="text-white/30">{k}</span>
+                      <span className="shrink-0 font-semibold text-white">{v}</span>
+                    </div>
+                  ))}
+                </div>
                 <div className="my-3 h-px bg-white/[0.06]" />
-                {(
-                  [
-                    ["Ofertă asigurător", "14.200 lei", false],
-                    ["Valoare reală", "18.400 lei", false],
-                    ["Recuperat", "+4.200 lei", true],
-                  ] as const
-                ).map(([k, v, accent]) => (
-                  <div key={k} className="mt-1.5 flex justify-between text-[11px]">
-                    <span className="text-white/30">{k}</span>
-                    <span className={`font-semibold ${accent ? "text-lime-400" : "text-white"}`}>{v}</span>
-                  </div>
-                ))}
-                <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-lime-400/10 px-2.5 py-2">
-                  <Check className="h-3.5 w-3.5 shrink-0 text-lime-400" />
-                  <span className="text-[10px] font-semibold text-lime-400">cu raport CarEval</span>
-                </div>
+                <p className="text-[10px] text-white/30">Fiecare cifră are o sursă și o metodă.</p>
               </div>
             </div>
 
@@ -310,21 +286,21 @@ export function Hero() {
             <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.22em] text-white/30">
               Alege situația ta
             </p>
-            <div className="grid grid-cols-1 gap-3 max-w-2xl sm:grid-cols-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-4 max-w-3xl sm:grid-cols-3 sm:gap-5">
               {situations.map((s) => (
                 <Link
                   key={s.label}
                   href={s.href}
-                  className="group flex flex-col gap-4 rounded-2xl border border-white/[0.14] bg-gradient-to-b from-white/[0.08] to-white/[0.03] p-5 backdrop-blur-sm transition-all duration-200 hover:border-lime-400/50 hover:from-lime-400/[0.12] hover:to-lime-400/[0.05] hover:shadow-[0_0_40px_rgba(143,208,47,0.12)]"
+                  className="group flex flex-col gap-5 rounded-2xl border border-white/[0.14] bg-gradient-to-b from-white/[0.08] to-white/[0.03] p-7 backdrop-blur-sm transition-all duration-200 hover:border-lime-400/50 hover:from-lime-400/[0.12] hover:to-lime-400/[0.05] hover:shadow-[0_0_40px_rgba(143,208,47,0.12)]"
                 >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-lime-400/15 transition-colors group-hover:bg-lime-400/30">
-                    <s.Icon className="h-5 w-5 text-lime-400" />
+                  <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-lime-400/15 transition-colors group-hover:bg-lime-400/30">
+                    <s.Icon className="h-8 w-8 text-lime-400" />
                   </span>
-                  <div className="flex flex-1 flex-col justify-between gap-3">
-                    <span className="text-sm font-semibold leading-snug text-white/75 transition-colors group-hover:text-white">{s.label}</span>
-                    <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.15em] text-lime-400/50 transition-colors group-hover:text-lime-400">
+                  <div className="flex flex-1 flex-col justify-between gap-4">
+                    <span className="text-base font-semibold leading-snug text-white/80 transition-colors group-hover:text-white">{s.label}</span>
+                    <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.15em] text-lime-400/60 transition-colors group-hover:text-lime-400">
                       <span>Vezi</span>
-                      <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                     </div>
                   </div>
                 </Link>

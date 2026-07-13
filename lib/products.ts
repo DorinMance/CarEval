@@ -148,14 +148,14 @@ export const products: Product[] = [
     image: "/images/generated/prod-consultanta.png",
     category: "Consultanță",
     shortDescription:
-      "Nu știi ce să faci după accident? Îți spunem exact ce pași să urmezi ca să obții despăgubirea corectă, fără stres și fără greșeli costisitoare.",
+      "Nu știi ce să faci după accident? Îți spunem exact ce pași să urmezi, pas cu pas, fără stres și fără greșeli costisitoare.",
     description: [
-      "Imediat după un accident e ușor să faci greșeli care te costă bani. Serviciul de consultanță îți oferă îndrumarea unui expert tehnic autorizat, care îți spune exact ce pași să urmezi.",
-      "Te ajutăm cu strategia de despăgubire, documentele necesare și negocierea cu asigurătorul, ca să obții suma corectă.",
+      "Imediat după un accident e ușor să faci greșeli costisitoare. Serviciul de consultanță îți oferă îndrumarea unui expert tehnic autorizat, care îți spune exact ce pași să urmezi.",
+      "Te ajutăm cu strategia de despăgubire, documentele necesare și pregătirea discuției cu asigurătorul.",
     ],
     benefits: [
-      "Îndrumare de la expert tehnic judiciar",
-      "Eviți greșelile care te costă bani",
+      "Îndrumare de la expert tehnic autorizat de Ministerul Justiției",
+      "Eviți greșelile costisitoare",
       "Strategie clară de despăgubire",
     ],
     steps: [
@@ -183,28 +183,29 @@ export const products: Product[] = [
     ],
   },
 
-  /* 2 — Despăgubiri Cuvenite */
+  /* 2 — Evaluare tehnică a prejudiciului */
   {
     id: 2,
     slug: "evaluare-despagubiri-cuvenite",
     code: "EV4",
-    name: "Evaluare Despăgubiri Cuvenite",
-    tagline: "Câți bani ți se cuvin de fapt după accident.",
+    name: "Evaluare tehnică a prejudiciului",
+    tagline: "Cât valorează, tehnic, paguba pe care ai suferit-o.",
     price: 650,
     delivery: "24–48h",
     image: "/images/generated/prod-despagubiri.png",
     category: "Accident",
     popular: true,
     shortDescription:
-      "Calculăm despăgubirea corectă la care ai dreptul — combinăm valoarea vehiculului, devizul de reparație și prevederile poliței.",
+      "Calculăm tehnic valoarea pagubei — combinăm valoarea de piață la data accidentului, devizul de reparație și prevederile poliței.",
     description: [
-      "Asigurătorii oferă frecvent mai puțin decât ți se cuvine. Raportul de Despăgubiri Cuvenite stabilește suma corectă la care ai dreptul, conform poliței RCA sau CASCO.",
-      "Combinăm opinia de valoare argumentată tehnic, devizul de reparație din AUDATEX/DAT și prevederile legale într-un singur document de expertiză, cu care poți contesta o ofertă subevaluată.",
+      "Suma dintr-un dosar de daună se compune din mai multe elemente distincte: valoarea de piață a vehiculului la data accidentului, costul reparației, valoarea reziduală și, după caz, devalorizarea post-reparație. Fiecare se calculează separat, după o metodă proprie.",
+      "Raportul recalculează aceste elemente în AUDATEX și DAT și le compară cu cifrele din dosar. Dacă valorile coincid, raportul le confirmă. Dacă apar diferențe, le documentează — cu metodă, surse și date de referință.",
+      "Documentul poate fi folosit în discuția cu asigurătorul, în procedura de soluționare alternativă a litigiilor (SAL) sau ca înscris în instanță.",
     ],
     benefits: [
-      "Suma corectă, calculată și documentată tehnic",
-      "Bază pentru contestație sau instanță",
-      "Întocmit de expert tehnic judiciar autorizat MJ",
+      "Valoarea pagubei, calculată și documentată tehnic",
+      "Metodologie și surse atașate — verificabile de oricare parte",
+      "Întocmit de expert tehnic autorizat de Ministerul Justiției",
     ],
     steps: [stepVehicle(), stepAccident, { id: "imagini", title: "Imagini cu avariile", subtitle: "Adaugă și procesul verbal dacă îl ai.", images: damageImages }, contactStep],
   },
@@ -221,15 +222,15 @@ export const products: Product[] = [
     image: "/images/generated/prod-costuri.png",
     category: "Accident",
     shortDescription:
-      "Deviz de reparație detaliat în sistem AUDATEX sau DAT, cu manoperă, piese și vopsitorie — argument solid în fața asigurătorului.",
+      "Deviz de reparație detaliat în sistem AUDATEX sau DAT, cu manoperă, piese și vopsitorie — reper tehnic clar în discuția cu asigurătorul.",
     description: [
-      "Ai avut un accident și asigurătorul îți oferă o sumă prea mică pentru reparații? Raportul de Evaluare Costuri Reparație îți arată costul real al reparației, calculat în sistemele oficiale AUDATEX sau DAT.",
-      "Devizul include manopera, piesele și vopsitoria, pe baza fotografiilor cu avariile. Este documentul cu care poți negocia o despăgubire corectă.",
+      "Vrei să știi cât costă, de fapt, reparația după un accident? Raportul de Evaluare Costuri Reparație îți arată costul reparației, calculat în sistemele oficiale AUDATEX sau DAT.",
+      "Devizul include manopera, piesele și vopsitoria, pe baza fotografiilor cu avariile. Este documentul pe care îl poți folosi în discuția cu asigurătorul.",
     ],
     benefits: [
       "Deviz oficial AUDATEX / DAT",
       "Manoperă + piese + vopsitorie, defalcat",
-      "Argument puternic în negocierea cu asigurarea",
+      "Reper tehnic în discuția cu asigurarea",
     ],
     steps: [stepVehicle(), stepAccident, { id: "imagini", title: "Imagini cu avariile", subtitle: "Pozele clare = evaluare precisă.", images: damageImages }, contactStep],
   },
@@ -246,10 +247,10 @@ export const products: Product[] = [
     image: "/images/generated/prod-data.png",
     category: "Accident",
     shortDescription:
-      "Stabilim o opinie de valoare argumentată tehnic pentru vehiculul tău la data accidentului — esențial pentru daune totale și despăgubiri corecte.",
+      "Stabilim o estimare tehnică a valorii pentru vehiculul tău la data accidentului — esențial pentru daune totale și despăgubiri corecte.",
     description: [
-      "Când mașina este declarată daună totală, asigurătorul calculează despăgubirea pe baza valorii vehiculului la data accidentului. Raportul nostru stabilește o opinie de valoare argumentată tehnic, cu referire la condițiile de piață din acel moment.",
-      "Raportul este semnat de Dr. Ing. Kulcsar Raul Miklos, expert tehnic judiciar autorizat de Ministerul Justiției — cifră documentată, susținută cu referințe AUDATEX/DAT și acceptată de asigurători.",
+      "Când mașina este declarată daună totală, asigurătorul calculează despăgubirea pe baza valorii vehiculului la data accidentului. Raportul nostru stabilește o estimare tehnică a valorii, cu referire la condițiile de piață din acel moment.",
+      "Raportul este semnat de Dr. Ing. Kulcsar Raul Miklos, expert tehnic autorizat de Ministerul Justiției — cifră documentată, susținută cu referințe AUDATEX/DAT.",
     ],
     benefits: [
       "Opinie de valoare raportată la data exactă a accidentului",
@@ -278,8 +279,8 @@ export const products: Product[] = [
     shortDescription:
       "Stabilește valoarea reziduală (epava) a vehiculului avariat — necesară la calculul corect al daunei totale.",
     description: [
-      "La o daună totală, despăgubirea = valoarea mașinii minus valoarea epavei. Dacă epava este supraevaluată, primești mai puțini bani. Acest raport stabilește valoarea reală a epavei.",
-      "Evaluarea reziduală documentată te ajută să nu fii dezavantajat în calculul asigurătorului.",
+      "La o daună totală, despăgubirea = valoarea mașinii minus valoarea epavei. Cu cât epava este evaluată mai sus, cu atât despăgubirea este mai mică. Acest raport stabilește valoarea de piață a epavei.",
+      "Evaluarea reziduală documentată aduce o cifră verificabilă în calculul daunei totale.",
     ],
     benefits: [
       "Valoare reziduală corectă",
@@ -295,41 +296,41 @@ export const products: Product[] = [
     slug: "evaluare-devalorizare-autovehicul-dupa-accident",
     code: "EV6",
     name: "Evaluare Devalorizare Autovehicul după Accident",
-    tagline: "Recuperează valoarea pierdută chiar și după reparație.",
+    tagline: "Calculăm valoarea pierdută chiar și după o reparație completă.",
     price: 1200,
     delivery: "24–48h",
     image: "/images/generated/prod-devalorizare.png",
     category: "Accident",
     shortDescription:
-      "Chiar reparată impecabil, o mașină accidentată valorează mai puțin. Calculăm această pierdere de valoare — bani pe care îi poți recupera.",
+      "Chiar reparată impecabil, o mașină accidentată valorează mai puțin. Calculăm această pierdere de valoare, documentat tehnic.",
     description: [
-      "O mașină care a fost accidentată valorează mai puțin la revânzare, chiar și după o reparație perfectă. Această pierdere se numește devalorizare și poate fi recuperată.",
-      "Raportul calculează procentul și cifra devalorizării, argumentate tehnic, pe baza datelor din sistemele AUDATEX/DAT — documentul cu care îți ceri banii pierduți de la asigurător.",
+      "O mașină care a fost accidentată valorează mai puțin la revânzare, chiar și după o reparație perfectă. Această pierdere se numește devalorizare și poate fi cuantificată tehnic.",
+      "Raportul calculează procentul și cifra devalorizării, argumentate tehnic, pe baza datelor din sistemele AUDATEX/DAT — documentul care susține valoarea devalorizării în discuția cu asigurătorul.",
     ],
     benefits: [
-      "Recuperezi valoarea pierdută la revânzare",
+      "Cuantifică valoarea pierdută la revânzare",
       "Calcul procentual documentat tehnic",
       "Aplicabil chiar și după reparație completă",
     ],
     steps: [stepVehicle(), stepAccident, { id: "imagini", title: "Imagini cu mașina", subtitle: "Înainte/după reparație, dacă ai.", images: damageImages }, contactStep],
   },
 
-  /* 7 — Contraexpertiță Tehnică */
+  /* 7 — Contraexpertiză Tehnică */
   {
     id: 7,
     slug: "contraexpertiza-tehnica",
     code: "EV_CT",
-    name: "Contraexpertiță Tehnică",
-    tagline: "Contestă evaluarea asigurătorului cu o opinie independentă.",
+    name: "Contraexpertiză Tehnică",
+    tagline: "Verifică evaluarea asigurătorului cu o opinie tehnică independentă.",
     price: 590,
     delivery: "24–48h",
     image: "/images/generated/prod-contraexpertiza.png",
     category: "Accident",
     shortDescription:
-      "Ai primit o expertiză sau ofertă de la asigurător pe care o consideri incorectă? O contraexpertiță independentă verifică calculele și poate demonstra diferența.",
+      "Ai primit o expertiză sau ofertă de la asigurător pe care vrei să o verifici? O contraexpertiză independentă analizează calculele și documentează eventualele diferențe.",
     description: [
-      "Dacă asigurătorul ți-a furnizat o evaluare pe care o contești, o contraexpertiță tehnică independentă analizează punct cu punct calculele acestuia și argumentează diferențele.",
-      "Raportul este elaborat de Dr. Ing. Kulcsar Raul Miklos, expert tehnic judiciar autorizat de Ministerul Justiției, cu referire la sistemele AUDATEX/DAT — document utilizabil în negociere sau în instanță.",
+      "Dacă ai primit o evaluare a asigurătorului pe care vrei să o verifici, o contraexpertiză tehnică independentă analizează punct cu punct calculele și documentează diferențele.",
+      "Raportul este elaborat de Dr. Ing. Kulcsar Raul Miklos, expert tehnic autorizat de Ministerul Justiției, cu referire la sistemele AUDATEX/DAT — document utilizabil în negociere sau în instanță.",
     ],
     benefits: [
       "Verificare independentă a calculelor asigurătorului",
@@ -363,7 +364,7 @@ export const products: Product[] = [
     shortDescription:
       "Vrei să cumperi o mașină second-hand și vrei o opinie de specialitate? Analizăm starea reală din fotografii și documente și îți oferim o evaluare independentă.",
     description: [
-      "Cumpărarea unei mașini second-hand ascunde riscuri: accidente nedeclarate, km dați înapoi sau prețuri umflate. O a doua opinie de la un expert tehnic judiciar îți oferă o imagine clară înainte să semnezi.",
+      "Cumpărarea unei mașini second-hand ascunde riscuri: accidente nedeclarate, km dați înapoi sau prețuri umflate. O a doua opinie de la un expert tehnic autorizat de Ministerul Justiției îți oferă o imagine clară înainte să semnezi.",
       "Pe baza fotografiilor, a VIN-ului și a documentelor disponibile, elaborăm o opinie tehnic argumentată privind starea și intervalul de valoare orientativ al vehiculului.",
     ],
     benefits: [
@@ -467,12 +468,13 @@ export const PRODUCT_FAQ: Record<string, [string, string][]> = {
     ["Consultanța include și un raport?", "Nu — consultanța e îndrumare (pași, strategie, documente). Dacă ai nevoie de un document tehnic, îți recomandăm serviciul de evaluare potrivit."],
   ],
   "evaluare-despagubiri-cuvenite": [
-    ["Cu ce mă ajută concret raportul?", "Îți pune negru pe alb suma corectă la care ai dreptul, calculată în AUDATEX/DAT — argumentul tehnic în fața asigurătorului sau la contestație."],
+    ["Cu ce mă ajută concret raportul?", "Îți arată, cu cifre verificabile, cum se compune valoarea pagubei tale. Poate confirma suma din dosar sau poate documenta o diferență — în ambele cazuri, știi exact unde stai."],
+    ["Îmi garantați o sumă mai mare?", "Nu. Raportul stabilește valori tehnice, nu rezultate. Onorariul este fix și nu depinde de suma obținută. Dacă analiza arată că suma din dosar este corectă, exact asta va scrie în raport."],
     ["În cât timp primesc raportul?", "În 24–48h de la trimiterea completă a datelor și fotografiilor."],
-    ["Pot folosi raportul în instanță?", "Da. E o expertiză tehnică semnată de expert autorizat de Ministerul Justiției; când instanța numește expertul pe caz, are calitate de expertiză judiciară."],
+    ["Pot folosi raportul în instanță?", "Da, ca înscris. Este o expertiză tehnică extrajudiciară, semnată de un expert autorizat de Ministerul Justiției. Devine expertiză judiciară doar atunci când instanța dispune efectuarea unei expertize și numește expertul în cauza respectivă."],
   ],
   "evaluare-costuri-reparatie-autovehicul": [
-    ["Ce sistem de calcul folosiți?", "AUDATEX sau DAT — aceleași sisteme oficiale folosite de asigurători, dar de data asta în favoarea ta."],
+    ["Ce sistem de calcul folosiți?", "AUDATEX sau DAT — aceleași sisteme oficiale folosite în evaluările de daună."],
     ["De ce fotografii am nevoie?", "Poze clare cu toate zonele avariate; cu cât sunt mai complete, cu atât devizul e mai precis."],
   ],
   "evaluare-autovehicul-la-data-accidentului": [
@@ -481,11 +483,11 @@ export const PRODUCT_FAQ: Record<string, [string, string][]> = {
   ],
   "evaluare-epava-autoturism": [
     ["Ce înseamnă valoarea epavei?", "Valoarea reziduală a mașinii avariate. La daună totală, despăgubirea = valoarea mașinii minus valoarea epavei."],
-    ["De ce contează?", "Dacă epava e supraevaluată de asigurător, primești mai puțini bani. Raportul stabilește valoarea reală, documentat."],
+    ["De ce contează?", "Cu cât epava este evaluată mai sus, cu atât despăgubirea la daună totală este mai mică. Raportul stabilește valoarea de piață, documentat."],
   ],
   "evaluare-devalorizare-autovehicul-dupa-accident": [
     ["Ce este devalorizarea?", "Pierderea de valoare la revânzare pe care o suferă o mașină după un accident, chiar reparată perfect."],
-    ["Se poate recupera?", "Da — calculăm procentul și suma, documentat tehnic, pe care le poți cere de la partea vinovată sau de la asigurător."],
+    ["Se poate recupera?", "Da — calculăm procentul și suma, documentat tehnic. Documentul poate fi folosit în discuția cu partea vinovată sau cu asigurătorul."],
   ],
   "contraexpertiza-tehnica": [
     ["Când am nevoie de o contraexpertiză?", "Când ai deja o expertiză sau ofertă de la asigurător pe care o consideri incorectă și vrei o analiză independentă."],
@@ -505,10 +507,14 @@ export const PRODUCT_NOTE: Record<string, string> = {
 export const COMPANY = {
   name: "CarEval",
   legal: "SC VAST Expertise SRL",
+  cui: "RO41683750",
+  regCom: "J2019003634350",
+  rep: "Dr. Ing. Kulcsar Raul Miklos",
   phone: "+40 750 483 935",
   phoneHref: "tel:+40750483935",
   email: "contact@careval.ro",
-  address: "Str. Lămîiței 4, ap. 12, Giroc, Timiș",
+  address: "Str. Lămâiței 4, ap. 12, Giroc, Timiș",
+  addressFull: "Str. Lămâiței nr. 4, Et. M, Ap. 12, sat Giroc, jud. Timiș, cod poștal 307220",
   hours: "Luni–Vineri, 08:00–17:00",
   expert: "Dr. Ing. KULCSAR Raul Miklos — Expert Tehnic Judiciar",
 };

@@ -154,7 +154,7 @@ function ProductForm({ product, onClose }: { product: Product; onClose: () => vo
 
       <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
         <div className="space-y-4 rounded-2xl border border-mist bg-white p-5">
-          <Labeled label="Nume produs"><input className={inputCls} value={p.name} onChange={(e) => set("name", e.target.value)} placeholder="ex. Evaluare Despăgubiri Cuvenite" /></Labeled>
+          <Labeled label="Nume produs"><input className={inputCls} value={p.name} onChange={(e) => set("name", e.target.value)} placeholder="ex. Evaluare tehnică a prejudiciului" /></Labeled>
           <div className="grid gap-4 sm:grid-cols-2">
             <Labeled label="Slug (URL)" hint="Gol = generat automat din nume">
               <input className={inputCls} value={p.slug} onChange={(e) => set("slug", slugify(e.target.value))} placeholder="auto" />

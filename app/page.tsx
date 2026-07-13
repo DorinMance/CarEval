@@ -17,16 +17,16 @@ const situations = [
   {
     Icon: Car,
     label: "Despăgubiri",
-    title: "Asigurătorul mi-a oferit prea puțin",
-    desc: "Calculăm suma reală la care ai dreptul, cu cifre din AUDATEX/DAT — argumentul solid față de orice asigurător.",
+    title: "Vreau să verific suma din dosar",
+    desc: "Recalculăm paguba în AUDATEX/DAT și o comparăm cu suma din dosar. Dacă cifrele coincid, raportul o confirmă. Dacă apar diferențe, le documentează — cu metodă și surse.",
     href: "/produs/evaluare-despagubiri-cuvenite",
-    stat: "9 din 10",
-    statLabel: "oferte sub valoarea reală",
+    stat: "Cifre verificabile",
+    statLabel: "",
   },
   {
     Icon: Scale,
     label: "Daună totală",
-    title: "Mașina e daună totală sau epavă",
+    title: "Mașina e declarată daună totală",
     desc: "Stabilim valoarea mașinii la data exactă a accidentului — esențial pentru despăgubirea corectă.",
     href: "/produs/evaluare-autovehicul-la-data-accidentului",
     stat: "Esențial",
@@ -35,10 +35,10 @@ const situations = [
   {
     Icon: FileText,
     label: "Devalorizare",
-    title: "Am reparat-o, dar valorează mai puțin acum",
-    desc: "O mașină accidentată pierde din valoare chiar și după reparație completă. Recuperează această diferență.",
+    title: "Am reparat-o — cât mai valorează?",
+    desc: "O mașină accidentată pierde din valoare chiar și după reparație completă. Documentăm această diferență, cu cifre.",
     href: "/produs/evaluare-devalorizare-autovehicul-dupa-accident",
-    stat: "Recuperabil",
+    stat: "Documentat",
     statLabel: "chiar și după reparație completă",
   },
 ];
@@ -60,7 +60,7 @@ const steps = [
     n: "03",
     Icon: FileText,
     title: "Primești raportul",
-    text: "Raport PDF autorizat de expert tehnic judiciar, pe email, în 24–48h. Fără deplasări.",
+    text: "Raport PDF autorizat de expert tehnic, pe email, în 24–48h. Fără deplasări.",
   },
 ];
 
@@ -74,49 +74,70 @@ const whyUs = [
   {
     Icon: Shield,
     title: "Expert autorizat MJ",
-    text: "Rapoartele sunt semnate de Dr. Ing. Kulcsar Raul Miklos, expert tehnic judiciar autorizat de Ministerul Justiției — acceptate de asigurători.",
+    text: "Rapoartele sunt semnate de Dr. Ing. Kulcsar Raul Miklos, expert tehnic autorizat de Ministerul Justiției, cu peste 1.500 de expertize realizate în 11 ani de practică.",
   },
   {
     Icon: Scale,
-    title: "Despăgubire corectă",
-    text: "Calculăm în sistemele oficiale AUDATEX și DAT. Argumentul cu care negociezi cu asigurătorul.",
+    title: "Cifre, nu estimări",
+    text: "Calculăm în AUDATEX și DAT, sistemele folosite de întreaga industrie. Fiecare valoare din raport are o sursă, o metodă și o dată de referință.",
   },
   {
     Icon: Zap,
     title: "Rapid & online",
-    text: "Totul de pe telefon. Fără programări, fără cozi, fără deplasări. Raportul vine în 24–48h.",
+    text: "Încarci documentele și fotografiile de pe telefon. Raportul vine în 24–48h. Când un caz necesită inspecție fizică, îți spunem din start.",
+  },
+  {
+    Icon: Scale,
+    title: "Independență",
+    text: (
+      <>
+        Realizăm expertize pentru persoane fizice, flote, service-uri, asigurători
+        și instanțe. Metodologia este aceeași, indiferent cine solicită raportul.{" "}
+        <strong className="font-semibold text-white/70">
+          Onorariul este fix și nu depinde de rezultatul obținut.
+        </strong>
+      </>
+    ),
   },
 ];
 
+// Recenzii reale, publice, de pe Google (nume prescurtat, fără dată).
 const testimonials = [
   {
-    name: "Andrei M.",
-    city: "Timișoara",
-    saved: "+3.850 lei",
+    name: "Anca M.",
+    city: "Recenzie Google",
+    saved: "Raport complet",
     stars: 5,
-    text: "Asigurarea îmi oferea cu aproape 4.000 lei mai puțin. Cu raportul CarEval am obținut suma corectă, fără bătăi de cap.",
+    text: "Evaluarea autovehiculului prin CarEval a fost o experiență eficientă și benefică. Raportul complet mi-a furnizat toate detaliile necesare, economisindu-mi timp.",
   },
   {
-    name: "Marius T.",
-    city: "Oradea",
-    saved: "+2.600 lei recuperați",
+    name: "Andrei V.",
+    city: "Recenzie Google",
+    saved: "Experiență pozitivă",
     stars: 5,
-    text: "Mașina a fost reparată dar asigurătorul refuza devalorizarea. Cu raportul CarEval am primit tot ce mi se cuvenea — în mai puțin de o săptămână.",
+    text: "Am avut recent o experiență extrem de pozitivă cu CarEval și doresc să împărtășesc impresiile mele cu voi.",
   },
   {
-    name: "Sorin P.",
-    city: "Lugoj",
-    saved: "Dosar câștigat",
+    name: "Corina M.",
+    city: "Recenzie Google",
+    saved: "Ajutor la nevoie",
     stars: 5,
-    text: "După accident eram pierdut. Consultanța lor mi-a spus exact ce să fac pas cu pas. Fără raportul lor nu știam cu ce să mă apăr.",
+    text: "Recomand CarEval! Pachetul de evaluare costuri reparații și evaluare auto la data accidentului m-au ajutat atunci când am avut nevoie! Mulțumesc!",
+  },
+  {
+    name: "Iulian L.",
+    city: "Recenzie Google",
+    saved: "Profesionalism",
+    stars: 5,
+    text: "Profesioniști în evaluarea mașinii. Personal foarte calificat! Recomand.",
   },
 ];
 
 const stats = [
   { v: "24–48h", l: "livrare raport" },
   { v: "100%", l: "online, fără deplasare" },
-  { v: "AUDATEX", l: "& DAT — sisteme oficiale" },
-  { v: "2023/24", l: "premii Targetare.ro" },
+  { v: "AUDATEX & DAT", l: "sisteme oficiale" },
+  { v: "AUTORIZAT", l: "Expert Tehnic Judiciar" },
 ];
 
 /* ── Page ── */
@@ -217,17 +238,24 @@ export default function HomePage() {
               <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
                 După un accident,{" "}
                 <br className="hidden lg:block" />
-                fiecare greșeală{" "}
-                <em className="not-italic italic text-lime-400">te costă bani.</em>
+                fiecare cifră{" "}
+                <em className="not-italic italic text-lime-400">contează.</em>
               </h2>
               <p className="mt-5 max-w-lg text-lg leading-relaxed text-white/50">
-                Asigurătorii calculează în favoarea lor și oferă frecvent mai puțin
-                decât ți se cuvine. Fără un document oficial, nu ai cu ce să te aperi.
+                Valoarea unei mașini avariate nu este o chestiune de opinie. Se
+                calculează: an de fabricație, kilometraj, dotări, starea de dinaintea
+                evenimentului, costul real al reparației la data accidentului,
+                valoarea reziduală.
               </p>
               <p className="mt-3 max-w-lg text-lg leading-relaxed text-white/50">
-                CarEval îți pune în mână o{" "}
-                <strong className="text-white/80">expertiză tehnică autorizată</strong>{" "}
-                — cifre corecte, documentate, pe care le poți susține oriunde.
+                Fără acest calcul, discuția rămâne între estimări — iar o estimare nu
+                se susține nici în negociere, nici în instanță.
+              </p>
+              <p className="mt-3 max-w-lg text-lg leading-relaxed text-white/50">
+                CarEval îți pune la dispoziție o{" "}
+                <strong className="text-white/80">expertiză tehnică extrajudiciară</strong>{" "}
+                — cifre calculate în sistemele oficiale ale industriei, cu metodologia
+                atașată, verificabile de oricine — de tine, de asigurător, de instanță.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/produse" className={btnPrimary}>
@@ -328,14 +356,16 @@ export default function HomePage() {
                 evaluată cu{" "}
                 <em className="not-italic italic text-lime-400">precizie</em>
                 <br />
-                de expert judiciar.
+                de expert autorizat.
               </h2>
               <p className="mt-4 max-w-md text-base leading-relaxed text-white/50">
-                Folosim sisteme profesionale AUDATEX &amp; DAT — aceleași pe care
-                le folosesc asigurătorii, dar de data aceasta în favoarea ta.
+                Lucrăm în AUDATEX și DAT — aceleași sisteme folosite de asigurători,
+                de service-urile autorizate și de experții numiți de instanță. Când
+                toată lumea vorbește aceeași limbă tehnică, discuția e despre cifre,
+                nu despre păreri.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                {["AUDATEX", "DAT", "Expert judiciar", "100% online"].map((tag) => (
+                {["AUDATEX", "DAT", "Expert autorizat", "100% online"].map((tag) => (
                   <span
                     key={tag}
                     className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.07] px-3.5 py-1.5 text-xs font-medium text-white/70 backdrop-blur-sm"
@@ -374,7 +404,7 @@ export default function HomePage() {
               Alege exact ce ai nevoie
             </h2>
             <p className="mt-3 text-lg text-navy-500">
-              Evaluare și expertiză tehnică judiciară, cu raport autorizat și preț transparent.
+              Evaluare și expertiză tehnică extrajudiciară, cu raport autorizat și preț transparent.
             </p>
           </div>
           <Link
@@ -464,17 +494,44 @@ export default function HomePage() {
       </section>
 
       {/* ════════════════════════════════════
+          INDEPENDENȚĂ — strip on-brand
+      ════════════════════════════════════ */}
+      <Section className="bg-surface pt-0">
+        <Reveal className="overflow-hidden rounded-3xl border border-lime-400/15 bg-white/[0.03] px-6 py-8 sm:px-10 sm:py-10">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl border-l-2 border-lime-400/50 pl-5">
+              <p className="text-base leading-relaxed text-white/60">
+                Realizăm expertize tehnice atât pentru persoane fizice, cât și pentru
+                asigurători, flote, service-uri și instanțe. Metodologia, sistemele de
+                calcul și standardul raportului sunt identice, indiferent de beneficiar.
+              </p>
+              <p className="mt-3 text-base leading-relaxed text-white/80">
+                Onorariile sunt fixe și nu depind de rezultatul obținut. Nu garantăm
+                sume și nu reprezentăm juridic nicio parte.
+              </p>
+            </div>
+            <Link
+              href="/independenta"
+              className="inline-flex shrink-0 items-center gap-1.5 font-semibold text-lime-400 hover:text-lime-300"
+            >
+              Vezi cum lucrăm independent <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </Reveal>
+      </Section>
+
+      {/* ════════════════════════════════════
           TESTIMONIALE
       ════════════════════════════════════ */}
       <Section className="bg-white">
         <Reveal className="mx-auto max-w-2xl text-center">
           <Eyebrow>Ce spun clienții</Eyebrow>
           <h2 className="mt-4 font-heading text-3xl font-bold text-navy-800 sm:text-4xl">
-            Rezultate, nu promisiuni
+            Ce spun clienții
           </h2>
         </Reveal>
 
-        <Reveal stagger className="mt-12 grid gap-6 md:grid-cols-3">
+        <Reveal stagger className="mt-12 grid gap-6 sm:grid-cols-2">
           {testimonials.map((t) => (
             <figure
               data-reveal
@@ -593,12 +650,13 @@ export default function HomePage() {
               Acționează acum
             </p>
             <h2 className="mx-auto max-w-2xl font-heading text-3xl font-bold sm:text-4xl lg:text-5xl">
-              Nu lăsa asigurătorul să decidă{" "}
-              <em className="not-italic italic text-lime-400">cât valorează</em>{" "}
-              mașina ta.
+              Înainte să accepți o sumă,{" "}
+              <em className="not-italic italic text-lime-400">verifică cifrele.</em>
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-lg text-white/45">
-              Cere acum evaluarea ta. Un expert te contactează cu oferta în cel mai scurt timp.
+              Cere raportul. Dacă suma din dosar este corectă, raportul o confirmă — și
+              știi că ai luat decizia potrivită. Dacă nu, ai documentul care arată
+              diferența.
             </p>
             <div className="mt-9 flex flex-wrap justify-center gap-3">
               <Link

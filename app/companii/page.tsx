@@ -15,8 +15,8 @@ export const metadata: Metadata = {
 
 const audience = [
   { icon: <Building className="h-7 w-7" />, t: "Flote & leasing", d: "Expertize tehnice și devize de reparație pentru accidente, daune și constatări din parcul auto." },
+  { icon: <Shield className="h-7 w-7" />, t: "Asigurători, brokeri și reasigurători", d: "Expertize tehnice independente pentru constatări, daune totale, analiza compatibilității avariilor și dosare cu suspiciune de fraudă. Aceeași echipă și același standard tehnic ca în expertiza judiciară." },
   { icon: <Users className="h-7 w-7" />, t: "Service-uri & dealeri", d: "Devize de reparație și evaluări la schimb, livrate rapid, pentru clienții voștri." },
-  { icon: <Shield className="h-7 w-7" />, t: "Asigurări & brokeri", d: "Expertize independente pentru constatări, daune totale și soluționarea dosarelor." },
 ];
 
 const benefits = [
@@ -71,6 +71,24 @@ export default function CompaniiPage() {
               <p className="mt-2 text-sm leading-relaxed text-navy-500">{a.d}</p>
             </div>
           ))}
+        </Reveal>
+      </Section>
+
+      <Section className="bg-white pt-0">
+        <Reveal className="mx-auto max-w-3xl rounded-3xl bg-mesh-light p-8 sm:p-12">
+          <Eyebrow>Independență</Eyebrow>
+          <h2 className="mt-4 font-heading text-2xl font-bold text-navy-800 lg:text-3xl">
+            Lucrăm pentru ambele părți
+          </h2>
+          <p className="mt-4 leading-relaxed text-navy-600">
+            Realizăm expertize tehnice atât pentru persoane fizice, cât și pentru asigurători, flote,
+            service-uri și instanțe. Metodologia, sistemele de calcul și standardul raportului sunt
+            identice, indiferent de beneficiar.
+          </p>
+          <p className="mt-3 leading-relaxed text-navy-600">
+            Onorariile sunt fixe și nu depind de rezultatul obținut. Nu garantăm sume și nu
+            reprezentăm juridic nicio parte.
+          </p>
         </Reveal>
       </Section>
 

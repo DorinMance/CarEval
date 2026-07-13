@@ -18,7 +18,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
 
       <div className="relative aspect-square overflow-hidden bg-white">
         <Image
-          src={product.image}
+          src={product.image.startsWith("data:") ? product.image : `${product.image}?v=4`}
           alt={product.name}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"

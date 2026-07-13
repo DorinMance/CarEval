@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, DM_Sans } from "next/font/google";
 import "./globals.css";
-import Script from "next/script";
 import { CartProvider } from "@/lib/cart";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress";
+import { CookieConsent } from "@/components/CookieConsent";
 import { COMPANY } from "@/lib/products";
-
-// Google Analytics 4 — ID public (vizibil oricum în HTML). Din env, cu fallback.
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-MXMQZ04NEB";
-const GA_ENABLED = process.env.NODE_ENV === "production" && Boolean(GA_ID);
 
 const orgSchema = {
   "@context": "https://schema.org",
@@ -18,7 +14,7 @@ const orgSchema = {
   name: "CarEval",
   legalName: COMPANY.legal,
   description:
-    "Expertize tehnice auto și evaluări în caz de accident, autorizate de expert tehnic judiciar. 100% online, livrare în 24–48h.",
+    "Expertize tehnice extrajudiciare auto și evaluări în caz de accident, semnate de expert autorizat de Ministerul Justiției. 100% online, livrare în 24–48h.",
   url: "https://careval.ro",
   telephone: COMPANY.phone,
   email: COMPANY.email,
@@ -26,7 +22,7 @@ const orgSchema = {
   areaServed: { "@type": "Country", name: "România" },
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Str. Lămîiței 4, ap. 12",
+    streetAddress: "Str. Lămâiței 4, ap. 12",
     addressLocality: "Giroc",
     addressRegion: "Timiș",
     addressCountry: "RO",
@@ -58,7 +54,7 @@ export const metadata: Metadata = {
     template: "%s · CarEval",
   },
   description:
-    "Rapoarte de evaluare auto și expertize tehnice în caz de accident, autorizate de expert tehnic judiciar. Fără deplasare, livrare în 24–48h. Obține despăgubirea corectă.",
+    "Rapoarte de evaluare auto și expertize tehnice extrajudiciare în caz de accident, semnate de expert autorizat de Ministerul Justiției. Fără deplasare, livrare în 24–48h. Cifre calculate în AUDATEX și DAT.",
   keywords: [
     "evaluare auto", "expertiza auto", "evaluare in caz de accident",
     "despagubiri rca", "evaluare epava", "raport evaluare autovehicul", "CarEval",
@@ -86,24 +82,13 @@ export default function RootLayout({
         </form>
 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
-        {GA_ENABLED && (
-          <>
-            <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
-            <Script
-              id="ga4-init"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`,
-              }}
-            />
-          </>
-        )}
         <ScrollProgress />
         <CartProvider>
           <Header />
           <main>{children}</main>
           <Footer />
         </CartProvider>
+        <CookieConsent />
       </body>
     </html>
   );

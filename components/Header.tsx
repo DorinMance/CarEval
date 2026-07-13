@@ -13,6 +13,7 @@ const NAV = [
   { href: "/cum-functioneaza", label: "Cum funcționează" },
   { href: "/model-raport", label: "Model raport" },
   { href: "/despre-noi", label: "Despre noi" },
+  { href: "/independenta", label: "Independență" },
   { href: "/companii", label: "Companii" },
   { href: "/blog", label: "Blog" },
 ];

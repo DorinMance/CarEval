@@ -154,12 +154,12 @@ export function seedIfEmpty(): void {
       id: "demo-1",
       createdAt: now - 1000 * 60 * 60 * 3,
       status: "nou",
-      contact: { nume: "Andrei Munteanu", telefon: "0741 222 333", email: "andrei.m@email.ro", localitate: "Timișoara", mesaj: "Asigurătorul mi-a oferit mult sub valoare. Aș vrea raportul cât mai repede pentru contestație." },
+      contact: { nume: "Andrei Munteanu", telefon: "0741 222 333", email: "andrei.m@email.ro", localitate: "Timișoara", mesaj: "Vreau să verific dacă suma din dosar reflectă corect valoarea mașinii. Aș avea nevoie de raport cât mai repede." },
       total: 650,
       items: [
         {
           productSlug: "evaluare-despagubiri-cuvenite",
-          productName: "Evaluare Despăgubiri Cuvenite",
+          productName: "Evaluare tehnică a prejudiciului",
           code: "EV4",
           price: 650,
           data: {
