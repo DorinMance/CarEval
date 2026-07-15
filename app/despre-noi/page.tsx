@@ -128,19 +128,6 @@ export default function DespreNoiPage() {
       </Section>
 
       <Section className="bg-navy-gradient relative overflow-hidden text-white">
-        {/* trophy-cut.png — floating award */}
-        <div className="pointer-events-none absolute right-[4%] top-1/2 hidden w-[130px] -translate-y-1/2 lg:block">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(143,208,47,0.18)_0%,transparent_65%)] blur-lg" />
-          <Image
-            src="/images/generated/trophy-cut.png"
-            alt=""
-            width={260}
-            height={300}
-            className="h-auto w-full object-contain"
-            style={{ filter: "drop-shadow(0 20px 34px rgba(0,0,0,0.45))" }}
-            aria-hidden
-          />
-        </div>
         <Reveal stagger className="grid grid-cols-2 gap-6 text-center lg:grid-cols-4">
           {[
             ["500+", "evaluări realizate"],
@@ -153,6 +140,29 @@ export default function DespreNoiPage() {
               <p className="mt-1 text-sm text-navy-200">{l}</p>
             </div>
           ))}
+        </Reveal>
+
+        {/* Distincție verificabilă — link către profilul public Targetare.ro */}
+        <Reveal className="mt-10 flex justify-center">
+          <a
+            href="https://targetare.ro/41683750/vast-expertise-srl"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex max-w-md items-center gap-4 rounded-2xl border border-lime-400/20 bg-white/[0.04] px-5 py-4 transition-colors hover:border-lime-400/45 hover:bg-white/[0.07]"
+          >
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-lime-400/20 bg-lime-400/[0.10]">
+              <Award className="h-5 w-5 text-lime-400" />
+            </span>
+            <span className="text-left">
+              <span className="block text-sm font-semibold text-white">
+                Locul 3 · Targetare.ro AWARDS 2024
+              </span>
+              <span className="mt-0.5 block text-xs leading-relaxed text-navy-200">
+                {COMPANY.legal}, Timiș — și Locul 9 în 2023. Vezi profilul public.
+              </span>
+            </span>
+            <ArrowRight className="h-4 w-4 shrink-0 text-lime-400/60 transition-transform group-hover:translate-x-0.5" />
+          </a>
         </Reveal>
       </Section>
 

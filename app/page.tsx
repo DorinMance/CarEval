@@ -276,7 +276,7 @@ export default function HomePage() {
                 {/* lime ground glow */}
                 <div className="absolute bottom-[26%] left-1/2 h-20 w-[72%] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(143,208,47,0.22)_0%,transparent_70%)] blur-xl" />
                 <Image
-                  src="/images/generated/accident-cut.png"
+                  src="/images/generated/accident-cut.png?v=4"
                   alt="Autovehicul avariat după accident — evaluare despăgubiri"
                   width={1040}
                   height={520}
@@ -434,32 +434,6 @@ export default function HomePage() {
       <section className="relative overflow-hidden bg-surface py-20 sm:py-28">
         <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 h-[300px] w-[700px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(143,208,47,0.07)_0%,transparent_65%)]" />
 
-        {/* seal-cut.png — floating authority emblem */}
-        <div className="pointer-events-none absolute right-[4%] top-[16%] hidden w-[140px] xl:block">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(143,208,47,0.18)_0%,transparent_65%)] blur-lg" />
-          <Image
-            src="/images/generated/seal-cut.png"
-            alt=""
-            width={300}
-            height={300}
-            className="h-auto w-full object-contain"
-            style={{ filter: "drop-shadow(0 18px 30px rgba(0,0,0,0.5))" }}
-            aria-hidden
-          />
-        </div>
-        <div className="pointer-events-none absolute left-[4%] bottom-[10%] hidden w-[110px] xl:block">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(143,208,47,0.12)_0%,transparent_65%)] blur-lg" />
-          <Image
-            src="/images/generated/trophy-cut.png"
-            alt=""
-            width={220}
-            height={260}
-            className="h-auto w-full object-contain"
-            style={{ filter: "drop-shadow(0 18px 30px rgba(0,0,0,0.5))" }}
-            aria-hidden
-          />
-        </div>
-
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Reveal className="mx-auto max-w-2xl text-center">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-lime-400/70">
@@ -489,6 +463,29 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
+          </Reveal>
+
+          {/* Distincție verificabilă — link către profilul public Targetare.ro */}
+          <Reveal className="mt-12 flex justify-center">
+            <a
+              href="https://targetare.ro/41683750/vast-expertise-srl"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex max-w-md items-center gap-4 rounded-2xl border border-lime-400/20 bg-white/[0.04] px-5 py-4 transition-colors hover:border-lime-400/45 hover:bg-white/[0.07]"
+            >
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-lime-400/20 bg-lime-400/[0.10]">
+                <Award className="h-5 w-5 text-lime-400" />
+              </span>
+              <span className="text-left">
+                <span className="block text-sm font-semibold text-white">
+                  Locul 3 · Targetare.ro AWARDS 2024
+                </span>
+                <span className="mt-0.5 block text-xs leading-relaxed text-white/45">
+                  {COMPANY.legal}, Timiș — și Locul 9 în 2023. Vezi profilul public.
+                </span>
+              </span>
+              <ArrowRight className="h-4 w-4 shrink-0 text-lime-400/60 transition-transform group-hover:translate-x-0.5" />
+            </a>
           </Reveal>
         </div>
       </section>
@@ -632,19 +629,6 @@ export default function HomePage() {
               aria-hidden
             />
           </div>
-          <div className="pointer-events-none absolute -bottom-2 left-[3%] hidden w-[150px] lg:block">
-            <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(143,208,47,0.12)_0%,transparent_65%)] blur-lg" />
-            <Image
-              src="/images/generated/seal-cut.png"
-              alt=""
-              width={300}
-              height={300}
-              className="h-auto w-full object-contain"
-              style={{ filter: "drop-shadow(0 22px 36px rgba(0,0,0,0.55))" }}
-              aria-hidden
-            />
-          </div>
-
           <div className="relative">
             <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.22em] text-lime-400/60">
               Acționează acum
