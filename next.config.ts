@@ -2,11 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // Allow local images with or without the cache-busting ?v= query
-    // (Next.js 16 blocks query-string local images unless whitelisted).
+    // Next.js 16: once localPatterns is set it becomes a whitelist for ALL local
+    // images. Allow every local path without a query, plus the cache-busting ?v=4.
     localPatterns: [
-      { pathname: "/images/**", search: "" },
-      { pathname: "/images/**", search: "?v=4" },
+      { pathname: "/**", search: "" },
+      { pathname: "/**", search: "?v=4" },
     ],
   },
 };

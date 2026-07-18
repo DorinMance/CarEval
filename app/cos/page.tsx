@@ -196,7 +196,7 @@ export default function CartPage() {
                       type="button"
                       onClick={() => removeItem(item.uid)}
                       aria-label="Elimină din coș"
-                      className="grid h-8 w-8 place-items-center rounded-lg text-navy-400 hover:bg-cloud hover:text-danger"
+                      className="grid h-11 w-11 place-items-center rounded-lg text-navy-400 hover:bg-cloud hover:text-danger"
                     >
                       <X className="h-4 w-4" />
                     </button>

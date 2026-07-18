@@ -399,7 +399,7 @@ function RoadProgress({
                   type="button"
                   onClick={() => onJump(i)}
                   aria-label={s.title}
-                  className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
+                  className="absolute top-1/2 grid -translate-x-1/2 -translate-y-1/2 place-items-center p-2.5"
                   style={{ left: `${mi * 100}%` }}
                 >
                   <span

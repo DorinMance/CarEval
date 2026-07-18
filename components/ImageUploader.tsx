@@ -229,8 +229,8 @@ function SingleSlot({
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
-        onClick={!previewSrc ? onBrowse : undefined}
-        onKeyDown={(e) => e.key === "Enter" && !previewSrc && onBrowse()}
+        onClick={onBrowse}
+        onKeyDown={(e) => e.key === "Enter" && onBrowse()}
       >
         {/* Preview */}
         {previewSrc && (
@@ -287,9 +287,9 @@ function SingleSlot({
             type="button"
             onClick={(e) => { e.stopPropagation(); onRemove(); }}
             aria-label="Șterge"
-            className="absolute right-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-full bg-navy-900/80 text-white opacity-0 transition-opacity group-hover:opacity-100"
+            className="absolute right-1.5 top-1.5 grid h-8 w-8 place-items-center rounded-full bg-navy-900/80 text-white opacity-100 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
           >
-            <X className="h-3.5 w-3.5" />
+            <X className="h-4 w-4" />
           </button>
         )}
       </div>
@@ -419,9 +419,9 @@ function MultiSlot({
                 type="button"
                 onClick={() => onRemove(i)}
                 aria-label="Șterge imaginea"
-                className="absolute right-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-navy-900/80 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                className="absolute right-1 top-1 grid h-7 w-7 place-items-center rounded-full bg-navy-900/80 text-white opacity-100 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
               >
-                <X className="h-3 w-3" />
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
           ))}
