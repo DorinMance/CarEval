@@ -16,7 +16,7 @@ export function Footer() {
         <div className="lg:col-span-1">
           <Logo light />
           <p className="mt-4 max-w-xs text-sm text-navy-200">
-            Evaluări auto și expertize tehnice în caz de accident, autorizate de expert autorizat
+            Evaluări auto și expertize tehnice în caz de accident, semnate de expert autorizat
             de Ministerul Justiției. Fără deplasare, livrare în 24–48h.
           </p>
           <p className="mt-4 text-xs text-navy-300">{COMPANY.legal}</p>

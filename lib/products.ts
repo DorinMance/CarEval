@@ -253,7 +253,7 @@ export const products: Product[] = [
       "Raportul este semnat de Dr. Ing. Kulcsar Raul Miklos, expert tehnic autorizat de Ministerul Justiției — cifră documentată, susținută cu referințe AUDATEX/DAT.",
     ],
     benefits: [
-      "Opinie de valoare raportată la data exactă a accidentului",
+      "Estimare tehnică a valorii, raportată la data exactă a accidentului",
       "Esențial la daună totală",
       "Document tehnic, semnat de expert autorizat",
     ],
@@ -284,7 +284,7 @@ export const products: Product[] = [
     ],
     benefits: [
       "Valoare reziduală corectă",
-      "Te protejează la calculul daunei totale",
+      "Intră direct în calculul daunei totale",
       "Raport autorizat, susținut documentat",
     ],
     steps: [stepVehicle(), stepAccident, { id: "imagini", title: "Imagini cu epava", subtitle: "Poze cuprinzătoare cu starea actuală.", images: damageImages }, contactStep],
@@ -321,7 +321,7 @@ export const products: Product[] = [
     slug: "contraexpertiza-tehnica",
     code: "EV_CT",
     name: "Contraexpertiză Tehnică",
-    tagline: "Verifică evaluarea asigurătorului cu o opinie tehnică independentă.",
+    tagline: "Verifică un calcul de daună cu o opinie tehnică independentă.",
     price: 590,
     delivery: "24–48h",
     image: "/images/generated/prod-contraexpertiza.png",
@@ -333,7 +333,7 @@ export const products: Product[] = [
       "Raportul este elaborat de Dr. Ing. Kulcsar Raul Miklos, expert tehnic autorizat de Ministerul Justiției, cu referire la sistemele AUDATEX/DAT — document utilizabil în negociere sau în instanță.",
     ],
     benefits: [
-      "Verificare independentă a calculelor asigurătorului",
+      "Verificare independentă a calculelor din dosar",
       "Argumentare tehnică punct cu punct",
       "Document tehnic semnat de expert autorizat MJ",
     ],

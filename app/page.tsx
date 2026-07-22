@@ -27,7 +27,7 @@ const situations = [
     Icon: Scale,
     label: "Daună totală",
     title: "Mașina e declarată daună totală",
-    desc: "Stabilim valoarea mașinii la data exactă a accidentului — esențial pentru despăgubirea corectă.",
+    desc: "Stabilim valoarea mașinii la data exactă a accidentului — cifra de la care pornește întregul calcul.",
     href: "/produs/evaluare-autovehicul-la-data-accidentului",
     stat: "Esențial",
     statLabel: "la daună totală",
