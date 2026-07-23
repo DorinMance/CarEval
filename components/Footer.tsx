@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { products, COMPANY } from "@/lib/products";
-import { Phone, Mail, MapPin, Clock } from "./icons";
+import { Phone, Mail, MapPin, Clock, Lock } from "./icons";
 
 export function Footer() {
   const pathname = usePathname();
@@ -73,9 +73,19 @@ export function Footer() {
             <a href="https://anpc.ro" target="_blank" rel="noopener noreferrer" className="hover:text-lime-300">ANPC</a>
             <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="hover:text-lime-300">SOL — soluționare online a litigiilor</a>
           </div>
-          <div className="mt-4 flex flex-col gap-1 text-xs text-navy-400 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-4 flex flex-col gap-3 text-xs text-navy-400 sm:flex-row sm:items-center sm:justify-between">
             <p>© {new Date().getFullYear()} {COMPANY.name} · {COMPANY.legal} · CUI {COMPANY.cui} · {COMPANY.regCom}</p>
-            <p>Expertize tehnice auto autorizate · livrare 24–48h</p>
+            <div className="flex items-center gap-4">
+              <p>Expertize tehnice auto autorizate · livrare 24–48h</p>
+              <Link
+                href="/admin"
+                aria-label="Autentificare administrator"
+                title="Acces administrator"
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-navy-300 transition-colors hover:border-lime-400/40 hover:text-lime-300"
+              >
+                <Lock className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
