@@ -70,7 +70,7 @@ export default function DespreNoiPage() {
         <Reveal stagger className="mt-12 grid gap-4 md:grid-cols-3">
           {values.map((v) => (
             <div data-reveal key={v.t} className="flex gap-4 rounded-2xl border border-mist bg-white p-5 shadow-[0_2px_10px_rgba(11,25,48,0.03)]">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-navy-800 text-lime-300">{v.icon}</span>
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-surface text-lime-300">{v.icon}</span>
               <div>
                 <h3 className="font-heading text-lg font-semibold text-navy-800">{v.t}</h3>
                 <p className="mt-1 text-sm text-navy-500">{v.d}</p>

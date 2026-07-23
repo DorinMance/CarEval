@@ -9,7 +9,7 @@ export const btnPrimary =
   "inline-flex items-center justify-center gap-2 btn-shimmer rounded-xl bg-lime-500 px-6 py-3 text-sm font-semibold text-navy-900 shadow-[0_10px_30px_-10px_rgba(143,208,47,0.6)] transition-all hover:bg-lime-400 hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-2";
 
 export const btnDark =
-  "inline-flex items-center justify-center gap-2 rounded-xl bg-navy-800 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-navy-700 hover:-translate-y-0.5 active:translate-y-0";
+  "inline-flex items-center justify-center gap-2 rounded-xl bg-surface px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-surface-soft hover:-translate-y-0.5 active:translate-y-0";
 
 export const btnOutline =
   "inline-flex items-center justify-center gap-2 rounded-xl border border-navy-200 bg-white px-6 py-3 text-sm font-semibold text-navy-800 transition-all hover:border-navy-300 hover:bg-cloud";
@@ -67,6 +67,7 @@ export function PriceTag({
     <span className={cn("font-heading tabular-nums text-navy-800", className)}>
       {price.toLocaleString("ro-RO")}
       <span className="ml-1 text-sm font-medium text-navy-400">Lei</span>
+      {note && <span className="ml-1.5 text-xs font-medium text-navy-400">({note})</span>}
     </span>
   );
 }

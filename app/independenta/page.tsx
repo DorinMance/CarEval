@@ -48,7 +48,7 @@ export default function IndependentaPage() {
         <div className="mt-14 grid gap-6 lg:grid-cols-2">
           <Reveal>
             <div className="flex h-full flex-col rounded-2xl border border-mist bg-white p-7 shadow-[0_2px_12px_rgba(11,25,48,0.04)]">
-              <span className="grid h-12 w-12 place-items-center rounded-xl bg-navy-800 text-lime-300">
+              <span className="grid h-12 w-12 place-items-center rounded-xl bg-surface text-lime-300">
                 <Shield className="h-6 w-6" />
               </span>
               <h2 className="mt-5 font-heading text-xl font-semibold text-navy-800">Pentru cine lucrăm</h2>
@@ -63,7 +63,7 @@ export default function IndependentaPage() {
 
           <Reveal>
             <div className="flex h-full flex-col rounded-2xl border border-mist bg-white p-7 shadow-[0_2px_12px_rgba(11,25,48,0.04)]">
-              <span className="grid h-12 w-12 place-items-center rounded-xl bg-navy-800 text-lime-300">
+              <span className="grid h-12 w-12 place-items-center rounded-xl bg-surface text-lime-300">
                 <Scale className="h-6 w-6" />
               </span>
               <h2 className="mt-5 font-heading text-xl font-semibold text-navy-800">
@@ -110,7 +110,7 @@ export default function IndependentaPage() {
                 key={item}
                 className="flex items-start gap-3 rounded-2xl border border-mist bg-white p-5 text-navy-700 shadow-[0_2px_8px_rgba(11,25,48,0.04)]"
               >
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-navy-800 text-lime-300">
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-surface text-lime-300">
                   <X className="h-4 w-4" />
                 </span>
                 <span className="leading-relaxed">{item}</span>

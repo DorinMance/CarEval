@@ -96,7 +96,7 @@ export default function CompaniiPage() {
         <Reveal stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {benefits.map((b) => (
             <div data-reveal key={b.t} className="rounded-2xl border border-mist bg-white p-6">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-navy-800 text-lime-300">{b.icon}</span>
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-surface text-lime-300">{b.icon}</span>
               <h3 className="mt-4 font-heading text-lg font-semibold text-navy-800">{b.t}</h3>
               <p className="mt-1.5 text-sm text-navy-500">{b.d}</p>
             </div>

@@ -18,7 +18,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
 
       <div className="relative aspect-square overflow-hidden bg-white">
         <Image
-          src={product.image.startsWith("data:") ? product.image : `${product.image}?v=4`}
+          src={product.image.startsWith("data:") ? product.image : `${product.image}?v=5`}
           alt={product.name}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
@@ -50,11 +50,11 @@ export function ProductCard({ product, priority = false }: { product: Product; p
         <div className="mt-5 flex items-center justify-between border-t border-mist pt-4">
           <div>
             <span className="block text-[11px] uppercase tracking-wide text-navy-400">
-              {product.price == null ? "Tarif" : "de la"}
+              {product.price == null ? "Tarif" : "Preț"}
             </span>
             <PriceTag price={product.price} note={product.priceNote} className="text-xl font-bold" />
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-xl bg-navy-800 px-4 py-2.5 text-sm font-semibold text-white transition-colors group-hover:bg-lime-500 group-hover:text-navy-900">
+          <span className="inline-flex items-center gap-1.5 rounded-xl bg-surface px-4 py-2.5 text-sm font-semibold text-white transition-colors group-hover:bg-lime-500 group-hover:text-navy-900">
             Comandă
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </span>

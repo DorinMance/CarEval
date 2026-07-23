@@ -191,7 +191,7 @@ export default function HomePage() {
 
               {/* Icon + label */}
               <div className="flex items-center justify-between">
-                <div className="grid h-14 w-14 place-items-center rounded-2xl bg-navy-800">
+                <div className="grid h-14 w-14 place-items-center rounded-2xl bg-surface">
                   <s.Icon className="h-7 w-7 text-lime-400" />
                 </div>
                 <span className="rounded-full border border-navy-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-navy-400">

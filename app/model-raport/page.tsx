@@ -133,7 +133,7 @@ export default function ModelRaportPage() {
                     href={`/model-raport/${r.slug}.pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-navy-800 px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-700"
+                    className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-surface px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-surface-soft"
                   >
                     <FileText className="h-4 w-4" /> Vezi
                   </a>
@@ -159,7 +159,7 @@ export default function ModelRaportPage() {
             { icon: <Check className="h-6 w-6" />, t: "Document oficial", d: "Poate fi folosit în discuția cu asigurătorul și în proceduri legale." },
           ].map((b) => (
             <div data-reveal key={b.t} className="rounded-2xl border border-mist bg-white p-6">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-navy-800 text-lime-300">{b.icon}</span>
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-surface text-lime-300">{b.icon}</span>
               <h3 className="mt-4 font-heading text-lg font-semibold text-navy-800">{b.t}</h3>
               <p className="mt-1.5 text-sm text-navy-500">{b.d}</p>
             </div>

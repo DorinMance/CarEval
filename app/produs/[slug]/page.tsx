@@ -63,7 +63,7 @@ export default function ProductPage() {
             <div className="overflow-hidden rounded-3xl bg-mesh-light p-6">
               <div className="relative aspect-square">
                 <Image
-                  src={product.image.startsWith("data:") ? product.image : `${product.image}?v=4`}
+                  src={product.image.startsWith("data:") ? product.image : `${product.image}?v=5`}
                   alt={product.name}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
@@ -129,7 +129,7 @@ export default function ProductPage() {
               </div>
             )}
 
-            <div className="mt-6 flex items-center gap-3 rounded-xl bg-navy-800 p-4 text-sm text-navy-100">
+            <div className="mt-6 flex items-center gap-3 rounded-xl bg-surface p-4 text-sm text-navy-100">
               <Phone className="h-5 w-5 text-lime-400" />
               Ai nevoie de ajutor?{" "}
               <a href={COMPANY.phoneHref} className="font-semibold text-white underline-offset-4 hover:underline">

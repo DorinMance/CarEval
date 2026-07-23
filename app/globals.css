@@ -36,9 +36,9 @@
   --color-cloud: #f6f8fb;
   --color-mist: #eef2f7;
 
-  /* Dark surface — fundal hero & secțiuni întunecate (albastru de brand #13144d) */
-  --color-surface: #13144d;
-  --color-surface-soft: #1e2069;
+  /* Dark surface — fundal hero & secțiuni întunecate (albastru de brand #283E64) */
+  --color-surface: #283e64;
+  --color-surface-soft: #34507f;
 
   /* Semantic */
   --color-success: #16a34a;
@@ -85,7 +85,7 @@ h1, h2, h3, h4, h5, .font-heading {
   background:
     radial-gradient(1200px 600px at 80% -10%, rgba(143, 208, 47, 0.16), transparent 60%),
     radial-gradient(900px 500px at 0% 110%, rgba(63, 93, 150, 0.38), transparent 55%),
-    linear-gradient(160deg, #1e2069 0%, #13144d 60%, #0c0d38 100%);
+    linear-gradient(160deg, #34507f 0%, #283e64 60%, #1b2b47 100%);
 }
 
 .bg-mesh-light {

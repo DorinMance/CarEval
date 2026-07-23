@@ -125,7 +125,7 @@ export function Header() {
             })}
             <a
               href={COMPANY.phoneHref}
-              className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-navy-800 px-4 py-4 text-base font-semibold text-white"
+              className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-surface px-4 py-4 text-base font-semibold text-white"
             >
               <Phone className="h-4 w-4" /> {COMPANY.phone}
             </a>
