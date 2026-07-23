@@ -8,8 +8,10 @@ import { COMPANY } from "@/lib/products";
 import { Award, Shield, Scale, Check, ArrowRight } from "@/components/icons";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/despre-noi" },
   title: "Despre noi",
-  description: "CarEval (SC VAST Expertise SRL) — expertize tehnice extrajudiciare auto, semnate de un expert autorizat de Ministerul Justiției. Misiunea noastră: expertize clare și imparțiale, fără stres.",
+  description:
+    "CarEval (SC VAST Expertise SRL) — expertize tehnice auto semnate de un expert autorizat de Ministerul Justiției. Clar, imparțial, fără stres.",
 };
 
 const values = [

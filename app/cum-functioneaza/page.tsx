@@ -7,6 +7,7 @@ import { ClipboardList, ImagePlus, FileText, Shield, ArrowRight } from "@/compon
 import { Section, Eyebrow, btnPrimary } from "@/components/ui";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/cum-functioneaza" },
   title: "Cum funcționează",
   description: "În 3 pași simpli obții un raport de evaluare auto autorizat: alegi serviciul, completezi formularul cu poze, primești raportul în 24–48h.",
 };

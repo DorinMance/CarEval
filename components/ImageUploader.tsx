@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, useCallback, type DragEvent } from "react";
+import { useRef, useState, useCallback, useEffect, type DragEvent } from "react";
 import type { ImageGroup } from "@/lib/products";
+import { compressToDataURL, MAX_FILE_BYTES } from "@/lib/image-compress";
 import { Upload, X, RefreshCw, Check, FileImage } from "./icons";
 import { cn } from "./ui";
 
@@ -11,6 +12,7 @@ interface QueueEntry {
   preview: string;        // object URL for instant thumbnail
   progress: number;       // 0-100
   status: "uploading" | "done" | "error";
+  error?: string;         // motivul concret, afișat utilizatorului
 }
 
 function formatBytes(bytes: number) {
@@ -45,6 +47,27 @@ export function ImageUploader({
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const metaRef = useRef<Map<string, { name: string; size: number; type: string }>>(new Map());
+  const timersRef = useRef<Set<ReturnType<typeof setInterval>>>(new Set());
+  const urlsRef = useRef<Set<string>>(new Set());
+
+  // Curățenie la demontare: opreșteintervalele rămase și eliberează object URL-urile
+  // (altfel rămâne câte un blob în memorie per poză, până la refresh — grav pe mobil).
+  useEffect(() => {
+    const timers = timersRef.current;
+    const urls = urlsRef.current;
+    return () => {
+      timers.forEach(clearInterval);
+      timers.clear();
+      urls.forEach((u) => URL.revokeObjectURL(u));
+      urls.clear();
+    };
+  }, []);
+
+  function makePreview(file: File): string {
+    const u = URL.createObjectURL(file);
+    urlsRef.current.add(u);
+    return u;
+  }
 
   const activeCount = queue.filter(q => q.status === "uploading").length;
   const remaining = group.max - files.length - activeCount;
@@ -53,16 +76,24 @@ export function ImageUploader({
   /* ── process a batch of File objects ── */
   const processFiles = useCallback(
     (batch: File[]) => {
-      const allowed = batch
-        .filter(f => f.type.startsWith("image/"))
-        .slice(0, Math.max(0, remaining));
-
+      const slots = Math.max(0, remaining);
+      const images = batch.filter(f => f.type.startsWith("image/") || !f.type).slice(0, slots);
+      const allowed = images.filter(f => f.size <= MAX_FILE_BYTES);
+      // Respinse tacit înainte: utilizatorul selecta o poză mare și nu se întâmpla nimic.
+      const rejected: QueueEntry[] = images
+        .filter(f => f.size > MAX_FILE_BYTES)
+        .map(file => ({
+          id: `x-${Math.random().toString(36).slice(2)}`,
+          file, preview: "", progress: 0, status: "error" as const,
+          error: `Fișier prea mare (${formatBytes(file.size)}). Maxim 25 MB.`,
+        }));
+      if (rejected.length) setQueue(prev => [...prev, ...rejected]);
       if (!allowed.length) return;
 
       const newEntries: QueueEntry[] = allowed.map(file => ({
         id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
         file,
-        preview: URL.createObjectURL(file),
+        preview: makePreview(file),
         progress: 0,
         status: "uploading" as const,
       }));
@@ -74,39 +105,39 @@ export function ImageUploader({
   );
 
   function startReader(id: string, file: File, preview: string) {
-    const reader = new FileReader();
     let progVal = 0;
-    let dataUrl: string | null = null;
-    let readerDone = false;
 
+    // Intervalul e PUR DECORATIV (bara de progres). Nu trebuie să fie niciodată
+    // responsabil de commit: dacă utilizatorul schimbă pasul, componenta se
+    // demontează, cleanup-ul oprește intervalul și poza s-ar pierde fără niciun semnal.
     const interval = setInterval(() => {
       progVal = Math.min(progVal + Math.random() * 14 + 6, 88);
       setQueue(prev => prev.map(q =>
         q.id === id ? { ...q, progress: Math.round(progVal) } : q
       ));
-      if (readerDone && dataUrl) {
-        clearInterval(interval);
-        commit(id, dataUrl, file, preview);
-      }
     }, 65);
+    timersRef.current.add(interval);
 
-    reader.onload = () => {
-      dataUrl = reader.result as string;
-      readerDone = true;
-      if (progVal >= 88) {
-        clearInterval(interval);
-        commit(id, dataUrl, file, preview);
-      }
-    };
-
-    reader.onerror = () => {
+    const stop = () => {
       clearInterval(interval);
-      setQueue(prev => prev.map(q =>
-        q.id === id ? { ...q, status: "error", progress: 0 } : q
-      ));
+      timersRef.current.delete(interval);
     };
 
-    reader.readAsDataURL(file);
+    // Comprimă înainte de dataURL: 4 MB -> ~180 KB, altfel se depășește cota
+    // de localStorage și se pierde coșul.
+    compressToDataURL(file)
+      .then(url => {
+        stop();
+        commit(id, url, file, preview); // necondiționat — sursa unică de commit
+      })
+      .catch((e) => {
+        stop();
+        setQueue(prev => prev.map(q =>
+          q.id === id
+            ? { ...q, status: "error", progress: 0, error: e?.message || "Încărcarea a eșuat." }
+            : q
+        ));
+      });
   }
 
   function commit(id: string, dataUrl: string, file: File, _preview: string) {
@@ -119,7 +150,7 @@ export function ImageUploader({
 
   function retryEntry(entry: QueueEntry) {
     const newId = `r-${Math.random().toString(36).slice(2)}`;
-    const newPreview = URL.createObjectURL(entry.file);
+    const newPreview = makePreview(entry.file);
     setQueue(prev => [
       ...prev.filter(q => q.id !== entry.id),
       { id: newId, file: entry.file, preview: newPreview, progress: 0, status: "uploading" },
@@ -230,7 +261,7 @@ function SingleSlot({
         onDragLeave={onDragLeave}
         onDrop={onDrop}
         onClick={onBrowse}
-        onKeyDown={(e) => e.key === "Enter" && onBrowse()}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onBrowse(); } }}
       >
         {/* Preview */}
         {previewSrc && (
@@ -276,8 +307,11 @@ function SingleSlot({
 
         {/* Error overlay */}
         {isError && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-navy-900/60">
-            <span className="text-[10px] font-bold text-danger">Eroare</span>
+          <div role="alert" className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-navy-900/80 px-2 text-center">
+            <span className="text-[11px] font-bold text-white">Eroare</span>
+            {queueEntry?.error && (
+              <span className="text-[10px] leading-tight text-white/85">{queueEntry.error}</span>
+            )}
           </div>
         )}
 
@@ -367,7 +401,7 @@ function MultiSlot({
           onDragLeave={onDragLeave}
           onDrop={onDrop}
           onClick={onBrowse}
-          onKeyDown={(e) => e.key === "Enter" && onBrowse()}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onBrowse(); } }}
         >
           {isDragging ? (
             <>
@@ -419,7 +453,7 @@ function MultiSlot({
                 type="button"
                 onClick={() => onRemove(i)}
                 aria-label="Șterge imaginea"
-                className="absolute right-1 top-1 grid h-7 w-7 place-items-center rounded-full bg-navy-900/80 text-white opacity-100 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+                className="absolute right-1 top-1 grid h-11 w-11 place-items-center rounded-full bg-navy-900/80 text-white opacity-100 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -478,6 +512,9 @@ function QueueRow({ entry, onRetry }: { entry: QueueEntry; onRetry: (e: QueueEnt
           <p className="truncate text-[12px] font-semibold text-navy-800">{file.name}</p>
           <span className="shrink-0 text-[11px] text-navy-400">{formatBytes(file.size)}</span>
         </div>
+        {isError && entry.error && (
+          <p role="alert" className="mt-0.5 text-[11px] leading-tight text-danger">{entry.error}</p>
+        )}
         {/* Progress bar */}
         <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-navy-100">
           <div
@@ -502,7 +539,7 @@ function QueueRow({ entry, onRetry }: { entry: QueueEntry; onRetry: (e: QueueEnt
           <button
             type="button"
             onClick={() => onRetry(entry)}
-            className="inline-flex items-center gap-1 rounded-lg bg-danger/10 px-2 py-1 text-[11px] font-bold text-danger hover:bg-danger/20 transition-colors"
+            className="inline-flex items-center gap-1 rounded-lg bg-danger/10 px-2.5 py-2 min-h-9 text-[11px] font-bold text-danger hover:bg-danger/20 transition-colors"
           >
             <RefreshCw className="h-3 w-3" />
             Retry

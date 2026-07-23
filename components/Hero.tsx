@@ -120,7 +120,7 @@ export function Hero() {
                 >
                   {t.v}
                 </span>
-                <span className="mt-1 text-[9px] uppercase tracking-wider text-white/40">{t.l}</span>
+                <span className="mt-1 text-[9px] uppercase tracking-wider text-white/65">{t.l}</span>
                 {/* connector dot */}
                 <span
                   className={`absolute -bottom-1 left-4 h-2 w-2 rounded-full ${
@@ -156,13 +156,13 @@ export function Hero() {
               ] as const
             ).map(([k, v]) => (
               <div key={k} className="mt-1.5 flex justify-between gap-2 text-[11px]">
-                <span className="text-white/30">{k}</span>
+                <span className="text-white/60">{k}</span>
                 <span className="shrink-0 font-semibold text-white">{v}</span>
               </div>
             ))}
           </div>
           <div className="my-3 h-px bg-white/[0.06]" />
-          <p className="text-[10px] text-white/30">Fiecare cifră are o sursă și o metodă.</p>
+          <p className="text-[10px] text-white/60">Fiecare cifră are o sursă și o metodă.</p>
         </div>
       </div>
 
@@ -177,7 +177,7 @@ export function Hero() {
             className="mb-7 inline-flex w-fit items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 backdrop-blur-sm"
           >
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lime-400" />
-            <span className="text-xs font-medium text-white/55">
+            <span className="text-xs font-medium text-white/75">
               Expert Tehnic Judiciar – autorizat Ministerul Justiției
             </span>
           </div>
@@ -197,7 +197,7 @@ export function Hero() {
             </em>
           </h1>
 
-          <p data-h="sub" className="mt-6 max-w-[390px] text-[1.05rem] leading-relaxed text-white/55">
+          <p data-h="sub" className="mt-6 max-w-[390px] text-[1.05rem] leading-relaxed text-white/75">
             Expertiză tehnică extrajudiciară în{" "}
             <strong className="text-white/85">24–48h, 100% online</strong>. Valori
             calculate în AUDATEX și DAT — sistemele folosite de întreaga industrie auto, verificabile de oricare parte.
@@ -240,13 +240,13 @@ export function Hero() {
                     ] as const
                   ).map(([k, v]) => (
                     <div key={k} className="mt-1.5 flex justify-between gap-2 text-[11px]">
-                      <span className="text-white/30">{k}</span>
+                      <span className="text-white/60">{k}</span>
                       <span className="shrink-0 font-semibold text-white">{v}</span>
                     </div>
                   ))}
                 </div>
                 <div className="my-3 h-px bg-white/[0.06]" />
-                <p className="text-[10px] text-white/30">Fiecare cifră are o sursă și o metodă.</p>
+                <p className="text-[10px] text-white/60">Fiecare cifră are o sursă și o metodă.</p>
               </div>
             </div>
 
@@ -275,7 +275,7 @@ export function Hero() {
                   <span className={`font-heading text-sm font-bold leading-none ${t.accent ? "text-lime-400" : "text-white"}`}>
                     {t.v}
                   </span>
-                  <span className="mt-1 text-[8px] uppercase tracking-wider text-white/40">{t.l}</span>
+                  <span className="mt-1 text-[8px] uppercase tracking-wider text-white/65">{t.l}</span>
                   <span className={`absolute -bottom-1 left-4 h-2 w-2 rounded-full ${t.accent ? "bg-lime-400" : "bg-white/30"}`} />
                 </div>
               ))}
@@ -283,7 +283,7 @@ export function Hero() {
           </div>
 
           <div data-h="chips" className="mt-10 border-t border-white/[0.07] pt-7">
-            <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.22em] text-white/30">
+            <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.22em] text-white/60">
               Alege situația ta
             </p>
             <div className="grid grid-cols-1 gap-4 max-w-3xl sm:grid-cols-3 sm:gap-5">

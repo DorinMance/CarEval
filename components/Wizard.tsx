@@ -8,7 +8,7 @@ import type { Product, Field, WizardStep } from "@/lib/products";
 import { formatPrice } from "@/lib/products";
 import { useCart } from "@/lib/cart";
 import { ImageUploader } from "./ImageUploader";
-import { FormField } from "./FormField";
+import { FormField, runValidation } from "./FormField";
 import type { InputType } from "./FormField";
 import { DateFormField } from "./DateField";
 import { btnPrimary, btnOutline, cn } from "./ui";
@@ -74,12 +74,32 @@ export function Wizard({ product }: { product: Product }) {
   function validateStep(stepObj: WizardStep): Record<string, boolean> {
     const errs: Record<string, boolean> = {};
     (stepObj.fields ?? []).forEach((f) => {
-      if (!f.required) return;
       const v = values[f.name];
       const empty = v === undefined || v === null || v === "" || v === false;
-      if (empty) errs[f.name] = true;
+      if (f.required && empty) {
+        errs[f.name] = true;
+        return;
+      }
+      // Nu doar „gol” — și formatul, cu aceeași funcție pe care o folosește FormField
+      // la blur. Altfel câmpul afișa „Format email invalid” iar „Continuă” avansa oricum.
+      if (typeof v === "string" && v.trim() && runValidation(f.type as InputType, v, f.required)) {
+        errs[f.name] = true;
+      }
     });
     return errs;
+  }
+
+  /** Primul pas invalid din intervalul [from, to). -1 dacă toate sunt valide. */
+  function firstInvalidStep(from: number, to: number): number {
+    for (let i = from; i < to; i++) {
+      if (Object.keys(validateStep(steps[i])).length > 0) return i;
+    }
+    return -1;
+  }
+
+  function markStepErrors(i: number) {
+    setErrors((e) => ({ ...e, ...validateStep(steps[i]) }));
+    panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function next() {
@@ -101,12 +121,15 @@ export function Wizard({ product }: { product: Product }) {
 
   function jumpTo(i: number) {
     if (i === step) return;
-    // La salt înainte, validează pasul curent (înapoi e mereu permis).
+    // La salt înainte se validează TOȚI pașii dintre cel curent și țintă, nu doar
+    // cel curent — altfel se putea sări din pasul 1 direct la sumar, iar comanda
+    // pleca fără descrierea avariei sau fără datele de contact.
     if (i > step) {
-      const errs = validateStep(current);
-      if (Object.keys(errs).length > 0) {
-        setErrors((e) => ({ ...e, ...errs }));
-        panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const bad = firstInvalidStep(step, i);
+      if (bad !== -1) {
+        markStepErrors(bad);
+        dirRef.current = bad > step ? 1 : -1;
+        setStep(bad); // du utilizatorul exact la pasul care lipsește
         return;
       }
     }
@@ -115,6 +138,15 @@ export function Wizard({ product }: { product: Product }) {
   }
 
   function submit() {
+    // Plasă de siguranță: revalidează toți pașii înainte de a pune în coș, indiferent
+    // cum a ajuns utilizatorul la sumar (jumpTo, back/next, sau o stare veche).
+    const bad = firstInvalidStep(0, steps.length - 1);
+    if (bad !== -1) {
+      markStepErrors(bad);
+      dirRef.current = -1;
+      setStep(bad);
+      return;
+    }
     addItem({
       productSlug: product.slug,
       productName: product.name,
@@ -137,9 +169,9 @@ export function Wizard({ product }: { product: Product }) {
         {current.subtitle && <p className="mt-1 text-sm text-navy-500">{current.subtitle}</p>}
 
         {(current.fields ?? []).some((f) => errors[f.name]) && (
-          <div className="mt-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-            <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-red-500 text-xs font-bold text-white">!</span>
-            Completează câmpurile obligatorii marcate cu roșu ca să poți continua.
+          <div role="alert" className="mt-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            <span aria-hidden="true" className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-red-500 text-xs font-bold text-white">!</span>
+            Verifică datele marcate cu roșu ca să poți continua.
           </div>
         )}
 
@@ -272,8 +304,15 @@ function FieldInput({
       required={field.required}
       options={field.options}
       maxLength={field.maxLength}
+      name={field.name}
+      autoComplete={AUTOCOMPLETE[field.name]}
       externalError={error}
-      externalErrorMsg="Acest câmp este obligatoriu."
+      // Mesajul trebuie să spună ce e greșit: „obligatoriu” doar când e gol,
+      // altfel eroarea concretă de format (email/telefon).
+      externalErrorMsg={
+        runValidation(field.type as InputType, (value as string) ?? "", field.required) ||
+        "Acest câmp este obligatoriu."
+      }
       rows={3}
       onChange={(v) => onChange(v)}
       className={wrap}
@@ -282,6 +321,14 @@ function FieldInput({
   );
 }
 
+
+/** Câmpurile de contact pe care browserul le poate completa singur. */
+const AUTOCOMPLETE: Record<string, string> = {
+  nume: "name",
+  telefon: "tel",
+  email: "email",
+  localitate: "address-level2",
+};
 
 const LABELS: Record<string, string> = {
   marca: "Marca", model: "Model", varianta: "Variantă", vin: "VIN",

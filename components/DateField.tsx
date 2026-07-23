@@ -79,7 +79,7 @@ export function DateFormField({
 
   const inputCls =
     cn(
-      "w-full rounded-xl border px-3 py-2.5 text-center text-sm tabular-nums text-navy-800 placeholder:text-navy-300 outline-none transition-all",
+      "w-full rounded-xl border px-3 py-2.5 text-center text-base sm:text-sm tabular-nums text-navy-800 placeholder:text-navy-300 outline-none transition-all",
       status === "error"
         ? "border-red-400 bg-red-50/60"
         : "border-navy-200 bg-white focus:border-lime-400 focus:shadow-[0_0_0_3px_rgba(143,208,47,0.18)]"
@@ -97,7 +97,7 @@ export function DateFormField({
           <span className="mb-1 block text-[11px] font-medium text-navy-400">Zi</span>
           <input
             ref={dRef} inputMode="numeric" maxLength={2} placeholder="ZZ" aria-label="Zi"
-            value={seg.d} disabled={disabled}
+            value={seg.d} disabled={disabled} aria-invalid={status === "error" || undefined}
             onChange={(e) => update("d", e.target.value)}
             className={inputCls}
           />
@@ -106,7 +106,7 @@ export function DateFormField({
           <span className="mb-1 block text-[11px] font-medium text-navy-400">Lună</span>
           <input
             ref={mRef} inputMode="numeric" maxLength={2} placeholder="LL" aria-label="Lună"
-            value={seg.m} disabled={disabled}
+            value={seg.m} disabled={disabled} aria-invalid={status === "error" || undefined}
             onChange={(e) => update("m", e.target.value)}
             onKeyDown={(e) => onBackspace("m", e)}
             className={inputCls}
@@ -116,7 +116,7 @@ export function DateFormField({
           <span className="mb-1 block text-[11px] font-medium text-navy-400">An</span>
           <input
             ref={yRef} inputMode="numeric" maxLength={4} placeholder="AAAA" aria-label="An"
-            value={seg.y} disabled={disabled}
+            value={seg.y} disabled={disabled} aria-invalid={status === "error" || undefined}
             onChange={(e) => update("y", e.target.value)}
             onKeyDown={(e) => onBackspace("y", e)}
             className={inputCls}
@@ -125,7 +125,7 @@ export function DateFormField({
       </div>
 
       {status === "error" && (
-        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-red-600">
+        <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs text-red-600">
           <AlertCircle className="h-3.5 w-3.5 shrink-0" />{externalError ? errMsg : "Completează ziua, luna și anul."}
         </p>
       )}

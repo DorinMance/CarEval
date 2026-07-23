@@ -4,6 +4,7 @@ import { COMPANY } from "@/lib/products";
 import { LegalDoc, LH2, LP, LUl, B } from "@/components/LegalDoc";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/politica-confidentialitate" },
   title: "Politica de confidențialitate",
   description:
     "Cum prelucrează CarEval (SC VAST Expertise SRL) datele tale cu caracter personal, conform Regulamentului (UE) 2016/679 (GDPR).",

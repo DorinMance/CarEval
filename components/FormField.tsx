@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Check } from "./icons";
 import { cn } from "./ui";
 
@@ -50,9 +50,16 @@ export interface FormFieldProps {
   disabled?: boolean;
   dataAnim?: boolean;
   maxLength?: number;
+  /** Lasă browserul să completeze automat (name, tel, email…) — câștig real pe mobil. */
+  autoComplete?: string;
 }
 
-function runValidation(type: InputType, value: string, required?: boolean): string {
+/**
+ * Sursa unică de adevăr pentru validare. Exportată ca să o poată refolosi și
+ * Wizard-ul la trecerea între pași — altfel câmpul afișa eroarea la blur, dar
+ * „Continuă" avansa oricum (se verifica doar dacă e gol, nu și formatul).
+ */
+export function runValidation(type: InputType, value: string, required?: boolean): string {
   if (required && !value.trim()) return "Câmp obligatoriu.";
   if (type === "email" && value.trim() && !/.+@.+\..+/.test(value))
     return "Format email invalid — verifică simbolul @";
@@ -67,10 +74,14 @@ export function FormField({
   externalError, externalErrorMsg, externalStatus,
   successMsg, loadingMsg = "Verificare în curs…",
   onChange, onBlurCallback,
-  className, disabled, dataAnim, maxLength,
+  className, disabled, dataAnim, maxLength, autoComplete,
 }: FormFieldProps) {
   const [touched, setTouched] = useState(false);
   const [focused, setFocused] = useState(false);
+  // id stabil, ca <label for> să lege eticheta de câmp (screen readers + autofill)
+  const uid = useId();
+  const fieldId = name ? `f-${name}-${uid}` : `f${uid}`;
+  const msgId = `${fieldId}-msg`;
 
   const selfErr = touched ? runValidation(type, value, required) : "";
   const selfSuccess = touched && !selfErr && value.trim() !== "";
@@ -105,14 +116,20 @@ export function FormField({
     : "top-1/2 right-3 -translate-y-1/2";
 
   const inputCls = cn(
-    "w-full rounded-xl border px-4 py-3 text-sm text-navy-800 placeholder:text-navy-300",
-    "outline-none transition-all duration-200",
+    // 16px pe mobil: sub 16px, iOS Safari face zoom automat la focus și „sare" pagina.
+    "w-full rounded-xl border px-4 py-3 text-base sm:text-sm text-navy-800 placeholder:text-navy-300",
+    // Inelul de focus vine din :focus-visible (navy + halou lime), nu outline-none.
+    "transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-800",
     borderCls, bgCls, ringShadow,
     showIcon && "pr-10",
     (disabled || status === "loading") && "opacity-60 cursor-not-allowed",
   );
 
   const eventProps = {
+    id: fieldId,
+    "aria-invalid": status === "error" || undefined,
+    "aria-describedby": status === "error" && errorMsg ? msgId : undefined,
+    "aria-required": required || undefined,
     onFocus: () => setFocused(true),
     onBlur:  () => { setFocused(false); setTouched(true); onBlurCallback?.(); },
   };
@@ -142,7 +159,7 @@ export function FormField({
     ) : (
       <input
         type={type} name={name} value={value} placeholder={placeholder}
-        maxLength={maxLength}
+        maxLength={maxLength} autoComplete={autoComplete}
         disabled={disabled || status === "loading"}
         onChange={(e) => onChange(maxLength ? e.target.value.slice(0, maxLength) : e.target.value)}
         className={inputCls}
@@ -152,7 +169,7 @@ export function FormField({
 
   return (
     <div className={className} data-anim={dataAnim ? "" : undefined}>
-      <label className="mb-1.5 flex items-center justify-between gap-2 text-sm font-medium text-navy-700">
+      <label htmlFor={fieldId} className="mb-1.5 flex items-center justify-between gap-2 text-sm font-medium text-navy-700">
         <span>
           {label}
           {required && <span className="ml-0.5 text-lime-600">*</span>}
@@ -183,7 +200,7 @@ export function FormField({
       </div>
 
       {status === "error" && errorMsg && (
-        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-red-600">
+        <p id={msgId} role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs text-red-600">
           <AlertCircle className="h-3.5 w-3.5 shrink-0" />
           {errorMsg}
         </p>

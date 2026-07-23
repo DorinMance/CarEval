@@ -7,9 +7,10 @@ import { COMPANY } from "@/lib/products";
 import { Shield, Scale, FileText, Check, X, ArrowRight } from "@/components/icons";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/independenta" },
   title: "Independență și imparțialitate",
   description:
-    "CarEval (SC VAST Expertise SRL) realizează expertize tehnice extrajudiciare auto. Aceeași metodologie, sisteme și standard al raportului, indiferent cine este beneficiarul — imparțialitate garantată.",
+    "Cum lucrăm imparțial: aceeași metodologie pentru orice beneficiar, surse verificabile și un expert autorizat de Ministerul Justiției.",
 };
 
 const neschimbate = [

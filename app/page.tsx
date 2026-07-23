@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Hero } from "@/components/Hero";
@@ -10,6 +11,13 @@ import {
   ArrowRight, FileText, Shield, Award, Building, Quote, Star,
   Clock, Car, Scale, Check, Zap, ClipboardList, ImagePlus,
 } from "@/components/icons";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  // Descrierea din layout are 204 caractere → trunchiată în Google. Aici, sub 160.
+  description:
+    "Evaluări auto și expertize tehnice după accident, semnate de expert autorizat de Ministerul Justiției. Fără deplasare, raport în 24–48h.",
+};
 
 /* ── Data ── */
 
@@ -159,7 +167,7 @@ export default function HomePage() {
               className="flex flex-col items-center gap-0.5 py-6 text-center"
             >
               <p className="font-heading text-2xl font-bold text-white sm:text-3xl">{s.v}</p>
-              <p className="text-xs text-white/35">{s.l}</p>
+              <p className="text-xs text-white/60">{s.l}</p>
             </div>
           ))}
         </Reveal>
@@ -204,12 +212,14 @@ export default function HomePage() {
               <p className="mt-2 flex-1 text-sm leading-relaxed text-navy-500">{s.desc}</p>
 
               {/* Stat */}
-              <div className="mt-6 flex items-end justify-between border-t border-navy-50 pt-5">
+              {/* gap + flex-wrap: la lățime de tabletă cele două blocuri se suprapuneau,
+                  pentru că niciunul nu ceda spațiu. */}
+              <div className="mt-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-t border-navy-50 pt-5">
                 <div>
                   <p className="font-heading text-2xl font-bold text-lime-600">{s.stat}</p>
                   <p className="text-[11px] text-navy-400">{s.statLabel}</p>
                 </div>
-                <span className="flex items-center gap-1 text-sm font-semibold text-navy-700 transition-all group-hover:gap-2 group-hover:text-lime-600">
+                <span className="flex shrink-0 items-center gap-1 whitespace-nowrap text-sm font-semibold text-navy-700 transition-all group-hover:gap-2 group-hover:text-lime-600">
                   Află mai mult <ArrowRight className="h-4 w-4" />
                 </span>
               </div>
@@ -241,17 +251,17 @@ export default function HomePage() {
                 fiecare cifră{" "}
                 <em className="not-italic italic text-lime-400">contează.</em>
               </h2>
-              <p className="mt-5 max-w-lg text-lg leading-relaxed text-white/50">
+              <p className="mt-5 max-w-lg text-lg leading-relaxed text-white/70">
                 Valoarea unei mașini avariate nu este o chestiune de opinie. Se
                 calculează: an de fabricație, kilometraj, dotări, starea de dinaintea
                 evenimentului, costul real al reparației la data accidentului,
                 valoarea reziduală.
               </p>
-              <p className="mt-3 max-w-lg text-lg leading-relaxed text-white/50">
+              <p className="mt-3 max-w-lg text-lg leading-relaxed text-white/70">
                 Fără acest calcul, discuția rămâne între estimări — iar o estimare nu
                 se susține nici în negociere, nici în instanță.
               </p>
-              <p className="mt-3 max-w-lg text-lg leading-relaxed text-white/50">
+              <p className="mt-3 max-w-lg text-lg leading-relaxed text-white/70">
                 CarEval îți pune la dispoziție o{" "}
                 <strong className="text-white/80">expertiză tehnică extrajudiciară</strong>{" "}
                 — cifre calculate în sistemele oficiale ale industriei, cu metodologia
@@ -358,7 +368,7 @@ export default function HomePage() {
                 <br />
                 de expert autorizat.
               </h2>
-              <p className="mt-4 max-w-md text-base leading-relaxed text-white/50">
+              <p className="mt-4 max-w-md text-base leading-relaxed text-white/70">
                 Lucrăm în AUDATEX și DAT — aceleași sisteme folosite de asigurători,
                 de service-urile autorizate și de experții numiți de instanță. Când
                 toată lumea vorbește aceeași limbă tehnică, discuția e despre cifre,
@@ -459,7 +469,7 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="font-heading text-lg font-bold text-white">{w.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-white/45">{w.text}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-white/70">{w.text}</p>
                 </div>
               </div>
             ))}
@@ -480,7 +490,7 @@ export default function HomePage() {
                 <span className="block text-sm font-semibold text-white">
                   Locul 3 · Targetare.ro AWARDS 2024
                 </span>
-                <span className="mt-0.5 block text-xs leading-relaxed text-white/45">
+                <span className="mt-0.5 block text-xs leading-relaxed text-white/70">
                   {COMPANY.legal}, Timiș — și Locul 9 în 2023. Vezi profilul public.
                 </span>
               </span>
@@ -573,7 +583,7 @@ export default function HomePage() {
                 Flote, leasing, service-uri
                 <br />și firme de asigurări
               </h2>
-              <p className="mt-3 text-white/50">
+              <p className="mt-3 text-white/70">
                 Volume de evaluări, facturare lunară și un expert dedicat. Construim un
                 flux de lucru pe nevoile companiei tale.
               </p>
@@ -637,7 +647,7 @@ export default function HomePage() {
               Înainte să accepți o sumă,{" "}
               <em className="not-italic italic text-lime-400">verifică cifrele.</em>
             </h2>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-white/45">
+            <p className="mx-auto mt-5 max-w-xl text-lg text-white/70">
               Cere raportul. Dacă suma din dosar este corectă, raportul o confirmă — și
               știi că ai luat decizia potrivită. Dacă nu, ai documentul care arată
               diferența.

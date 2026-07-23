@@ -4,6 +4,7 @@ import { COMPANY } from "@/lib/products";
 import { LegalDoc, LH2, LP, LUl, B } from "@/components/LegalDoc";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/politica-cookies" },
   title: "Politica de cookie-uri",
   description:
     "Ce cookie-uri folosește site-ul CarEval, în ce scop și cum îți poți gestiona preferințele.",

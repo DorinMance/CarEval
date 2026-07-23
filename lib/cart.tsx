@@ -15,6 +15,8 @@ interface CartCtx {
   removeItem: (uid: string) => void;
   clear: () => void;
   ready: boolean;
+  /** Coșul nu a putut fi salvat local (cotă depășită). Rămâne valid în memorie. */
+  storageFull: boolean;
 }
 
 const Ctx = createContext<CartCtx | null>(null);
@@ -32,8 +34,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setReady(true);
   }, []);
 
+  const [storageFull, setStorageFull] = useState(false);
+
   useEffect(() => {
-    if (ready) localStorage.setItem(KEY, JSON.stringify(items));
+    if (!ready) return;
+    // Fără try/catch, QuotaExceededError (poze prea mari) arunca dintr-un efect
+    // și rupea randarea → pagină albă și coș pierdut. Acum coșul rămâne funcțional
+    // în memorie, doar persistența se pierde, iar utilizatorul e avertizat.
+    try {
+      localStorage.setItem(KEY, JSON.stringify(items));
+      // Actualizăm doar la schimbare, ca să nu declanșăm randări în cascadă.
+      setStorageFull((f) => (f ? false : f));
+    } catch {
+      setStorageFull((f) => (f ? f : true));
+    }
   }, [items, ready]);
 
   const addItem = useCallback((item: LeadItem) => {
@@ -50,7 +64,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const total = items.reduce((s, i) => s + (i.price ?? 0), 0);
 
   return (
-    <Ctx.Provider value={{ items, count: items.length, total, addItem, removeItem, clear, ready }}>
+    <Ctx.Provider value={{ items, count: items.length, total, addItem, removeItem, clear, ready, storageFull }}>
       {children}
     </Ctx.Provider>
   );

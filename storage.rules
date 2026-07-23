@@ -1,0 +1,36 @@
+rules_version = '2';
+
+// CarEval — reguli Firebase Storage (pozele cu avariile)
+//
+// Codul depinde de aceste reguli: `lib/db.ts` salvează în Firestore DOAR calea
+// fișierului, nu un URL public, iar link-ul de descărcare se generează în panoul
+// de admin, logat. Dacă citirea ar fi publică, pozele cu accidentele clienților
+// ar fi accesibile oricui are linkul.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null
+          && request.auth.uid == 'Ujd6ONzvfMQmjxbWgM4J1XKdg762';
+    }
+
+    // leads/{idComanda}/{fisier} — pozele urcate din formular
+    match /leads/{leadId}/{fileName} {
+      // Clientul încarcă fără cont (formularul e public), dar numai imagini și
+      // numai sub 10 MB. Fără limită, spațiul putea fi umplut cu orice.
+      // Pozele sunt oricum comprimate în browser la ~200 KB (lib/image-compress.ts);
+      // pragul acoperă cazurile în care compresia nu se poate aplica.
+      allow write: if request.resource.size < 10 * 1024 * 1024
+                && request.resource.contentType.matches('image/.*');
+
+      // Doar adminul vede pozele.
+      allow read: if isAdmin();
+    }
+
+    // Tot restul bucket-ului e închis.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

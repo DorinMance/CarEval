@@ -9,6 +9,7 @@ import { COMPANY } from "@/lib/products";
 import { Building, FileText, Clock, Shield, Users, Award, ArrowRight, Check } from "@/components/icons";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/companii" },
   title: "Pentru companii",
   description: "Soluții de evaluare auto pentru flote, leasing, service-uri și firme de asigurări: volume, facturare lunară și expert dedicat.",
 };

@@ -7,6 +7,7 @@ import { Section, Eyebrow, btnPrimary } from "@/components/ui";
 import { Check, ArrowRight, FileText, Shield } from "@/components/icons";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/model-raport" },
   title: "Model de raport",
   description: "Vezi ce conține un raport de evaluare CarEval: date tehnice, estimare tehnică a valorii, deviz de reparație și semnătura expertului autorizat de Ministerul Justiției.",
 };

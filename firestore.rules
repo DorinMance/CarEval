@@ -1,0 +1,40 @@
+rules_version = '2';
+
+// CarEval — reguli Firestore
+// Versionate în repo intenționat: până acum existau doar în consolă, deci nu
+// puteau fi revizuite sau restaurate. Sursa de adevăr rămâne consola Firebase;
+// când modifici acolo, actualizează și fișierul ăsta.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Adminul e contul CONCRET, nu „oricine e logat".
+    // `request.auth != null` ar permite oricui își face cont (sau oricărei sesiuni
+    // anonime, dacă furnizorul e activ) să citească toate comenzile: nume, telefon,
+    // email, VIN, descrierea avariei. Date personale.
+    function isAdmin() {
+      return request.auth != null
+          && request.auth.uid == 'Ujd6ONzvfMQmjxbWgM4J1XKdg762';
+    }
+
+    // Comenzi: formularul public trebuie să poată scrie; doar adminul le citește.
+    match /leads/{id} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Produse: conținut public de site.
+    match /products/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Articole blog. Citirea publică e OBLIGATORIE: serverul le citește de aici ca
+    // să le randeze și să le poată indexa Google (lib/posts-server.ts). Dacă o
+    // închizi, blogul rămâne doar cu articolele din cod.
+    match /posts/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

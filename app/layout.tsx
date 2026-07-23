@@ -6,7 +6,8 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { CookieConsent } from "@/components/CookieConsent";
-import { COMPANY } from "@/lib/products";
+import { COMPANY, products } from "@/lib/products";
+import { SITE_URL } from "@/lib/site";
 
 const orgSchema = {
   "@context": "https://schema.org",
@@ -15,14 +16,18 @@ const orgSchema = {
   legalName: COMPANY.legal,
   description:
     "Expertize tehnice extrajudiciare auto și evaluări în caz de accident, semnate de expert autorizat de Ministerul Justiției. 100% online, livrare în 24–48h.",
-  url: "https://careval.ro",
+  url: SITE_URL,
   telephone: COMPANY.phone,
   email: COMPANY.email,
-  priceRange: "320–1200 Lei",
+  // Calculat din prețurile reale — altfel deviază tăcut la prima schimbare de tarif.
+  priceRange: (() => {
+    const p = products.map((x) => x.price).filter((x): x is number => x != null);
+    return `${Math.min(...p)}–${Math.max(...p)} Lei`;
+  })(),
   areaServed: { "@type": "Country", name: "România" },
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Str. Lămâiței 4, ap. 12",
+    streetAddress: COMPANY.address.split(",").slice(0, 2).join(",").trim(),
     addressLocality: "Giroc",
     addressRegion: "Timiș",
     addressCountry: "RO",
@@ -48,10 +53,33 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
+const DESCRIERE =
+  "Rapoarte de evaluare auto și expertize tehnice extrajudiciare în caz de accident, semnate de expert autorizat de Ministerul Justiției. Fără deplasare, livrare în 24–48h.";
+
 export const metadata: Metadata = {
+  // Fără metadataBase, orice URL relativ din metadata (og:image, canonical) nu se rezolvă.
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "CarEval — Evaluări auto & expertize în caz de accident",
     template: "%s · CarEval",
+  },
+  // ATENȚIE: `alternates` NU se pune aici. Câmpurile de metadata se moștenesc,
+  // deci un canonical "/" în layout ar face ca fiecare pagină care nu-l suprascrie
+  // să se declare duplicat al homepage-ului. Canonical se pune per pagină.
+  openGraph: {
+    type: "website",
+    locale: "ro_RO",
+    siteName: "CarEval",
+    url: "/",
+    title: "CarEval — Evaluări auto & expertize în caz de accident",
+    description: DESCRIERE,
+    images: [{ url: "/images/og-careval.png", width: 1200, height: 630, alt: "CarEval — expertize tehnice auto autorizate" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CarEval — Evaluări auto & expertize în caz de accident",
+    description: DESCRIERE,
+    images: ["/images/og-careval.png"],
   },
   description:
     "Rapoarte de evaluare auto și expertize tehnice extrajudiciare în caz de accident, semnate de expert autorizat de Ministerul Justiției. Fără deplasare, livrare în 24–48h. Cifre calculate în AUDATEX și DAT.",

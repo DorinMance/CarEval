@@ -4,6 +4,7 @@ import { COMPANY } from "@/lib/products";
 import { LegalDoc, LH2, LP, LUl, B } from "@/components/LegalDoc";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/termeni-si-conditii" },
   title: "Termeni și condiții",
   description:
     "Termenii și condițiile de utilizare a site-ului careval.ro și de prestare a serviciilor SC VAST Expertise SRL.",

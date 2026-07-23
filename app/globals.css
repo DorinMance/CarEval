@@ -65,6 +65,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* Headerul e sticky (80px). Fără asta, orice ancoră (#situatii, #produse, #formular)
+     ajunge cu titlul ascuns sub el — inclusiv CTA-ul principal din hero. */
+  scroll-padding-top: 5.5rem;
 }
 
 body {
@@ -116,9 +119,31 @@ h1, h2, h3, h4, h5, .font-heading {
   will-change: transform, opacity;
 }
 
-/* Focus visibility */
-:where(a, button, input, select, textarea):focus-visible {
-  outline: 2px solid var(--color-lime-400);
+/* Focus visibility
+   Lime pe alb are doar 1.87:1 — sub minimul WCAG de 3:1, deci inelul original era
+   practic invizibil pe fundal deschis. Navy (17.5:1 pe alb) rezolvă asta.
+
+   Culoarea se propagă printr-o variabilă, nu prin selectori descendenți: variabilele
+   CSS se moștenesc, deci un card alb aflat ÎNTR-o secțiune întunecată își resetează
+   singur inelul la navy (altfel ieșea alb pe alb — vezi formularul de login din admin),
+   iar un element care ARE el însuși fundal închis primește varianta albă.
+
+   Fără `border-radius` aici: ar bate utilitățile Tailwind (regula e unlayered) și ar
+   turti la 4px orice `rounded-xl`/`rounded-full` la focus. Outline-ul urmează oricum
+   raza elementului în browserele moderne.
+   Fără `box-shadow` aici: ar suprascrie inelul de stare (roșu/verde) din FormField. */
+:root { --focus-ring: var(--color-navy-800); }
+
+.bg-navy-gradient, .bg-surface, .bg-surface-soft, .bg-navy-800, .bg-navy-900,
+.bg-navy-950, footer, [data-surface="dark"] { --focus-ring: #ffffff; }
+
+/* Suprafețele deschise resetează, oriunde s-ar afla în arbore. */
+.bg-white, .bg-cloud, .bg-mist, .bg-mesh-light, [data-surface="light"] {
+  --focus-ring: var(--color-navy-800);
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 

@@ -19,7 +19,7 @@ export function Footer() {
             Evaluări auto și expertize tehnice în caz de accident, semnate de expert autorizat
             de Ministerul Justiției. Fără deplasare, livrare în 24–48h.
           </p>
-          <p className="mt-4 text-xs text-navy-300">{COMPANY.legal}</p>
+          <p className="mt-4 text-xs text-navy-200">{COMPANY.legal}</p>
         </div>
 
         <div>
@@ -66,14 +66,19 @@ export function Footer() {
 
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-navy-300 sm:justify-start">
-            <Link href="/termeni-si-conditii" className="hover:text-lime-300">Termeni și condiții</Link>
-            <Link href="/politica-confidentialitate" className="hover:text-lime-300">Politica de confidențialitate</Link>
-            <Link href="/politica-cookies" className="hover:text-lime-300">Politica de cookie-uri</Link>
-            <a href="https://anpc.ro" target="_blank" rel="noopener noreferrer" className="hover:text-lime-300">ANPC</a>
-            <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="hover:text-lime-300">SOL — soluționare online a litigiilor</a>
+          {/* inline-flex + min-h-11 = 44px țintă de atingere, fără a schimba aspectul */}
+          <div className="flex flex-wrap items-center justify-center gap-x-5 text-xs text-navy-200 sm:justify-start">
+            {[
+              ["/termeni-si-conditii", "Termeni și condiții"],
+              ["/politica-confidentialitate", "Politica de confidențialitate"],
+              ["/politica-cookies", "Politica de cookie-uri"],
+            ].map(([href, label]) => (
+              <Link key={href} href={href} className="inline-flex min-h-11 items-center hover:text-lime-300">{label}</Link>
+            ))}
+            <a href="https://anpc.ro" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center hover:text-lime-300">ANPC</a>
+            <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center hover:text-lime-300">SOL — soluționare online a litigiilor</a>
           </div>
-          <div className="mt-4 flex flex-col gap-3 text-xs text-navy-400 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-4 flex flex-col gap-3 text-xs text-navy-200 sm:flex-row sm:items-center sm:justify-between">
             <p>© {new Date().getFullYear()} {COMPANY.name} · {COMPANY.legal} · CUI {COMPANY.cui} · {COMPANY.regCom}</p>
             <div className="flex items-center gap-4">
               <p>Expertize tehnice auto autorizate · livrare 24–48h</p>
@@ -81,7 +86,7 @@ export function Footer() {
                 href="/admin"
                 aria-label="Autentificare administrator"
                 title="Acces administrator"
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-navy-300 transition-colors hover:border-lime-400/40 hover:text-lime-300"
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-navy-200 transition-colors hover:border-lime-400/40 hover:text-lime-300"
               >
                 <Lock className="h-4 w-4" />
               </Link>
