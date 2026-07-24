@@ -6,22 +6,23 @@ import { useCart } from "@/lib/cart";
 import { saveLead } from "@/lib/db";
 import { fieldLabel } from "@/lib/labels";
 import type { Lead, Contact } from "@/lib/types";
-import { products, COMPANY } from "@/lib/products";
+import { products, COMPANY, lineTotal, PRINT_FEE } from "@/lib/products";
 import { FormField } from "@/components/FormField";
 import type { FieldStatus } from "@/components/FormField";
 import { Section, Eyebrow, btnPrimary, btnOutline, cn } from "@/components/ui";
 import { Lottie } from "@/components/Lottie";
 import { X, ArrowRight, Shield, Phone } from "@/components/icons";
 
-type Phase = "cart" | "sending" | "success";
+type Phase = "cart" | "sending" | "paying" | "success";
 
 export function CosClient() {
-  const { items, total, removeItem, clear, ready, storageFull } = useCart();
+  const { items, total, removeItem, clear, ready, storageFull, getOrderID } = useCart();
   const [phase, setPhase] = useState<Phase>("cart");
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [emailAsync, setEmailAsync] = useState<FieldStatus>("idle");
   const [consent, setConsent] = useState(false);
   const [consentError, setConsentError] = useState(false);
+  const [payError, setPayError] = useState("");
 
   // pre-fill contact din ultimul item care are date de contact
   const prefill = useMemo<Contact>(() => {
@@ -83,7 +84,11 @@ export function CosClient() {
           .map(([k, v]) => `  ${fieldLabel(k)}: ${v === true ? "Da" : v}`)
           .join("\n");
         const imgs = Object.values(it.images).reduce((n, a) => n + a.length, 0);
-        return `• ${it.productName} (${it.code}) — ${it.price != null ? it.price + " Lei" : "la cerere"}\n${rows}\n  Fotografii încărcate: ${imgs} (vizibile în panoul admin)`;
+        const pretRand = lineTotal(it);
+        const pretText = pretRand != null
+          ? pretRand + " Lei" + (it.data.raportTiparit ? ` (include raport tipărit +${PRINT_FEE})` : "")
+          : "la cerere";
+        return `• ${it.productName} (${it.code}) — ${pretText}\n${rows}\n  Fotografii încărcate: ${imgs} (vizibile în panoul admin)`;
       })
       .join("\n\n");
 
@@ -103,6 +108,61 @@ export function CosClient() {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: params.toString(),
     });
+  }
+
+  /** Toate serviciile au preț fix? Altfel nu se poate încasa o sumă în avans. */
+  const platibil = items.length > 0 && items.every((i) => i.price != null) && total > 0;
+
+  async function platesteCuCardul() {
+    if (!validate()) return;
+    setPayError("");
+    setPhase("paying");
+
+    // Numărul de comandă vine din coș și e STABIL: o plată reluată folosește același
+    // număr, deci suprascrie același lead în loc să creeze duplicate. Se resetează
+    // abia după o comandă finalizată (clear()).
+    const orderID = getOrderID();
+
+    const lead: Lead = {
+      id: `lead-${Date.now()}`,
+      createdAt: Date.now(),
+      status: "nou",
+      contact,
+      total,
+      orderID,
+      items: items.map(({ uid: _uid, ...rest }) => rest),
+    };
+
+    try {
+      // Comanda se salvează ÎNAINTE de plată: dacă utilizatorul abandonează la
+      // banca, datele și pozele nu se pierd, iar expertul poate relua legătura.
+      await saveLead(lead);
+      try { await submitToNetlify(lead); } catch { /* email best-effort */ }
+
+      const res = await fetch("/api/plata/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderID,
+          amount: total,
+          description: items.map((i) => i.productName).join(", "),
+          contact,
+        }),
+      });
+      const data = await res.json();
+      if (!data?.ok || !data.paymentURL) {
+        setPhase("cart");
+        setPayError(data?.message ?? "Nu am putut porni plata. Încearcă din nou sau sună-ne.");
+        return;
+      }
+      // NU golim coșul aici. Dacă utilizatorul apasă „Înapoi" pe pagina băncii
+      // fără să plătească, trebuie să-și regăsească serviciile. Coșul se golește
+      // abia după confirmarea plății, pe pagina de rezultat.
+      window.location.href = data.paymentURL;
+    } catch {
+      setPhase("cart");
+      setPayError("A apărut o eroare la inițierea plății. Încearcă din nou sau sună-ne.");
+    }
   }
 
   async function submit() {
@@ -200,10 +260,17 @@ export function CosClient() {
                   <div>
                     <span className="text-xs font-medium text-navy-400">{product?.category} · Cod {item.code}</span>
                     <h3 className="font-heading text-lg font-semibold text-navy-800">{item.productName}</h3>
+                    {item.data.raportTiparit && item.price != null && (
+                      <p className="mt-0.5 text-xs text-navy-500">
+                        include raport tipărit <span className="font-medium">+{PRINT_FEE} Lei</span>
+                      </p>
+                    )}
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="font-heading font-bold text-navy-800">
-                      {item.price == null ? "La cerere" : `${item.price.toLocaleString("ro-RO")} Lei`}
+                      {item.price == null
+                        ? "La cerere"
+                        : `${(lineTotal(item) ?? item.price).toLocaleString("ro-RO")} Lei`}
                     </span>
                     <button
                       type="button"
@@ -327,9 +394,34 @@ export function CosClient() {
               <p className="mt-1.5 text-xs text-danger">Trebuie să accepți termenii pentru a trimite cererea.</p>
             )}
 
-            <button type="button" onClick={submit} disabled={phase === "sending"} className={cn(btnPrimary, "mt-4 w-full", phase === "sending" && "opacity-70")}>
-              {phase === "sending" ? "Se trimite…" : (<>Trimite comanda <ArrowRight className="h-4 w-4" /></>)}
-            </button>
+            {/* Plata cu cardul apare doar când toate serviciile din coș au preț fix.
+                Consultanța e la oră, deci nu se poate încasa în avans. */}
+            {platibil && (
+              <>
+                <button
+                  type="button"
+                  onClick={platesteCuCardul}
+                  disabled={phase === "sending" || phase === "paying"}
+                  className={cn(btnPrimary, "mt-4 w-full", (phase === "sending" || phase === "paying") && "opacity-70")}
+                >
+                  {phase === "paying" ? "Te ducem la plată…" : (<>Plătește {total.toLocaleString("ro-RO")} Lei cu cardul <ArrowRight className="h-4 w-4" /></>)}
+                </button>
+                {payError && <p role="alert" className="mt-2 text-xs text-danger">{payError}</p>}
+              </>
+            )}
+
+            {/* Serviciile „la cerere" (Consultanța) n-au preț fix, deci nu se pot
+                încasa în avans — pentru ele rămâne trimiterea cererii spre ofertă. */}
+            {!platibil && (
+              <button
+                type="button"
+                onClick={submit}
+                disabled={phase === "sending"}
+                className={cn(btnPrimary, "mt-4 w-full", phase === "sending" && "opacity-70")}
+              >
+                {phase === "sending" ? "Se trimite…" : (<>Trimite cererea <ArrowRight className="h-4 w-4" /></>)}
+              </button>
+            )}
 
             <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-navy-400">
               <Shield className="h-3.5 w-3.5 text-lime-600" /> Datele tale sunt confidențiale.

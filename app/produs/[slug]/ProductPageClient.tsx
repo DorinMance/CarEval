@@ -61,7 +61,7 @@ export function ProductPageClient({ slug }: { slug: string }) {
             <div className="overflow-hidden rounded-3xl bg-mesh-light p-6">
               <div className="relative aspect-square">
                 <Image
-                  src={product.image.startsWith("data:") ? product.image : `${product.image}?v=5`}
+                  src={product.image.startsWith("data:") ? product.image : `${product.image}?v=6`}
                   alt={product.name}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"

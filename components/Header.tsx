@@ -16,6 +16,7 @@ const NAV = [
   { href: "/independenta", label: "Independență" },
   { href: "/companii", label: "Companii" },
   { href: "/blog", label: "Blog" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Header() {

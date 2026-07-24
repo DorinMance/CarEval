@@ -18,5 +18,17 @@
       <textarea name="mesaj"></textarea>
       <input type="text" name="bot-field" />
     </form>
+
+    <!-- Formularul de contact (/contact). Orice câmp adăugat în ContactWizard
+         trebuie declarat și aici, altfel Netlify îl ignoră tăcut. -->
+    <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="text" name="motiv" />
+      <input type="text" name="nume" />
+      <input type="text" name="telefon" />
+      <input type="email" name="email" />
+      <input type="text" name="localitate" />
+      <textarea name="mesaj"></textarea>
+      <input type="text" name="bot-field" />
+    </form>
   </body>
 </html>

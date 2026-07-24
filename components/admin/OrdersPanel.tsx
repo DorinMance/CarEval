@@ -41,6 +41,8 @@ export function OrdersPanel() {
       if (product !== "all" && !l.items.some((i) => i.productName === product)) return false;
       if (q) {
         const hay = [
+          // Numărul de comandă e primul lucru pe care îl spune un client la telefon.
+          l.orderID ?? "",
           l.contact.nume, l.contact.email, l.contact.telefon, l.contact.localitate ?? "",
           ...l.items.map((i) => i.productName),
           ...l.items.flatMap((i) => Object.values(i.data).map(String)),
@@ -140,6 +142,9 @@ export function OrdersPanel() {
                 </span>
               </div>
               <p className="mt-1 text-sm text-navy-500">{lead.items.map((i) => i.productName).join(", ")}</p>
+              {lead.orderID && (
+                <p className="mt-1 font-mono text-[11px] text-navy-400">{lead.orderID}</p>
+              )}
               <div className="mt-2 flex items-center justify-between text-xs text-navy-400">
                 <span>{new Date(lead.createdAt).toLocaleString("ro-RO", { dateStyle: "medium", timeStyle: "short" })}</span>
                 <span className="font-semibold text-navy-600">{lead.total != null ? `${lead.total.toLocaleString("ro-RO")} Lei` : "La cerere"}</span>
@@ -161,6 +166,52 @@ export function OrdersPanel() {
   );
 }
 
+/**
+ * Starea plății pentru o comandă, ca operatorul să vadă dacă s-a încasat fără
+ * să deschidă panoul NETOPIA.
+ *
+ * Deocamdată interoghează registrul din memoria serverului (vezi lib/payment-store).
+ * LA GO-LIVE, când IPN-ul va scrie în Firestore prin Admin SDK, starea vine direct
+ * pe documentul comenzii și acest apel dispare.
+ */
+function StarePlata({ orderID }: { orderID: string }) {
+  const [info, setInfo] = useState<{ state?: string; ntpID?: string } | null>(null);
+
+  useEffect(() => {
+    let viu = true;
+    fetch(`/api/plata/status?orderID=${encodeURIComponent(orderID)}`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => { if (viu) setInfo(d); })
+      .catch(() => { if (viu) setInfo(null); });
+    return () => { viu = false; };
+  }, [orderID]);
+
+  const state = info?.state;
+  const eticheta =
+    state === "platit" ? { txt: "Plătit", cls: "bg-lime-100 text-lime-700" } :
+    state === "esuat" ? { txt: "Plată eșuată", cls: "bg-red-100 text-red-700" } :
+    state === "in_asteptare" ? { txt: "Plată în așteptare", cls: "bg-amber-100 text-amber-700" } :
+    null;
+
+  return (
+    <div className="mt-1.5 flex flex-wrap items-center gap-2">
+      <span className="rounded-md bg-cloud px-2 py-1 font-mono text-xs text-navy-600">
+        Comandă: {orderID}
+      </span>
+      {eticheta && (
+        <span className={cn("rounded-md px-2 py-1 text-xs font-semibold", eticheta.cls)}>
+          {eticheta.txt}
+        </span>
+      )}
+      {info?.ntpID && (
+        <span className="rounded-md bg-cloud px-2 py-1 font-mono text-xs text-navy-500">
+          ID plată: {info.ntpID}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function LeadDetail({ lead }: { lead: Lead }) {
   const [lightbox, setLightbox] = useState<string | null>(null);
 
@@ -173,6 +224,7 @@ function LeadDetail({ lead }: { lead: Lead }) {
             <p className="text-sm text-navy-400">
               {new Date(lead.createdAt).toLocaleString("ro-RO", { dateStyle: "full", timeStyle: "short" })}
             </p>
+            {lead.orderID && <StarePlata orderID={lead.orderID} />}
           </div>
           <span className="font-heading text-lg font-bold text-navy-800">
             {lead.total != null ? `${lead.total.toLocaleString("ro-RO")} Lei` : "La cerere"}

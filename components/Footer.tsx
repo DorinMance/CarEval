@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { products, COMPANY } from "@/lib/products";
+import { PaymentLogos } from "./PaymentLogos";
 import { Phone, Mail, MapPin, Clock, Lock } from "./icons";
 
 export function Footer() {
@@ -72,12 +73,17 @@ export function Footer() {
               ["/termeni-si-conditii", "Termeni și condiții"],
               ["/politica-confidentialitate", "Politica de confidențialitate"],
               ["/politica-cookies", "Politica de cookie-uri"],
+              ["/politica-livrare", "Politica de livrare"],
+              ["/politica-anulare", "Anulare și retragere"],
+              ["/contact", "Contact"],
             ].map(([href, label]) => (
               <Link key={href} href={href} className="inline-flex min-h-11 items-center hover:text-lime-300">{label}</Link>
             ))}
-            <a href="https://anpc.ro" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center hover:text-lime-300">ANPC</a>
-            <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center hover:text-lime-300">SOL — soluționare online a litigiilor</a>
+            {/* ANPC cere informarea privind soluționarea alternativă a litigiilor (SAL). */}
+            <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center hover:text-lime-300">ANPC — SAL</a>
           </div>
+
+          <PaymentLogos className="mt-5 border-t border-white/10 pt-5" />
           <div className="mt-4 flex flex-col gap-3 text-xs text-navy-200 sm:flex-row sm:items-center sm:justify-between">
             <p>© {new Date().getFullYear()} {COMPANY.name} · {COMPANY.legal} · CUI {COMPANY.cui} · {COMPANY.regCom}</p>
             <div className="flex items-center gap-4">
@@ -91,6 +97,18 @@ export function Footer() {
                 <Lock className="h-4 w-4" />
               </Link>
             </div>
+          </div>
+
+          {/* Semnătura autorului site-ului, ultimul rând din pagină. */}
+          <div className="mt-4 border-t border-white/10 pt-4 text-center">
+            <a
+              href="https://novaprimedigital.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center text-xs text-navy-200 transition-colors hover:text-lime-300"
+            >
+              Made by <span className="ml-1 font-semibold">NovaPrime Digital</span>
+            </a>
           </div>
         </div>
       </div>

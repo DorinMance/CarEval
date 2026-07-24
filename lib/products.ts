@@ -468,6 +468,22 @@ export function formatPrice(p: Product): string {
   return `${p.price.toLocaleString("ro-RO")} Lei`;
 }
 
+/** Cost suplimentar pentru raportul livrat și în format tipărit (bifă în wizard). */
+export const PRINT_FEE = 65;
+
+/**
+ * Prețul efectiv al unui rând din coș: prețul de bază + tipărirea, dacă e bifată.
+ * Sursă unică — folosită de coș, de total și de suma trimisă la plată, ca cei 65 Lei
+ * să nu se piardă pe drum (bifa trăiește în `data`, nu în `price`).
+ */
+export function lineTotal(item: {
+  price: number | null;
+  data?: Record<string, string | boolean>;
+}): number | null {
+  if (item.price == null) return null; // serviciu „la cerere" — tipărirea nu se poate cuantifica
+  return item.price + (item.data?.raportTiparit ? PRINT_FEE : 0);
+}
+
 // FAQ per produs (2–3 întrebări reale) — folosit pe pagina de produs + schema FAQPage (SEO).
 export const PRODUCT_FAQ: Record<string, [string, string][]> = {
   "consultanta-in-caz-de-accident": [

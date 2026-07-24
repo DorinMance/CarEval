@@ -52,11 +52,36 @@ export default function TermeniPage() {
         responsabil pentru corectitudinea și completitudinea informațiilor transmise.
       </LP>
 
-      <LH2>4. Prețuri și plată</LH2>
+      <LH2>4. Prețuri și modalități de plată</LH2>
       <LP>
-        Prețurile sunt afișate pe fiecare pagină de serviciu, exprimate în lei (RON). Factura se emite
-        conform legislației fiscale în vigoare. <B>Onorariul este fix, comunicat înainte de începerea
-        lucrării și nu depinde de rezultatul obținut.</B>
+        Prețurile sunt afișate pe fiecare pagină de serviciu, exprimate în <B>lei (RON), cu TVA
+        inclus</B>. Factura se emite conform legislației fiscale în vigoare și se transmite
+        electronic, pe adresa de email indicată la comandă. <B>Onorariul este fix, comunicat
+        înainte de începerea lucrării și nu depinde de rezultatul obținut.</B>
+      </LP>
+      <LP>Plata se poate face prin:</LP>
+      <LUl>
+        <li>
+          <B>Card bancar, online</B> — Visa sau Mastercard, prin procesatorul autorizat{" "}
+          <a href="https://netopia-payments.com" target="_blank" rel="noopener noreferrer" className="font-medium text-lime-700 underline underline-offset-2">
+            NETOPIA Payments
+          </a>
+          . Plata se desfășoară integral în mediul securizat al procesatorului. <B>CarEval nu
+          are acces la datele cardului</B> și nu le stochează în niciun fel.
+        </li>
+        <li>
+          <B>Transfer bancar (ordin de plată)</B>, pe baza facturii proforme emise la cerere.
+        </li>
+      </LUl>
+      <LP>
+        Pentru serviciile tarifate orar sau pentru cazurile care necesită analiză prealabilă,
+        prețul final se confirmă în ofertă, înainte de începerea lucrării.
+      </LP>
+      <LP>
+        Livrarea este detaliată în{" "}
+        <Link href="/politica-livrare" className="font-medium text-lime-700 underline underline-offset-2">politica de livrare</Link>,
+        iar anularea și restituirea în{" "}
+        <Link href="/politica-anulare" className="font-medium text-lime-700 underline underline-offset-2">politica de anulare și retragere</Link>.
       </LP>
 
       <LH2>5. Livrarea raportului</LH2>

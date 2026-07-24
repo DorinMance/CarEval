@@ -51,7 +51,9 @@ export async function saveLead(lead: Lead): Promise<void> {
   if (isFirebaseEnabled) {
     const db = fbDb()!;
     const st = fbStorage()!;
-    const ref = doc(collection(db, COL));
+    // Dacă comanda are un orderID, documentul e cheiat pe el — o comandă reluată
+    // (ex. plata reîncercată) suprascrie același document, nu creează duplicate.
+    const ref = lead.orderID ? doc(db, COL, lead.orderID) : doc(collection(db, COL));
     const id = ref.id;
 
     // Urcă pozele (dataURL) în Storage și înlocuiește-le cu URL-uri publice.
@@ -79,6 +81,10 @@ export async function saveLead(lead: Lead): Promise<void> {
       status: "nou" as LeadStatus,
       contact: lead.contact,
       total: lead.total ?? null,
+      // Numărul de comandă afișat clientului și în NETOPIA. Documentul se
+      // construiește câmp cu câmp, deci orice câmp nou trebuie adăugat explicit
+      // aici — altfel se pierde tăcut la salvare.
+      orderID: lead.orderID ?? null,
       items,
     });
     return;

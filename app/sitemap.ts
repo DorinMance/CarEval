@@ -16,11 +16,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ["/independenta", 0.6, "monthly"],
     ["/companii", 0.6, "monthly"],
     ["/blog", 0.6, "weekly"],
+    ["/contact", 0.7, "monthly"],
     // Paginile legale rămân indexabile: Google le folosește ca semnal de
     // legitimitate pentru site-uri YMYL (aici, financiar).
     ["/termeni-si-conditii", 0.2, "yearly"],
     ["/politica-confidentialitate", 0.2, "yearly"],
     ["/politica-cookies", 0.2, "yearly"],
+    ["/politica-livrare", 0.3, "yearly"],
+    ["/politica-anulare", 0.3, "yearly"],
   ];
 
   return [

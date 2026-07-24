@@ -251,7 +251,8 @@ export function Wizard({ product }: { product: Product }) {
   );
 }
 
-function FieldInput({
+/** Exportate ca să le refolosească și formularul de contact, fără duplicare. */
+export function FieldInput({
   field,
   value,
   error,
@@ -386,7 +387,7 @@ function FlagIcon() {
   );
 }
 
-function RoadProgress({
+export function RoadProgress({
   steps,
   step,
   onJump,
