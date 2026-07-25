@@ -36,5 +36,26 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    // Recenzii produse. Oricine (fără cont) poate TRIMITE o recenzie, dar STRICT
+    // ca „pending" — nu se poate autoaproba. Public se pot citi doar cele aprobate
+    // (clientul interoghează cu where status == 'approved', altfel regula respinge
+    // query-ul). Doar adminul le vede pe toate și le moderează.
+    match /reviews/{id} {
+      allow read: if resource.data.status == 'approved' || isAdmin();
+      allow create: if request.resource.data.status == 'pending'
+                    && request.resource.data.rating is int
+                    && request.resource.data.rating >= 1
+                    && request.resource.data.rating <= 5
+                    && request.resource.data.author is string
+                    && request.resource.data.author.size() > 0
+                    && request.resource.data.author.size() <= 80
+                    && request.resource.data.text is string
+                    && request.resource.data.text.size() > 0
+                    && request.resource.data.text.size() <= 1500
+                    && request.resource.data.productSlug is string
+                    && request.resource.data.createdAt is int;
+      allow update, delete: if isAdmin();
+    }
   }
 }

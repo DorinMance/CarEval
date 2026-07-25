@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isPaidStatus, type NetopiaNotification } from "@/lib/netopia";
 import { updatePayment, getPayment } from "@/lib/payment-store";
-import { issueInvoice } from "@/lib/smartbill";
+import { adminDb } from "@/lib/firebase-admin";
 
 /**
  * Confirmarea plății, trimisă de NETOPIA server-la-server pe `notifyUrl`.
@@ -54,22 +54,32 @@ export async function POST(req: Request) {
   });
 
   console.log(`[NETOPIA IPN] ${orderID} status=${status} → ${paid ? "PLĂTIT" : "eșuat"} (ntpID ${ntpID})`);
+  void rec;
 
-  // Factura se emite doar la încasare confirmată și doar dacă e pornit
-  // întrerupătorul. Nu blocăm răspunsul către NETOPIA dacă facturarea pică.
-  if (paid) {
-    try {
-      const current = rec ?? getPayment(orderID);
-      await issueInvoice({
-        orderID,
-        amount: current?.amount ?? body.payment?.amount ?? 0,
-        description: current?.description ?? "Servicii de evaluare tehnică auto",
-        contact: current?.contact,
-      });
-    } catch (e) {
-      console.error("[SMARTBILL] emitere eșuată:", e);
+  // Scriem starea plății PERMANENT pe comanda din Firestore, ca badge-ul
+  // „Plătit / Plată eșuată" din admin să nu depindă de memoria (efemeră) a
+  // funcției serverless. Documentul comenzii e cheiat pe orderID. Dacă Admin SDK
+  // nu e configurat (fără cheie de service account), degradăm la registrul din
+  // memorie — nu blocăm răspunsul către NETOPIA.
+  try {
+    const db = adminDb();
+    if (db) {
+      await db.collection("leads").doc(orderID).set(
+        {
+          plataStare: paid ? "platit" : "esuat",
+          plataNtpID: ntpID ?? null,
+          plataData: Date.now(),
+        },
+        { merge: true }
+      );
     }
+  } catch (e) {
+    console.error("[NETOPIA IPN] nu am putut scrie starea plății în Firestore:", e);
   }
+
+  // Factura NU se emite automat aici. Am ales cu clientul facturare manuală:
+  // proprietarul apasă „Facturează" în admin (vezi app/api/factura), verifică
+  // factura în SmartBill și o trimite el.
 
   // NETOPIA așteaptă 200 cu errorCode 0; altfel reia notificarea.
   return NextResponse.json({ errorCode: 0 });

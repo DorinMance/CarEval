@@ -51,6 +51,12 @@ export const Star = (p: SVGProps<SVGSVGElement>) => (
 export const Shield = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}><path d="M12 3 5 6v6c0 4.2 3 7.4 7 9 4-1.6 7-4.8 7-9V6l-7-3Z" /><path d="m9 12 2 2 4-4" /></svg>
 );
+export const Banknote = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><rect x="2" y="6" width="20" height="12" rx="2" /><circle cx="12" cy="12" r="2.5" /><path d="M6 12h.01M18 12h.01" /></svg>
+);
+export const Spinner = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M12 3a9 9 0 1 0 9 9" /></svg>
+);
 export const FileText = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></svg>
 );

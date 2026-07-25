@@ -6,17 +6,19 @@ import { ADMIN_CREDENTIALS, login, logout, subscribeAuth } from "@/lib/auth";
 import { isFirebaseEnabled } from "@/lib/firebase";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/components/ui";
-import { Lock, Shield, LogOut, FileText, Car, ClipboardList } from "@/components/icons";
+import { Lock, Shield, LogOut, FileText, Car, ClipboardList, Star, Spinner } from "@/components/icons";
 import { OrdersPanel } from "@/components/admin/OrdersPanel";
 import { ProductsPanel } from "@/components/admin/ProductsPanel";
 import { BlogPanel } from "@/components/admin/BlogPanel";
+import { ReviewsPanel } from "@/components/admin/ReviewsPanel";
 
-type Tab = "comenzi" | "produse" | "blog";
+type Tab = "comenzi" | "produse" | "blog" | "recenzii";
 
 const TABS: { id: Tab; label: string; Icon: typeof FileText }[] = [
   { id: "comenzi", label: "Comenzi (CRM)", Icon: ClipboardList },
   { id: "produse", label: "Produse", Icon: Car },
   { id: "blog", label: "Blog", Icon: FileText },
+  { id: "recenzii", label: "Recenzii", Icon: Star },
 ];
 
 export default function AdminPage() {
@@ -88,8 +90,9 @@ export default function AdminPage() {
             <button
               onClick={submit}
               disabled={busy}
-              className="w-full rounded-xl bg-lime-500 px-4 py-2.5 text-sm font-semibold text-navy-900 transition-colors hover:bg-lime-400 disabled:opacity-60"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-lime-500 px-4 py-2.5 text-sm font-semibold text-navy-900 transition-colors hover:bg-lime-400 disabled:cursor-not-allowed disabled:opacity-60"
             >
+              {busy && <Spinner className="h-4 w-4 animate-spin" />}
               {busy ? "Se conectează…" : "Autentificare"}
             </button>
           </div>
@@ -125,7 +128,7 @@ export default function AdminPage() {
         </div>
 
         {/* Tabs */}
-        <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 [mask-image:linear-gradient(to_right,#000_88%,transparent)] [scrollbar-width:none] sm:[mask-image:none] sm:px-6 lg:px-8 [&::-webkit-scrollbar]:hidden">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -147,6 +150,7 @@ export default function AdminPage() {
         {tab === "comenzi" && <OrdersPanel />}
         {tab === "produse" && <ProductsPanel />}
         {tab === "blog" && <BlogPanel />}
+        {tab === "recenzii" && <ReviewsPanel />}
       </div>
     </div>
   );

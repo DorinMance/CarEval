@@ -147,6 +147,13 @@ h1, h2, h3, h4, h5, .font-heading {
   outline-offset: 2px;
 }
 
+/* Cursor clar: butoanele active se văd clicabile; cele dezactivate, nu.
+   Rezolvă „nu-mi dau seama dacă butonul e activ când merg cu mouse-ul pe el". */
+button:not(:disabled), [role="button"]:not(:disabled), a[href], summary, label[for] {
+  cursor: pointer;
+}
+button:disabled, [aria-disabled="true"] { cursor: not-allowed; }
+
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }

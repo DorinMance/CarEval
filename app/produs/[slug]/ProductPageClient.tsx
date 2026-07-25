@@ -8,6 +8,7 @@ import { Wizard } from "@/components/Wizard";
 import { Reveal } from "@/components/Reveal";
 import { ProductCard } from "@/components/ProductCard";
 import { FAQAccordion } from "@/components/FAQAccordion";
+import { ProductReviews } from "@/components/ProductReviews";
 import { Section, Eyebrow, PriceTag, btnPrimary } from "@/components/ui";
 import { Check, Clock, Shield, ChevronRight, ArrowRight, Phone } from "@/components/icons";
 
@@ -178,6 +179,9 @@ export function ProductPageClient({ slug }: { slug: string }) {
           />
         </Section>
       )}
+
+      {/* Recenzii (cu moderare în admin) */}
+      <ProductReviews slug={product.slug} productName={product.name} />
 
       {/* Suggestions */}
       <Section className="bg-white">

@@ -1,4 +1,5 @@
 import "server-only";
+import type { Contact } from "./types";
 
 /**
  * Registru de plăți — DOAR PENTRU FAZA DE TEST.
@@ -25,8 +26,8 @@ export interface PaymentRecord {
   currency?: string;
   netopiaStatus?: number;
   updatedAt: number;
-  /** Datele necesare facturii, reținute de la inițierea plății. */
-  contact?: { nume: string; email: string; telefon: string; localitate?: string };
+  /** Datele necesare facturii, reținute de la inițierea plății (inclusiv firmă). */
+  contact?: Contact;
   description?: string;
 }
 

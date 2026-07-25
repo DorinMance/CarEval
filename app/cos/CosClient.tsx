@@ -11,7 +11,7 @@ import { FormField } from "@/components/FormField";
 import type { FieldStatus } from "@/components/FormField";
 import { Section, Eyebrow, btnPrimary, btnOutline, cn } from "@/components/ui";
 import { Lottie } from "@/components/Lottie";
-import { X, ArrowRight, Shield, Phone } from "@/components/icons";
+import { X, ArrowRight, Shield, Phone, Spinner } from "@/components/icons";
 
 type Phase = "cart" | "sending" | "paying" | "success";
 
@@ -43,7 +43,7 @@ export function CosClient() {
     setContact((c) => (c.nume || c.email || c.telefon ? c : prefill));
   }, [prefill]);
 
-  function set(name: keyof Contact, v: string) {
+  function set(name: keyof Contact, v: string | boolean) {
     setContact((c) => ({ ...c, [name]: v }));
     setErrors((e) => ({ ...e, [name]: false }));
   }
@@ -65,6 +65,15 @@ export function CosClient() {
     // Telefonul era verificat doar cu .trim() — trecea „aaa”. Același regex ca în FormField.
     if (!contact.telefon.trim() || !/^[+\d\s\-()]{7,}$/.test(contact.telefon)) next.telefon = true;
     if (!contact.email.trim() || !/.+@.+\..+/.test(contact.email)) next.email = true;
+    // Adresa și localitatea sunt necesare pentru factură.
+    if (!(contact.adresa ?? "").trim()) next.adresa = true;
+    if (!(contact.localitate ?? "").trim()) next.localitate = true;
+    // Pentru factura pe firmă, denumirea și CIF-ul devin obligatorii.
+    if (contact.facturaFirma) {
+      if (!(contact.firmaNume ?? "").trim()) next.firmaNume = true;
+      // CIF valabil: 2–10 cifre, cu prefix RO opțional.
+      if (!/^(RO)?\d{2,10}$/i.test((contact.firmaCui ?? "").replace(/\s/g, ""))) next.firmaCui = true;
+    }
     setErrors(next);
     setConsentError(!consent);
     return Object.keys(next).length === 0 && consent;
@@ -97,6 +106,10 @@ export function CosClient() {
     params.append("nume", lead.contact.nume);
     params.append("telefon", lead.contact.telefon);
     params.append("email", lead.contact.email);
+    params.append("adresa", [lead.contact.adresa, lead.contact.localitate, lead.contact.judet].filter(Boolean).join(", "));
+    params.append("firma", lead.contact.facturaFirma
+      ? `${lead.contact.firmaNume ?? ""} · CIF ${lead.contact.firmaCui ?? ""}${lead.contact.firmaRegCom ? " · " + lead.contact.firmaRegCom : ""}`
+      : "Persoană fizică");
     params.append("localitate", lead.contact.localitate || "");
     params.append("produse", lead.items.map((i) => `${i.productName} (${i.code})`).join(", "));
     params.append("total", lead.total != null ? `${lead.total} Lei` : "La cerere");
@@ -144,7 +157,9 @@ export function CosClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           orderID,
-          amount: total,
+          // Serverul recalculează suma din aceste produse — nu are încredere în `amount`.
+          items: items.map((i) => ({ slug: i.productSlug, raportTiparit: !!i.data?.raportTiparit })),
+          amount: total, // trimis doar informativ, pentru avertisment la nepotrivire
           description: items.map((i) => i.productName).join(", "),
           contact,
         }),
@@ -186,7 +201,7 @@ export function CosClient() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setPhase("cart");
-      alert("A apărut o eroare. Încearcă din nou. Dacă persistă, sună-ne.");
+      setPayError("A apărut o eroare la trimitere. Încearcă din nou. Dacă persistă, sună-ne.");
     }
   }
 
@@ -365,15 +380,89 @@ export function CosClient() {
                 onBlurCallback={handleEmailBlur}
               />
               <FormField
+                label="Adresă (stradă, nr.)"
+                type="text"
+                name="adresa"
+                autoComplete="street-address"
+                value={contact.adresa ?? ""}
+                placeholder="Str. Exemplu 12, ap. 3"
+                required
+                externalError={errors.adresa}
+                onChange={(v) => set("adresa", v)}
+              />
+              <FormField
                 label="Localitate"
                 type="text"
                 name="localitate"
                 autoComplete="address-level2"
                 value={contact.localitate ?? ""}
                 placeholder="Timișoara"
+                required
+                externalError={errors.localitate}
                 onChange={(v) => set("localitate", v)}
               />
+              <FormField
+                label="Județ"
+                type="text"
+                name="judet"
+                autoComplete="address-level1"
+                value={contact.judet ?? ""}
+                placeholder="Timiș"
+                onChange={(v) => set("judet", v)}
+              />
             </div>
+
+            {/* Factură pe firmă — datele merg pe factura SmartBill cu CIF corect. */}
+            <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-navy-200 bg-white p-4">
+              <input
+                type="checkbox"
+                checked={!!contact.facturaFirma}
+                onChange={(e) => set("facturaFirma", e.target.checked)}
+                className="mt-0.5 h-5 w-5 shrink-0 accent-lime-500"
+              />
+              <span className="text-sm font-medium text-navy-700">
+                Doresc factură pe firmă
+                <span className="mt-0.5 block text-xs font-normal text-navy-400">
+                  Bifează dacă vrei factura pe o persoană juridică, cu CIF.
+                </span>
+              </span>
+            </label>
+
+            {contact.facturaFirma && (
+              <div className="mt-3 grid gap-3 rounded-xl border border-lime-300 bg-lime-50/50 p-4 sm:grid-cols-2">
+                <FormField
+                  label="Denumire firmă"
+                  type="text"
+                  name="firmaNume"
+                  autoComplete="organization"
+                  value={contact.firmaNume ?? ""}
+                  placeholder="SC Exemplu SRL"
+                  required
+                  externalError={errors.firmaNume}
+                  onChange={(v) => set("firmaNume", v)}
+                  className="sm:col-span-2"
+                />
+                <FormField
+                  label="CIF / CUI"
+                  type="text"
+                  name="firmaCui"
+                  value={contact.firmaCui ?? ""}
+                  placeholder="RO12345678"
+                  required
+                  externalError={errors.firmaCui}
+                  externalErrorMsg={errMsg(contact.firmaCui ?? "", "CIF invalid (ex. RO12345678).")}
+                  onChange={(v) => set("firmaCui", v)}
+                />
+                <FormField
+                  label="Nr. Reg. Comerțului (opțional)"
+                  type="text"
+                  name="firmaRegCom"
+                  value={contact.firmaRegCom ?? ""}
+                  placeholder="J40/1234/2020"
+                  onChange={(v) => set("firmaRegCom", v)}
+                />
+              </div>
+            )}
 
             <label className="mt-5 flex cursor-pointer items-start gap-2.5 text-xs leading-relaxed text-navy-600">
               <input
@@ -404,7 +493,7 @@ export function CosClient() {
                   disabled={phase === "sending" || phase === "paying"}
                   className={cn(btnPrimary, "mt-4 w-full", (phase === "sending" || phase === "paying") && "opacity-70")}
                 >
-                  {phase === "paying" ? "Te ducem la plată…" : (<>Plătește {total.toLocaleString("ro-RO")} Lei cu cardul <ArrowRight className="h-4 w-4" /></>)}
+                  {phase === "paying" ? (<><Spinner className="h-4 w-4 animate-spin" /> Te ducem la plată…</>) : (<>Plătește {total.toLocaleString("ro-RO")} Lei cu cardul <ArrowRight className="h-4 w-4" /></>)}
                 </button>
                 {payError && <p role="alert" className="mt-2 text-xs text-danger">{payError}</p>}
               </>
@@ -419,9 +508,10 @@ export function CosClient() {
                 disabled={phase === "sending"}
                 className={cn(btnPrimary, "mt-4 w-full", phase === "sending" && "opacity-70")}
               >
-                {phase === "sending" ? "Se trimite…" : (<>Trimite cererea <ArrowRight className="h-4 w-4" /></>)}
+                {phase === "sending" ? (<><Spinner className="h-4 w-4 animate-spin" /> Se trimite…</>) : (<>Trimite cererea <ArrowRight className="h-4 w-4" /></>)}
               </button>
             )}
+            {!platibil && payError && <p role="alert" className="mt-2 text-xs text-danger">{payError}</p>}
 
             <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-navy-400">
               <Shield className="h-3.5 w-3.5 text-lime-600" /> Datele tale sunt confidențiale.

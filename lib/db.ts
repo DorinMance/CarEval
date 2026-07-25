@@ -129,6 +129,16 @@ export async function updateLeadStatus(id: string, status: LeadStatus): Promise<
   write(read().map((l) => (l.id === id ? { ...l, status } : l)));
 }
 
+/** Marchează o comandă drept facturată (număr + moment), după emiterea în SmartBill. */
+export async function setLeadInvoice(id: string, facturaNr: string): Promise<void> {
+  const facturaData = Date.now();
+  if (isFirebaseEnabled) {
+    await updateDoc(doc(fbDb()!, COL, id), { facturaNr, facturaData });
+    return;
+  }
+  write(read().map((l) => (l.id === id ? { ...l, facturaNr, facturaData } : l)));
+}
+
 export async function deleteLead(id: string): Promise<void> {
   if (isFirebaseEnabled) {
     await deleteDoc(doc(fbDb()!, COL, id));
