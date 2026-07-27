@@ -105,6 +105,13 @@ export async function startCardPayment(input: StartPaymentInput): Promise<StartP
 
     const data = await res.json().catch(() => null);
     if (!res.ok || !data) {
+      // Motivul real (ex. „POS is not approved", cheie greșită, sumă invalidă) vine
+      // în corpul răspunsului. Fără logul ăsta rămâne doar codul HTTP, care nu spune
+      // nimic. Îl scriem în log, dar NU îl arătăm clientului — sunt detalii interne.
+      console.error(
+        `[NETOPIA] pornire plată eșuată: HTTP ${res.status}`,
+        data ? JSON.stringify(data).slice(0, 300) : "(corp necitibil)"
+      );
       return { ok: false, message: `NETOPIA a răspuns cu ${res.status}.` };
     }
 
