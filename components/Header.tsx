@@ -46,6 +46,7 @@ export function Header() {
   if (pathname.startsWith("/admin")) return null;
 
   return (
+    <>
     <header
       className={`sticky top-0 z-50 transition-all ${
         scrolled
@@ -105,8 +106,15 @@ export function Header() {
           </button>
         </div>
       </div>
+    </header>
 
-      {/* Mobile menu — overlay full-page, cu blocare scroll fundal */}
+      {/* Mobile menu — DELIBERAT în afara <header>.
+          Când pagina e derulată, header-ul primește `backdrop-blur`, iar
+          `backdrop-filter` creează containing block pentru descendenții
+          `position: fixed`. Dacă overlay-ul stă în header, `top-20 bottom-0` se
+          măsoară față de header (80px înălțime) → overlay de 0px: meniul se
+          randa, dar era invizibil. Ca frate al header-ului, `fixed` se raportează
+          din nou la ecran. */}
       {open && (
         <div className="fixed inset-x-0 bottom-0 top-20 z-40 overflow-y-auto overscroll-contain bg-white lg:hidden">
           <nav className="flex flex-col gap-1 px-4 py-6 sm:px-6">
@@ -133,6 +141,6 @@ export function Header() {
           </nav>
         </div>
       )}
-    </header>
+    </>
   );
 }
