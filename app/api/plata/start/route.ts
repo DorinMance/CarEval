@@ -11,23 +11,34 @@ const MAX_AMOUNT = 20000;
 /** Linie de coș trimisă de client — DOAR ce produs e, nu și prețul (îl calculăm noi). */
 type ItemInput = { slug?: string; raportTiparit?: boolean };
 
-/** Prețul unui produs, ca „sursă de adevăr" server: cele 8 standard din cod;
- *  produsele create din admin se citesc din Firestore (nu din suma clientului). */
+/**
+ * Prețul unui produs, stabilit pe SERVER — niciodată din suma trimisă de browser.
+ *
+ * Sursa de adevăr e Firestore, fiindcă acolo editează adminul prețurile și tot de
+ * acolo le citește pagina de produs. Dacă cele două ar folosi surse diferite,
+ * clientul ar vedea o sumă și ar plăti alta. Datele din cod rămân doar rezervă
+ * (colecție goală sau Firestore indisponibil).
+ */
 async function priceForSlug(slug: string | undefined): Promise<number | null | undefined> {
-  const seed = seedProducts.find((p) => p.slug === slug);
-  if (seed) return seed.price; // poate fi și null (serviciu „la cerere")
   if (!slug) return undefined;
-  // Produs ne-standard (creat din admin) — îl căutăm în Firestore după slug.
+
   const db = adminDb();
-  if (!db) return undefined;
-  try {
-    const q = await db.collection("products").where("slug", "==", slug).limit(1).get();
-    if (q.empty) return undefined;
-    const p = q.docs[0].data()?.price;
-    return typeof p === "number" ? p : null;
-  } catch {
-    return undefined;
+  if (db) {
+    try {
+      const q = await db.collection("products").where("slug", "==", slug).limit(1).get();
+      if (!q.empty) {
+        const p = q.docs[0].data()?.price;
+        return typeof p === "number" ? p : null; // null = serviciu „la cerere"
+      }
+    } catch (e) {
+      console.error("[plata/start] citire preț din Firestore eșuată, folosesc prețul din cod:", e);
+    }
+  } else {
+    console.warn("[plata/start] Firebase Admin neconfigurat — prețurile vin din cod, nu din admin.");
   }
+
+  const seed = seedProducts.find((p) => p.slug === slug);
+  return seed ? seed.price : undefined;
 }
 
 /**

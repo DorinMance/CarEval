@@ -8,13 +8,13 @@ import { COMPANY, products as seedProducts } from "@/lib/products";
 import { useProducts } from "@/lib/content";
 import { ArrowRight } from "@/components/icons";
 
-// Conținutul celor 8 servicii standard vine din cod (sursă de adevăr), ca textele
-// aprobate de client să apară live indiferent de ce e (eventual învechit) în store.
+// Firestore e sursa de adevăr (adminul editează prețuri și texte acolo); datele
+// din cod completează doar câmpurile lipsă sau colecția goală.
 const SEED_BY_SLUG = Object.fromEntries(seedProducts.map((s) => [s.slug, s]));
 
 export function ProduseClient() {
   const products = useProducts().map((p) =>
-    SEED_BY_SLUG[p.slug] ? { ...p, ...SEED_BY_SLUG[p.slug] } : p
+    SEED_BY_SLUG[p.slug] ? { ...SEED_BY_SLUG[p.slug], ...p } : p
   );
 
   return (

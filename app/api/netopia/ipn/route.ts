@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { isPaidStatus, type NetopiaNotification } from "@/lib/netopia";
+import {
+  isPaidStatus, verifyIpn, isIpnVerificationConfigured, isNetopiaSandbox,
+  type NetopiaNotification,
+} from "@/lib/netopia";
 import { updatePayment, getPayment } from "@/lib/payment-store";
 import { adminDb } from "@/lib/firebase-admin";
 
@@ -14,9 +17,47 @@ import { adminDb } from "@/lib/firebase-admin";
  * `scripts/simulate-ipn.mjs`.
  */
 export async function POST(req: Request) {
+  // Corpul se citește BRUT: hash-ul din semnătură se calculează pe octeții
+  // exacți, iar un JSON.parse/stringify intermediar l-ar schimba.
+  let raw: string;
+  try {
+    raw = await req.text();
+  } catch {
+    return NextResponse.json({ errorCode: 1, message: "payload ilizibil" }, { status: 400 });
+  }
+
+  // ── Autenticitatea notificării ──
+  // Fără ea, oricine poate trimite un POST cu „status: 3" și marca o comandă
+  // drept plătită. În producție respingem ferm; în sandbox, dacă certificatul nu
+  // e configurat, lăsăm să treacă (scripts/simulate-ipn.mjs nu poate semna).
+  if (isIpnVerificationConfigured) {
+    const token = req.headers.get("verification-token");
+    const v = verifyIpn(token, raw);
+    if (!v.ok) {
+      // Detalii pentru diagnostic rapid: dacă NETOPIA trimite alt format decât
+      // cel documentat, aici se vede imediat de ce a picat. Nu logăm semnătura.
+      let detalii = "";
+      try {
+        const [h, p] = (token ?? "").split(".");
+        const alg = JSON.parse(Buffer.from(h, "base64url").toString("utf8"))?.alg;
+        const iss = JSON.parse(Buffer.from(p, "base64url").toString("utf8"))?.iss;
+        detalii = ` (alg=${alg}, iss=${iss})`;
+      } catch { /* token indescifrabil — motivul e deja în v.reason */ }
+      console.warn(`[NETOPIA IPN] notificare RESPINSĂ: ${v.reason}${detalii}`);
+      // Răspuns non-200 → NETOPIA reia notificarea mai târziu. Dacă se dovedește
+      // o nepotrivire de format, o reparăm și reluarea trece de la sine.
+      return NextResponse.json({ errorCode: 1, message: "semnătură invalidă" }, { status: 400 });
+    }
+  } else if (!isNetopiaSandbox) {
+    console.error("[NETOPIA IPN] RESPINS: NETOPIA_PUBLIC_KEY lipsește în producție.");
+    return NextResponse.json({ errorCode: 1, message: "verificare neconfigurată" }, { status: 500 });
+  } else {
+    console.warn("[NETOPIA IPN] sandbox fără certificat — notificare acceptată NEVERIFICATĂ.");
+  }
+
   let body: NetopiaNotification;
   try {
-    body = (await req.json()) as NetopiaNotification;
+    body = JSON.parse(raw) as NetopiaNotification;
   } catch {
     return NextResponse.json({ errorCode: 1, message: "payload invalid" }, { status: 400 });
   }

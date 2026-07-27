@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
-import { products } from "@/lib/products";
+import { getAllProducts } from "@/lib/products-server";
 import { getAllPosts } from "@/lib/posts-server";
 import { SITE_URL } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await getAllPosts();
+  // Produsele și articolele se iau din Firestore, ca cele adăugate din panou să
+  // ajungă în Google, nu doar să fie accesibile.
+  const [products, posts] = await Promise.all([getAllProducts(), getAllPosts()]);
   const now = new Date();
 
   const statice: [string, number, MetadataRoute.Sitemap[number]["changeFrequency"]][] = [

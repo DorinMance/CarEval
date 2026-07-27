@@ -26,11 +26,16 @@ export function ProductPageClient({ slug }: { slug: string }) {
     );
   }
 
-  // Conținutul celor 8 servicii standard vine din cod (nume, text, pași, preț, imagine),
-  // ca textele aprobate de client să apară live indiferent de datele (eventual învechite) din store.
+  // Firestore e sursa de adevăr: ce editează adminul (preț, texte) se vede pe site.
+  // Datele din cod rămân doar ca plasă de siguranță, pentru câmpurile lipsă și
+  // pentru cazul în care colecția e goală.
+  //
+  // ATENȚIE: prețul afișat aici trebuie să rămână același cu cel calculat pe
+  // server la plată (`app/api/plata/start`, `priceForSlug`) — altfel clientul
+  // vede o sumă și plătește alta. Ambele citesc din Firestore, cu cod ca rezervă.
   const overlay = (p: typeof rawProduct) => {
     const s = seedProducts.find((x) => x.slug === p.slug);
-    return s ? { ...p, ...s } : p;
+    return s ? { ...s, ...p } : p;
   };
   const product = overlay(rawProduct);
   const wizardProduct = product;

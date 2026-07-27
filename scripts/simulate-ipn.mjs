@@ -11,6 +11,12 @@
  *
  * Exemplu:
  *   node scripts/simulate-ipn.mjs CE-1784816996768-WHUKFL 3000 5
+ *
+ * ATENȚIE: dacă `NETOPIA_PUBLIC_KEY` e setată, serverul verifică semnătura
+ * notificării și va respinge scriptul ăsta cu „semnătură invalidă" — corect,
+ * fiindcă nu putem semna în locul NETOPIA. Pentru simulare locală, scoate
+ * temporar `NETOPIA_PUBLIC_KEY` din `.env.local` (merge doar pe sandbox; în
+ * producție lipsa cheii oprește complet acceptarea notificărilor).
  */
 
 const [orderID, port = "3000", status = "5", amount] = process.argv.slice(2);

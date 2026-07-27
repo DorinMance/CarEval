@@ -1,13 +1,11 @@
 import "server-only";
 import type { Post } from "./blog";
 import { posts as seedPosts } from "./blog";
+import { canReadFirestore, decodeFields, listCollection, type FsValue } from "./firestore-rest";
 
 /**
- * Citirea articolelor pe SERVER, direct din Firestore prin REST.
- *
- * De ce REST și nu SDK-ul: articolele sunt conținut public, deci nu e nevoie de
- * Firebase Admin SDK și de un cont de serviciu — ajunge cheia publică pe care
- * site-ul o folosește oricum în browser. Fără secrete noi în Netlify.
+ * Citirea articolelor pe SERVER, direct din Firestore prin REST
+ * (mecanica de citire e în `lib/firestore-rest.ts`, comună cu produsele).
  *
  * De ce e necesar: paginile de blog sunt prerandate pe server. Fără asta, serverul
  * se uita doar în `lib/blog.ts` și returna 404 pentru orice articol scris din
@@ -19,34 +17,6 @@ const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 
 /** Cât timp e considerat proaspăt un articol citit din Firestore (secunde). */
 const REVALIDATE = 300;
-
-type FsValue = {
-  stringValue?: string;
-  integerValue?: string;
-  doubleValue?: number;
-  booleanValue?: boolean;
-  nullValue?: null;
-  arrayValue?: { values?: FsValue[] };
-  mapValue?: { fields?: Record<string, FsValue> };
-};
-
-/** Firestore REST întoarce valorile împachetate pe tip; le despachetăm. */
-function decode(v: FsValue): unknown {
-  if (v.stringValue !== undefined) return v.stringValue;
-  if (v.booleanValue !== undefined) return v.booleanValue;
-  if (v.integerValue !== undefined) return Number(v.integerValue);
-  if (v.doubleValue !== undefined) return v.doubleValue;
-  if (v.nullValue !== undefined) return null;
-  if (v.arrayValue) return (v.arrayValue.values ?? []).map(decode);
-  if (v.mapValue) return decodeFields(v.mapValue.fields ?? {});
-  return undefined;
-}
-
-function decodeFields(fields: Record<string, FsValue>): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(fields)) out[k] = decode(v);
-  return out;
-}
 
 /** Minimul fără de care pagina nu are ce randa. */
 function isValidPost(o: Record<string, unknown>): boolean {
@@ -72,26 +42,14 @@ function toPost(o: Record<string, unknown>): Post {
  * articolele noi să ajungă în Google, nu doar să fie accesibile.
  */
 export async function getAllPosts(): Promise<Post[]> {
-  if (!PROJECT_ID || !API_KEY) return seedPosts;
+  const docs = await listCollection("posts", REVALIDATE);
+  if (!docs) return seedPosts;
 
-  const url =
-    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}` +
-    `/databases/(default)/documents/posts?pageSize=300&key=${API_KEY}`;
-
-  try {
-    const res = await fetch(url, { next: { revalidate: REVALIDATE } });
-    if (!res.ok) return seedPosts;
-    const data = (await res.json()) as { documents?: { fields?: Record<string, FsValue> }[] };
-    const bySlug = new Map(seedPosts.map((p) => [p.slug, p]));
-    for (const d of data.documents ?? []) {
-      if (!d.fields) continue;
-      const o = decodeFields(d.fields);
-      if (isValidPost(o)) bySlug.set(o.slug as string, toPost(o)); // panoul are ultimul cuvânt
-    }
-    return [...bySlug.values()];
-  } catch {
-    return seedPosts;
+  const bySlug = new Map(seedPosts.map((p) => [p.slug, p]));
+  for (const o of docs) {
+    if (isValidPost(o)) bySlug.set(o.slug as string, toPost(o)); // panoul are ultimul cuvânt
   }
+  return [...bySlug.values()];
 }
 
 /** Un singur articol după slug. `null` dacă nu există nicăieri. */
@@ -102,7 +60,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   // ar prefera codul, pagina s-ar randa cu textul vechi și apoi ar sări la cel din
   // panou. Articolele din cod rămân rezerva: prima intrare în admin le copiază
   // oricum în Firestore (`seedPostsIfEmpty`).
-  if (!PROJECT_ID || !API_KEY) return seed;
+  if (!canReadFirestore) return seed;
 
   const url =
     `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}` +

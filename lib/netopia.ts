@@ -138,3 +138,104 @@ export interface NetopiaNotification {
   };
   order?: { orderID?: string };
 }
+
+/* ═══════════════ Verificarea semnăturii notificării (IPN) ═══════════════ */
+
+/**
+ * NETOPIA semnează fiecare notificare și trimite dovada în headerul
+ * `Verification-token`: un JWT semnat RSA cu cheia lor privată. Verificarea are
+ * trei părți, toate obligatorii:
+ *
+ *   1. semnătura JWT se validează cu certificatul public NETOPIA;
+ *   2. `iss` trebuie să fie exact „NETOPIA Payments";
+ *   3. `sub` trebuie să fie base64(SHA-512(corpul BRUT al cererii)) — asta leagă
+ *      semnătura de conținut, deci nimeni nu poate refolosi un token valid cu un
+ *      alt payload (ex. altă comandă sau altă sumă).
+ *
+ * Fără pasul ăsta, oricine poate trimite un POST cu „status: 3" și marca o
+ * comandă drept plătită fără să fi intrat vreun ban.
+ */
+
+const PUBLIC_KEY_RAW = process.env.NETOPIA_PUBLIC_KEY ?? "";
+
+/** Algoritmi acceptați. Strict RSA: „none" și HMAC (HS*) sunt vulnerabilități clasice. */
+const ALG_TO_HASH: Record<string, string> = {
+  RS256: "sha256",
+  RS384: "sha384",
+  RS512: "sha512",
+};
+
+export interface IpnVerifyResult {
+  ok: boolean;
+  reason?: string;
+}
+
+/** Certificatul NETOPIA din env — acceptă PEM direct sau codificat base64. */
+function netopiaPublicKey() {
+  if (!PUBLIC_KEY_RAW) return null;
+  const text = PUBLIC_KEY_RAW.includes("-----BEGIN")
+    ? PUBLIC_KEY_RAW.replace(/\n/g, "\n")
+    : Buffer.from(PUBLIC_KEY_RAW, "base64").toString("utf8");
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { X509Certificate, createPublicKey } = require("node:crypto");
+  try {
+    // Panoul NETOPIA livrează un certificat X.509; acceptăm și cheie publică simplă.
+    return text.includes("BEGIN CERTIFICATE")
+      ? new X509Certificate(text).publicKey
+      : createPublicKey(text);
+  } catch {
+    return null;
+  }
+}
+
+/** True dacă verificarea e configurată (există certificatul public). */
+export const isIpnVerificationConfigured = Boolean(PUBLIC_KEY_RAW);
+
+/**
+ * Verifică notificarea. `rawBody` trebuie să fie corpul BRUT, exact octeții
+ * primiți — un `JSON.parse` urmat de `JSON.stringify` schimbă hash-ul.
+ */
+export function verifyIpn(token: string | null | undefined, rawBody: string): IpnVerifyResult {
+  const key = netopiaPublicKey();
+  if (!key) return { ok: false, reason: "certificatul public NETOPIA nu e configurat" };
+  if (!token) return { ok: false, reason: "lipsește headerul Verification-token" };
+
+  const parts = token.split(".");
+  if (parts.length !== 3) return { ok: false, reason: "token malformat" };
+  const [headerB64, payloadB64, signatureB64] = parts;
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { createVerify, createHash, timingSafeEqual } = require("node:crypto");
+
+  let alg: string;
+  let claims: { iss?: string; sub?: string };
+  try {
+    alg = String(JSON.parse(Buffer.from(headerB64, "base64url").toString("utf8"))?.alg ?? "");
+    claims = JSON.parse(Buffer.from(payloadB64, "base64url").toString("utf8"));
+  } catch {
+    return { ok: false, reason: "token indescifrabil" };
+  }
+
+  const hash = ALG_TO_HASH[alg];
+  if (!hash) return { ok: false, reason: `algoritm neacceptat: ${alg || "(absent)"}` };
+
+  const semnaturaOk = createVerify(hash)
+    .update(`${headerB64}.${payloadB64}`)
+    .verify(key, Buffer.from(signatureB64, "base64url"));
+  if (!semnaturaOk) return { ok: false, reason: "semnătură invalidă" };
+
+  if (claims.iss !== "NETOPIA Payments") {
+    return { ok: false, reason: `emitent neașteptat: ${claims.iss ?? "(absent)"}` };
+  }
+
+  // Legătura dintre semnătură și conținut.
+  const asteptat = createHash("sha512").update(rawBody, "utf8").digest("base64");
+  const primit = String(claims.sub ?? "");
+  const a = Buffer.from(asteptat);
+  const b = Buffer.from(primit);
+  if (a.length !== b.length || !timingSafeEqual(a, b)) {
+    return { ok: false, reason: "corpul cererii nu corespunde semnăturii" };
+  }
+
+  return { ok: true };
+}
