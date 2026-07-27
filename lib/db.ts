@@ -76,17 +76,31 @@ export async function saveLead(lead: Lead): Promise<void> {
       })
     );
 
-    await setDoc(ref, {
-      createdAt: lead.createdAt,
-      status: "nou" as LeadStatus,
-      contact: lead.contact,
-      total: lead.total ?? null,
-      // Numărul de comandă afișat clientului și în NETOPIA. Documentul se
-      // construiește câmp cu câmp, deci orice câmp nou trebuie adăugat explicit
-      // aici — altfel se pierde tăcut la salvare.
-      orderID: lead.orderID ?? null,
-      items,
-    });
+    try {
+      await setDoc(ref, {
+        createdAt: lead.createdAt,
+        status: "nou" as LeadStatus,
+        contact: lead.contact,
+        total: lead.total ?? null,
+        // Numărul de comandă afișat clientului și în NETOPIA. Documentul se
+        // construiește câmp cu câmp, deci orice câmp nou trebuie adăugat explicit
+        // aici — altfel se pierde tăcut la salvare.
+        orderID: lead.orderID ?? null,
+        items,
+      });
+    } catch (e) {
+      // La o plată REÎNCERCATĂ, orderID-ul e același, deci `setDoc` cade pe un
+      // document existent — pentru Firestore asta e `update`, nu `create`, iar
+      // regulile îi permit clientului doar `create`. Fără tratarea asta, un
+      // client căruia i-a picat plata rămânea blocat definitiv: nu se mai putea
+      // salva comanda, deci nu se mai putea porni plata.
+      //
+      // Comanda e deja salvată din prima încercare, așa că NU blocăm reluarea.
+      // Orice altă eroare (rețea, Storage) se propagă normal.
+      const code = (e as { code?: string })?.code;
+      if (code !== "permission-denied") throw e;
+      console.warn(`[saveLead] ${id}: comandă reluată — păstrăm datele din prima încercare.`);
+    }
     return;
   }
 

@@ -6,7 +6,7 @@ import { ADMIN_CREDENTIALS, login, logout, subscribeAuth } from "@/lib/auth";
 import { isFirebaseEnabled } from "@/lib/firebase";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/components/ui";
-import { Lock, Shield, LogOut, FileText, Car, ClipboardList, Star, Spinner } from "@/components/icons";
+import { Lock, LogOut, FileText, Car, ClipboardList, Star, Spinner } from "@/components/icons";
 import { OrdersPanel } from "@/components/admin/OrdersPanel";
 import { ProductsPanel } from "@/components/admin/ProductsPanel";
 import { BlogPanel } from "@/components/admin/BlogPanel";
@@ -97,11 +97,7 @@ export default function AdminPage() {
             </button>
           </div>
 
-          <p className="mt-4 flex items-center justify-center gap-1.5 rounded-lg bg-cloud py-2 text-xs text-navy-400">
-            <Shield className="h-3.5 w-3.5" />
-            {isFirebaseEnabled ? "Autentificare securizată prin Firebase." : "Demo: datele sunt deja completate."}
-          </p>
-          <Link href="/" className="mt-4 block text-center text-xs text-navy-400 hover:text-navy-700">← Înapoi pe site</Link>
+          <Link href="/" className="mt-6 block text-center text-xs text-navy-400 hover:text-navy-700">← Înapoi pe site</Link>
         </div>
       </div>
     );
