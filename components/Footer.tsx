@@ -79,8 +79,11 @@ export function Footer() {
             ].map(([href, label]) => (
               <Link key={href} href={href} className="inline-flex min-h-11 items-center hover:text-lime-300">{label}</Link>
             ))}
-            {/* ANPC cere informarea privind soluționarea alternativă a litigiilor (SAL). */}
+            {/* ANPC cere informarea privind soluționarea litigiilor: SAL (național)
+                și SOL (platforma europeană de soluționare online). NETOPIA le
+                verifică pe amândouă la aprobarea punctului de vânzare. */}
             <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center hover:text-lime-300">ANPC — SAL</a>
+            <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center hover:text-lime-300">ANPC — SOL</a>
           </div>
 
           <PaymentLogos className="mt-5 border-t border-white/10 pt-5" />
