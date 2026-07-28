@@ -260,7 +260,7 @@ export function verifyIpn(token: string | null | undefined, rawBody: string): Ip
 export async function getPaymentStatus(
   ntpID: string,
   orderID: string
-): Promise<{ ok: boolean; status?: number; amount?: number; message?: string }> {
+): Promise<{ ok: boolean; status?: number; amount?: number; orderID?: string; message?: string }> {
   if (!isNetopiaEnabled || !ntpID) return { ok: false, message: "lipsesc datele plății" };
   try {
     const res = await fetch(`${BASE}/operation/status`, {
@@ -271,14 +271,23 @@ export async function getPaymentStatus(
     });
     const data = await res.json().catch(() => null);
     const err = data?.error;
-    // NETOPIA răspunde 200 și pentru erori de business; codul „0" înseamnă ok.
-    if (!res.ok || (err?.code && err.code !== "0" && err.code !== 0)) {
+    // NETOPIA răspunde 200 și pentru erori de business. ATENȚIE: la succes, codul
+    // e „00" (cu mesajul „Approved"), nu „0" — verificat pe o tranzacție reală.
+    // Prima versiune accepta doar „0" și trata plățile valide drept erori, deci
+    // canalul 2 respingea confirmări legitime.
+    const cod = String(err?.code ?? "0");
+    if (!res.ok || (cod !== "0" && cod !== "00")) {
       return { ok: false, message: err?.message ?? `HTTP ${res.status}` };
     }
     return {
       ok: true,
       status: Number(data?.payment?.status ?? 0),
       amount: Number(data?.order?.amount ?? data?.payment?.amount ?? 0),
+      // ATENȚIE: endpointul IGNORĂ orderID-ul trimis de noi — caută doar după
+      // ntpID — dar răspunde cu orderID-ul REAL al tranzacției. Apelantul TREBUIE
+      // să-l compare cu al lui: altfel un ntpID plătit (de 5 Lei) ar putea
+      // „confirma" orice altă comandă. Descoperit printr-un test de atac.
+      orderID: data?.order?.orderID ? String(data.order.orderID) : undefined,
     };
   } catch {
     return { ok: false, message: "nu am putut contacta NETOPIA" };

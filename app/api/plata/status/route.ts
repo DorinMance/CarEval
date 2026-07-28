@@ -49,7 +49,11 @@ export async function GET(req: Request) {
   const ntpID = doc?.plataNtpID ?? rec?.ntpID;
   if (ntpID) {
     const st = await getPaymentStatus(ntpID, orderID);
-    if (st.ok && st.status != null) {
+    // NETOPIA răspunde cu orderID-ul real al tranzacției (ignoră ce-i trimitem):
+    // confirmăm doar dacă tranzacția chiar aparține acestei comenzi.
+    if (st.ok && st.orderID !== orderID) {
+      console.warn(`[plata/status] ${orderID}: ntpID ${ntpID} aparține altei comenzi (${st.orderID}) — ignorat.`);
+    } else if (st.ok && st.status != null) {
       const platit = isPaidStatus(st.status);
       // Persistăm rezultatul, ca panoul de admin să-l vadă și el, nu doar clientul.
       // Suma rămâne cea inițiată de noi — nu o luăm de la NETOPIA fără verificare.

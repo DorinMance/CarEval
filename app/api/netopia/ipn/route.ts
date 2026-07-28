@@ -132,15 +132,21 @@ export async function POST(req: Request) {
   // NETOPIA spune că e plătită ȘI suma coincide cu cea inițiată de noi.
   if (!autentic && ntpID) {
     const st = await getPaymentStatus(ntpID, orderID);
+    // LEGĂTURA CRITICĂ: NETOPIA ignoră orderID-ul din interogare (caută doar după
+    // ntpID) dar răspunde cu orderID-ul REAL al tranzacției. Fără comparația asta,
+    // un ntpID plătit legitim (ex. o comandă de 5 Lei) ar „confirma" ORICE altă
+    // comandă — testat ca atac, chiar trecea. Comanda din notificare trebuie să fie
+    // exact cea căreia NETOPIA îi atribuie tranzacția.
+    const comandaOk = !!st.orderID && st.orderID === orderID;
     const initiata = getPayment(orderID)?.amount ?? (await sumaInitiataDinFirestore(orderID));
     const sumaOk = st.amount == null || initiata == null || Math.abs(st.amount - initiata) < 0.01;
-    if (st.ok && st.status != null && isPaidStatus(st.status) && sumaOk) {
+    if (st.ok && comandaOk && st.status != null && isPaidStatus(st.status) && sumaOk) {
       autentic = true;
       console.warn(`[NETOPIA IPN] ${orderID}: semnătura a picat, dar NETOPIA confirmă plata — acceptat.`);
     } else {
       console.warn(
         `[NETOPIA IPN] ${orderID}: RESPINS — semnătura invalidă și NETOPIA nu confirmă ` +
-        `(status=${st.status ?? "?"}, sumaOk=${sumaOk}, motiv=${st.message ?? "-"}).`
+        `(status=${st.status ?? "?"}, comandaOk=${comandaOk}, sumaOk=${sumaOk}, motiv=${st.message ?? "-"}).`
       );
       return NextResponse.json({ errorCode: 1, message: "notificare neautentificată" }, { status: 400 });
     }
