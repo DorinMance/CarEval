@@ -6,6 +6,7 @@ import {
 } from "@/lib/netopia";
 import { updatePayment, getPayment } from "@/lib/payment-store";
 import { adminDb } from "@/lib/firebase-admin";
+import { trimiteEmailPlataConfirmata } from "@/lib/email-plata";
 
 /** Suma pe care NOI am inițiat-o, ca să nu credem suma din notificare. */
 async function sumaInitiataDinFirestore(orderID: string): Promise<number | null> {
@@ -202,6 +203,13 @@ export async function POST(req: Request) {
   } catch (e) {
     console.error("[NETOPIA IPN] nu am putut scrie starea plății în Firestore:", e);
   }
+
+  // Confirmarea pe email către client. Se trimite o singură dată (vezi
+  // `trimiteEmailPlataConfirmata`) și doar la plată reușită. Așteptăm rezultatul
+  // în loc să lansăm în fundal: după ce răspundem, instanța serverless poate fi
+  // înghețată imediat, iar un email pornit „pe fundal” s-ar pierde. Funcția nu
+  // aruncă și are timeout scurt, deci nu poate bloca răspunsul către NETOPIA.
+  if (paid) await trimiteEmailPlataConfirmata(orderID);
 
   // Factura NU se emite automat aici. Am ales cu clientul facturare manuală:
   // proprietarul apasă „Facturează" în admin (vezi app/api/factura), verifică

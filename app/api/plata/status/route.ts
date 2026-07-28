@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getPayment } from "@/lib/payment-store";
 import { adminDb } from "@/lib/firebase-admin";
 import { getPaymentStatus, isPaidStatus } from "@/lib/netopia";
+import { trimiteEmailPlataConfirmata } from "@/lib/email-plata";
 
 /** Starea unei comenzi, interogată de pagina de rezultat cât timp NETOPIA încă nu a confirmat. */
 export async function GET(req: Request) {
@@ -64,6 +65,11 @@ export async function GET(req: Request) {
             { merge: true }
           );
           console.warn(`[plata/status] ${orderID} confirmat prin interogare directă (IPN-ul nu a ajuns).`);
+          // Confirmarea pe email pleacă și pe canalul ăsta: dacă IPN-ul nu a
+          // ajuns, clientul ar rămâne altfel fără niciun mesaj. Trimiterea e
+          // idempotentă, deci nu riscăm un al doilea email dacă IPN-ul apare
+          // mai târziu.
+          await trimiteEmailPlataConfirmata(orderID);
         }
       } catch (e) {
         console.error("[plata/status] nu am putut salva starea:", e);
