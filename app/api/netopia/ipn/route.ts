@@ -33,6 +33,11 @@ function diagnostic(token: string | null, raw: string, motiv?: string) {
     parti: token ? token.split(".").length : 0,
     lungimeCorp: raw.length,
     subCalculatDeNoi: createHash("sha512").update(raw, "utf8").digest("base64"),
+    // Corpul și tokenul, ca să putem reproduce verificarea offline și testa pe ce
+    // cheie publică se validează. Nu sunt secrete: corpul e starea plății (fără
+    // date de card), iar tokenul e o semnătură peste el. Se șterg după diagnostic.
+    corp: raw.slice(0, 2000),
+    token: (token ?? "").slice(0, 3000),
   };
   try {
     const [h, p] = (token ?? "").split(".");
