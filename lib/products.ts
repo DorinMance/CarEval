@@ -58,17 +58,21 @@ export interface Product {
 
 // ---- Grupuri de câmpuri reutilizabile ----
 
+// Datele din talon sunt toate obligatorii: expertul le folosește la evaluare, iar o
+// evaluare cu date lipsă înseamnă întârziere și un telefon în plus către client.
+// Excepție: „dotări suplimentare" — o mașină în configurație standard nu are ce
+// completa acolo, iar un câmp obligatoriu ar forța răspunsuri inventate.
 const vehicleFields: Field[] = [
   { name: "marca", label: "Marca", type: "text", required: true, placeholder: "ex. BMW" },
   { name: "model", label: "Model", type: "text", required: true, placeholder: "ex. Seria 3" },
-  { name: "varianta", label: "Variantă echipare", type: "text", placeholder: "ex. 320d xDrive" },
+  { name: "varianta", label: "Variantă echipare", type: "text", required: true, placeholder: "ex. 320d xDrive" },
   { name: "vin", label: "Serie șasiu (VIN)", type: "text", required: true, placeholder: "17 caractere", maxLength: 17 },
-  { name: "capacitate", label: "Capacitate cilindrică [cmc]", type: "number", placeholder: "ex. 1995" },
-  { name: "putere", label: "Putere motor [kW]", type: "number", placeholder: "ex. 140" },
+  { name: "capacitate", label: "Capacitate cilindrică [cmc]", type: "number", required: true, placeholder: "ex. 1995" },
+  { name: "putere", label: "Putere motor [kW]", type: "number", required: true, placeholder: "ex. 140" },
   { name: "transmisie", label: "Transmisie", type: "select", required: true, options: ["Manuală", "Automată"] },
   { name: "km", label: "Kilometri rulați [km]", type: "number", required: true, placeholder: "ex. 120000" },
   { name: "primaInmatriculare", label: "Data primei înmatriculări", type: "date", required: true },
-  { name: "proprietari", label: "Număr proprietari", type: "number", placeholder: "ex. 2" },
+  { name: "proprietari", label: "Număr proprietari", type: "number", required: true, placeholder: "ex. 2" },
   { name: "dotari", label: "Dotări suplimentare după fabricație", type: "textarea", full: true, placeholder: "Trapă, jante 19”, pachet M, etc." },
 ];
 

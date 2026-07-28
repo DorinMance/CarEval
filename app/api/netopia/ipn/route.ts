@@ -1,10 +1,51 @@
 import { NextResponse } from "next/server";
+import { createHash } from "node:crypto";
 import {
-  isPaidStatus, verifyIpn, isIpnVerificationConfigured, isNetopiaSandbox,
+  isPaidStatus, verifyIpn, isIpnVerificationConfigured, isNetopiaSandbox, getPaymentStatus,
   type NetopiaNotification,
 } from "@/lib/netopia";
 import { updatePayment, getPayment } from "@/lib/payment-store";
 import { adminDb } from "@/lib/firebase-admin";
+
+/** Suma pe care NOI am inițiat-o, ca să nu credem suma din notificare. */
+async function sumaInitiataDinFirestore(orderID: string): Promise<number | null> {
+  try {
+    const db = adminDb();
+    if (!db) return null;
+    const snap = await db.collection("leads").doc(orderID).get();
+    const d = snap.data() as { plataSumaInitiata?: number; total?: number } | undefined;
+    return d?.plataSumaInitiata ?? d?.total ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Metadate despre o notificare respinsă, ca să putem repara nepotrivirea de format
+ * fără să vânăm prin logurile funcțiilor (care se pierd în 24h). Nu conține
+ * semnătura și nici date personale — doar ce trebuie ca să comparăm cu specificația.
+ */
+function diagnostic(token: string | null, raw: string, motiv?: string) {
+  const d: Record<string, unknown> = {
+    cand: new Date().toISOString(),
+    motiv: motiv ?? "-",
+    areHeader: !!token,
+    parti: token ? token.split(".").length : 0,
+    lungimeCorp: raw.length,
+    subCalculatDeNoi: createHash("sha512").update(raw, "utf8").digest("base64"),
+  };
+  try {
+    const [h, p] = (token ?? "").split(".");
+    d.antet = JSON.parse(Buffer.from(h, "base64url").toString("utf8"));
+    const claims = JSON.parse(Buffer.from(p, "base64url").toString("utf8"));
+    d.iss = claims?.iss;
+    d.subPrimitDeLaNetopia = claims?.sub;
+    d.cheiClaims = Object.keys(claims ?? {});
+  } catch {
+    d.tokenIndescifrabil = true;
+  }
+  return d;
+}
 
 /**
  * Confirmarea plății, trimisă de NETOPIA server-la-server pe `notifyUrl`.
@@ -26,40 +67,51 @@ export async function POST(req: Request) {
     return NextResponse.json({ errorCode: 1, message: "payload ilizibil" }, { status: 400 });
   }
 
+  // Corpul trebuie citibil ca JSON înainte de orice — și pentru verificarea de
+  // rezervă avem nevoie de `ntpID` din el.
+  let body: NetopiaNotification;
+  try {
+    body = JSON.parse(raw) as NetopiaNotification;
+  } catch {
+    return NextResponse.json({ errorCode: 1, message: "payload invalid" }, { status: 400 });
+  }
+
   // ── Autenticitatea notificării ──
-  // Fără ea, oricine poate trimite un POST cu „status: 3" și marca o comandă
-  // drept plătită. În producție respingem ferm; în sandbox, dacă certificatul nu
-  // e configurat, lăsăm să treacă (scripts/simulate-ipn.mjs nu poate semna).
+  // Fără ea, oricine poate trimite un POST cu „status: 3" și marca o comandă drept
+  // plătită. Avem DOUĂ căi independente, ca o singură nepotrivire de format să nu
+  // blocheze încasările — exact ce s-a întâmplat la prima plată reală, unde NETOPIA
+  // a reîncercat de 3 ori și de fiecare dată am răspuns 400:
+  //
+  //   1. semnătura JWT (rapidă, offline);
+  //   2. dacă pică — întrebăm NETOPIA dacă plata e reală (autoritar, cu cheia
+  //      noastră API). Un atacator n-ar trece nici pe aici: NETOPIA i-ar spune că
+  //      tranzacția nu există sau nu e plătită, iar suma trebuie să coincidă cu cea
+  //      inițiată de noi.
+  //
+  // În sandbox fără certificat lăsăm să treacă (scripts/simulate-ipn.mjs nu poate semna).
+  let autentic = false;
   if (isIpnVerificationConfigured) {
     const token = req.headers.get("verification-token");
     const v = verifyIpn(token, raw);
+    autentic = v.ok;
     if (!v.ok) {
-      // Detalii pentru diagnostic rapid: dacă NETOPIA trimite alt format decât
-      // cel documentat, aici se vede imediat de ce a picat. Nu logăm semnătura.
-      let detalii = "";
+      // Diagnostic: dacă NETOPIA trimite alt format decât cel documentat, aici se
+      // vede exact de ce a picat. Se scrie și în Firestore, fiindcă logurile
+      // funcțiilor serverless se pierd în 24h și sunt greu de citit. Nu salvăm
+      // semnătura, doar metadate.
+      const d = diagnostic(token, raw, v.reason);
+      console.warn(`[NETOPIA IPN] semnătură respinsă: ${JSON.stringify(d)}`);
       try {
-        const [h, p] = (token ?? "").split(".");
-        const alg = JSON.parse(Buffer.from(h, "base64url").toString("utf8"))?.alg;
-        const iss = JSON.parse(Buffer.from(p, "base64url").toString("utf8"))?.iss;
-        detalii = ` (alg=${alg}, iss=${iss})`;
-      } catch { /* token indescifrabil — motivul e deja în v.reason */ }
-      console.warn(`[NETOPIA IPN] notificare RESPINSĂ: ${v.reason}${detalii}`);
-      // Răspuns non-200 → NETOPIA reia notificarea mai târziu. Dacă se dovedește
-      // o nepotrivire de format, o reparăm și reluarea trece de la sine.
-      return NextResponse.json({ errorCode: 1, message: "semnătură invalidă" }, { status: 400 });
+        const db = adminDb();
+        if (db) await db.collection("_diagnostic").doc("ultima-ipn-respinsa").set(d);
+      } catch { /* diagnosticul nu trebuie să blocheze plata */ }
     }
   } else if (!isNetopiaSandbox) {
     console.error("[NETOPIA IPN] RESPINS: NETOPIA_PUBLIC_KEY lipsește în producție.");
     return NextResponse.json({ errorCode: 1, message: "verificare neconfigurată" }, { status: 500 });
   } else {
     console.warn("[NETOPIA IPN] sandbox fără certificat — notificare acceptată NEVERIFICATĂ.");
-  }
-
-  let body: NetopiaNotification;
-  try {
-    body = JSON.parse(raw) as NetopiaNotification;
-  } catch {
-    return NextResponse.json({ errorCode: 1, message: "payload invalid" }, { status: 400 });
+    autentic = true;
   }
 
   const orderID = body.order?.orderID;
@@ -68,6 +120,28 @@ export async function POST(req: Request) {
 
   if (!orderID) {
     return NextResponse.json({ errorCode: 1, message: "orderID lipsă" }, { status: 400 });
+  }
+
+  // A doua cale de autentificare: întrebăm NETOPIA. Nu credem nimic din corpul
+  // primit — îl folosim doar ca să știm PE CINE să întrebăm. Confirmăm doar dacă
+  // NETOPIA spune că e plătită ȘI suma coincide cu cea inițiată de noi.
+  if (!autentic && ntpID) {
+    const st = await getPaymentStatus(ntpID, orderID);
+    const initiata = getPayment(orderID)?.amount ?? (await sumaInitiataDinFirestore(orderID));
+    const sumaOk = st.amount == null || initiata == null || Math.abs(st.amount - initiata) < 0.01;
+    if (st.ok && st.status != null && isPaidStatus(st.status) && sumaOk) {
+      autentic = true;
+      console.warn(`[NETOPIA IPN] ${orderID}: semnătura a picat, dar NETOPIA confirmă plata — acceptat.`);
+    } else {
+      console.warn(
+        `[NETOPIA IPN] ${orderID}: RESPINS — semnătura invalidă și NETOPIA nu confirmă ` +
+        `(status=${st.status ?? "?"}, sumaOk=${sumaOk}, motiv=${st.message ?? "-"}).`
+      );
+      return NextResponse.json({ errorCode: 1, message: "notificare neautentificată" }, { status: 400 });
+    }
+  } else if (!autentic) {
+    console.warn(`[NETOPIA IPN] ${orderID}: RESPINS — semnătură invalidă și fără ntpID de verificat.`);
+    return NextResponse.json({ errorCode: 1, message: "notificare neautentificată" }, { status: 400 });
   }
 
   const paid = isPaidStatus(status);
