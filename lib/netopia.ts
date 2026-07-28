@@ -246,3 +246,41 @@ export function verifyIpn(token: string | null | undefined, rawBody: string): Ip
 
   return { ok: true };
 }
+
+/**
+ * Întreabă NETOPIA direct care e starea unei plăți.
+ *
+ * De ce e nevoie: confirmarea vine în mod normal prin IPN, dar dacă notificarea
+ * întârzie, se pierde sau e respinsă, comanda rămâne „în așteptare" deși banii au
+ * fost încasați — exact ce s-a întâmplat la prima plată reală. Aici întrebăm sursa
+ * autoritară, deci confirmarea nu mai depinde de un singur canal.
+ *
+ * Necesită `ntpID`-ul primit la pornirea plății (îl salvăm pe comandă atunci).
+ */
+export async function getPaymentStatus(
+  ntpID: string,
+  orderID: string
+): Promise<{ ok: boolean; status?: number; amount?: number; message?: string }> {
+  if (!isNetopiaEnabled || !ntpID) return { ok: false, message: "lipsesc datele plății" };
+  try {
+    const res = await fetch(`${BASE}/operation/status`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: API_KEY },
+      body: JSON.stringify({ ntpID, orderID, posSignature: POS_SIGNATURE }),
+      cache: "no-store",
+    });
+    const data = await res.json().catch(() => null);
+    const err = data?.error;
+    // NETOPIA răspunde 200 și pentru erori de business; codul „0" înseamnă ok.
+    if (!res.ok || (err?.code && err.code !== "0" && err.code !== 0)) {
+      return { ok: false, message: err?.message ?? `HTTP ${res.status}` };
+    }
+    return {
+      ok: true,
+      status: Number(data?.payment?.status ?? 0),
+      amount: Number(data?.order?.amount ?? data?.payment?.amount ?? 0),
+    };
+  } catch {
+    return { ok: false, message: "nu am putut contacta NETOPIA" };
+  }
+}

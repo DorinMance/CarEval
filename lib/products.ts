@@ -541,3 +541,20 @@ export const COMPANY = {
   hours: "Luni–Vineri, 08:00–17:00",
   expert: "Dr. Ing. KULCSAR Raul Miklos — Expert Tehnic Judiciar",
 };
+
+/**
+ * Județele României, în forma cerută de e-Factura (ANAF).
+ *
+ * De ce listă fixă și nu câmp liber: județul ajunge pe factura SmartBill, iar de
+ * acolo la ANAF prin e-Factura, care validează denumirea exact. Un câmp liber
+ * producea „Județ client incorect" la trimitere — factura se emitea, dar nu putea
+ * pleca mai departe. Cu diacritice, ca în nomenclatorul oficial.
+ */
+export const JUDETE = [
+  "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov",
+  "Brăila", "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța",
+  "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara",
+  "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt",
+  "Prahova", "Satu Mare", "Sălaj", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea",
+  "Vaslui", "Vâlcea", "Vrancea",
+] as const;

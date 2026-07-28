@@ -141,5 +141,22 @@ export async function POST(req: Request) {
     description,
   });
 
+  // `ntpID` se scrie PERMANENT pe comandă, nu doar în memoria (efemeră) a funcției.
+  // Fără el nu putem întreba NETOPIA care e starea plății, iar dacă notificarea IPN
+  // se pierde comanda rămâne „în așteptare" deși banii au fost încasați — exact ce
+  // s-a întâmplat la prima plată reală. Suma inițiată se salvează tot aici, ca să
+  // avem cu ce compara confirmarea.
+  try {
+    const db = adminDb();
+    if (db && result.ntpID) {
+      await db.collection("leads").doc(orderID).set(
+        { plataNtpID: result.ntpID, plataSumaInitiata: amount },
+        { merge: true }
+      );
+    }
+  } catch (e) {
+    console.error("[plata/start] nu am putut salva ntpID pe comandă:", e);
+  }
+
   return NextResponse.json({ ok: true, orderID, paymentURL: result.paymentURL, ntpID: result.ntpID });
 }

@@ -6,7 +6,7 @@ import { useCart } from "@/lib/cart";
 import { saveLead } from "@/lib/db";
 import { fieldLabel } from "@/lib/labels";
 import type { Lead, Contact } from "@/lib/types";
-import { products, COMPANY, lineTotal, PRINT_FEE } from "@/lib/products";
+import { products, COMPANY, lineTotal, PRINT_FEE, JUDETE } from "@/lib/products";
 import { FormField } from "@/components/FormField";
 import type { FieldStatus } from "@/components/FormField";
 import { Section, Eyebrow, btnPrimary, btnOutline, cn } from "@/components/ui";
@@ -65,9 +65,12 @@ export function CosClient() {
     // Telefonul era verificat doar cu .trim() — trecea „aaa”. Același regex ca în FormField.
     if (!contact.telefon.trim() || !/^[+\d\s\-()]{7,}$/.test(contact.telefon)) next.telefon = true;
     if (!contact.email.trim() || !/.+@.+\..+/.test(contact.email)) next.email = true;
-    // Adresa și localitatea sunt necesare pentru factură.
+    // Adresa, localitatea și județul sunt necesare pentru factură. Județul lipsea
+    // din validare, iar fără el factura se emitea dar era respinsă la e-Factura
+    // (ANAF) cu „Județ client incorect" — s-a întâmplat la prima comandă reală.
     if (!(contact.adresa ?? "").trim()) next.adresa = true;
     if (!(contact.localitate ?? "").trim()) next.localitate = true;
+    if (!(contact.judet ?? "").trim()) next.judet = true;
     // Pentru factura pe firmă, denumirea și CIF-ul devin obligatorii.
     if (contact.facturaFirma) {
       if (!(contact.firmaNume ?? "").trim()) next.firmaNume = true;
@@ -401,13 +404,18 @@ export function CosClient() {
                 externalError={errors.localitate}
                 onChange={(v) => set("localitate", v)}
               />
+              {/* Listă fixă, nu câmp liber: județul ajunge pe factura SmartBill și de
+                  acolo la ANAF prin e-Factura, care validează denumirea exact. */}
               <FormField
                 label="Județ"
-                type="text"
+                type="select"
                 name="judet"
+                required
+                options={[...JUDETE]}
                 autoComplete="address-level1"
                 value={contact.judet ?? ""}
-                placeholder="Timiș"
+                externalError={errors.judet}
+                externalErrorMsg="Alege județul — apare pe factură."
                 onChange={(v) => set("judet", v)}
               />
             </div>
